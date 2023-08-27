@@ -96,9 +96,11 @@ class Player(LivingThing):
         print(f'You picked up {item.name}.')
 
     def use(self, item, monster):
+        # allows the player to use items
         pass
 
     def equip(self, weapon):
+        # allows the player to Equip weapons
         pass
 
 
@@ -279,9 +281,8 @@ items = [
 starter_room = Room('You find your self in a forest clearing','','',health_potion)
 forest = Room('You are in a large forest',wolf,'',axe)
 path_in_forest = Room('You find a path in the forest','','','')
-cave_entrance = Room('you find an entrance to a cave','','','')
-cave = Room('you continue down the cave','','','')
-cave_cavern = Room('you come to a large cavern','','','')
+cave_entrance = Room('you find an entrance to a cave',goblin,'','')
+cave_cavern = Room('you come to a large cavern',goblin_2,'',sword)
 along_path = Room('you follow the path through the forest','','','')
 hut_along_path = Room('you find a small hut along the path','','','')
 village = Room('You come across a village','','','')
@@ -289,16 +290,17 @@ other_cave_entrance = Room('you found an entrance to a cave','','','')
 boss_room = Room('you find your self in a large room but their is, their is something in the room','','','')
 
 # Room connections dictionarys
-room_dictionary = {
-starter_room : [forest],
-forest : [starter_room,cave_entrance,path_in_forest],
-path_in_forest : [forest,along_path],
-along_path : [path_in_forest,hut_along_path],
-hut_along_path : [along_path,other_cave_entrance,village],
-villiger : [hut_along_path],
-other_cave_entrance : [hut_along_path,cave_cavern],
-cave_cavern : [cave,other_cave_entrance,boss_room],
-boss_room : [cave_cavern]
+room_connections = {
+starter_room : {forest : 'forward'},
+forest : {starter_room : 'back',cave_entrance : 'left',path_in_forest : 'right'},
+path_in_forest : {forest : 'back',along_path : 'forward'},
+cave_entrance : {forest : 'back',cave_entrance : 'forward'},
+along_path : {path_in_forest : 'back',hut_along_path : 'forward'},
+hut_along_path : {along_path : 'back',other_cave_entrance : 'left',village : 'right'},
+villiger : {hut_along_path : 'back'},
+other_cave_entrance : {hut_along_path : 'back',cave_cavern : 'forward'},
+cave_cavern : {cave_entrance : 'right', other_cave_entrance : 'left',boss_room : 'forward'},
+boss_room : {cave_cavern : 'back'}
 }
 
 

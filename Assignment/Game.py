@@ -21,8 +21,9 @@ class LivingThing():
 
 # Create a class for the player, inheriting from LivingThing
 class Player(LivingThing):
-    def __init__(self, name):
+    def __init__(self, name,):
         # Initialize player-specific attributes
+        global starter_room
         self.name = name
         self.health = 25
         self.status = 'regular'
@@ -104,6 +105,21 @@ class Player(LivingThing):
         # Allows the player to Equip weapons
         pass
 
+    def go(self,monster):
+        try:
+            direction = input("Which direction do you want to go? (forward/back/left/right)\n>> ")
+            if direction in room_connections[self.room]:
+                self.room = room_connections[self.room][direction]
+                print(f'You went {direction}')
+                print(f'you are now in the {self.room.name}')
+            else:
+                print("You can't go that way.")
+        except KeyError:
+            print("Invalid input or no valid connections from this room.")
+            
+    def die(self,monster):
+        self.health = 0
+
 
 # Create a class for monsters, also inheriting from LivingThing
 class Monster(LivingThing):
@@ -150,8 +166,9 @@ class Weapon(Item):
 
 # Create a class for Rooms
 class Room():
-    def __init__(self, description, monsters, npcs, items):
+    def __init__(self,name ,description, monsters, npcs, items):
         # Initialize Rooms
+        self.name = name
         self.description = description
         self.monsters = monsters
         self.npcs = npcs
@@ -171,7 +188,7 @@ def credits():
     print('Tester -- Dexter Hart')
     print('Tester -- ')
     print('Tester -- ')
-    print('')
+    print('Tester -- ')
 
 # Dictionary of commands mapped to player methods
 Commands = {
@@ -183,7 +200,9 @@ Commands = {
     'inventory': Player.inventory,
     'inv': Player.inventory,
     'use' : Player.use,
-    'equip': Player.equip
+    'equip': Player.equip,
+    'go' : Player.go,
+    'die': Player.die
 }
 
 # Dictionary of Difficultys 
@@ -229,30 +248,6 @@ def get_difficulty():
 # get difficulty
 get_difficulty()
 
-# Create friendly NPC instances
-villiger = FriendlyNPC('Villiger',5,"PLACE HOLDER")
-traveler = FriendlyNPC('Traveler',10,"PLACE HOLDER")
-hermit = FriendlyNPC('Hermit',15,'Place Holder')
-
-# Create monster instances
-goblin = Monster('Goblin', round(15*difficulty))
-wolf = Monster('Wolf',round(10*difficulty))
-bear = Monster('Bear Cub',round(15*difficulty))
-goblin_2 = Monster('Goblin',round(5*difficulty))
-
-# list of Monsters
-monsters = [
-    goblin,
-    wolf,
-    bear,
-    goblin_2
-]
-
-# Choose a random monster to face
-monster = choice(monsters)
-
-# Create Boss instance
-dragon = Boss('Red Dragon',round(25*difficulty),difficulty)
 
 # Create Item instances
 health_potion = Item('Health Potion','Restores some health points.',hero.heal())
@@ -265,7 +260,6 @@ mega_health_potion = Item('Mega Health Potion','Restores many health points.',he
 magic_sword = Weapon('Magic Sword','','')
 pitch_folk = Weapon('Pitch Folk','','')
 teleport = Item('Teloport Stone','Teleports user to any* room','')
-
 
 # list of Items
 items = [
@@ -281,36 +275,62 @@ items = [
     health_potion_4
 ]
 
+# Create friendly NPC instances
+villiger = FriendlyNPC('Villiger',5,"PLACE HOLDER")
+traveler = FriendlyNPC('Traveler',10,"PLACE HOLDER")
+hermit = FriendlyNPC('Hermit',15,'Place Holder')
+
+# Create monster instances
+goblin = Monster('Goblin', round(15*difficulty))
+wolf = Monster('Wolf',round(10*difficulty))
+bear = Monster('Bear Cub',round(15*difficulty))
+goblin_2 = Monster('Goblin',round(5*difficulty))
+
+
+# Create Boss instance
+dragon = Boss('Red Dragon',round(25*difficulty),difficulty)
+
+# list of Monsters
+monsters = [
+    goblin,
+    wolf,
+    bear,
+    goblin_2
+]
+
 # Create Rooms
-starter_room = Room('You find your self in a forest clearing','','',health_potion)
-forest = Room('You are in a large forest',wolf,'',axe)
-path_in_forest = Room('You find a path in the forest','','','')
-cave_entrance = Room('you find an entrance to a cave',goblin,'','')
-cave_cavern = Room('you come to a large cavern',goblin_2,'',sword)
-along_path = Room('you follow the path through the forest','','','')
-hut_along_path = Room('you find a small hut along the path','','','')
-village = Room('You come across a village','','','')
-other_cave_entrance = Room('you found an entrance to a cave','','','')
-boss_room = Room('you find your self in a large room but their is, their is something in the room','','','')
+starter_room = Room('Forest Clearing','in a forest clearing','','',health_potion)
+forest = Room('Forest','you leave the clearing and venture into the forest',wolf,'',axe)
+path_in_forest = Room('Path in forest','you find a path in the forest','','','')
+cave_entrance = Room('Cave entrance','as you wonder through the forest you come to a cave entrance',goblin,'','')
+cave_cavern = Room('Cave Cavern','you continue deeper into the cave and find a large open cavern',goblin_2,'',sword)
+along_path = Room('Path in forest','you follow the path deeper into the forest','','','')
+hut_along_path = Room('Hut along path','while following the path you come to a hut in the forest. the path splits','','','')
+village = Room('Village','after following the path you come to a village','','','')
+other_cave_entrance = Room('Cave entrance','you follow one of the paths to an entrance to a cave','','','')
+boss_room = Room('Deep Dark Cave','as you explore the cavern the ground seems to move suddenly a large creature rises from the deeps','','','')
+
+# Choose a random monster to face
+monster = choice(monsters)
 
 # Room connections dictionarys
 room_connections = {
-    starter_room : {forest : 'forward'},
-    forest : {starter_room : 'back',cave_entrance : 'left',path_in_forest : 'right'},
-    path_in_forest : {forest : 'back',along_path : 'forward'},
-    cave_entrance : {forest : 'back',cave_entrance : 'forward'},
-    along_path : {path_in_forest : 'back',hut_along_path : 'forward'},
-    hut_along_path : {along_path : 'back',other_cave_entrance : 'left',village : 'right'},
-    villiger : {hut_along_path : 'back'},
-    other_cave_entrance : {hut_along_path : 'back',cave_cavern : 'forward'},
-    cave_cavern : {cave_entrance : 'right', other_cave_entrance : 'left',boss_room : 'forward'},
-    boss_room : {cave_cavern : 'back'}
+    starter_room : {'forward':forest},
+    forest : {'back':starter_room , 'left':cave_entrance , 'right':path_in_forest},
+    path_in_forest : {'back':forest , 'forward':along_path},
+    cave_entrance : {'back':forest , 'forward':cave_entrance},
+    along_path : {'back':path_in_forest , 'forward':hut_along_path},
+    hut_along_path : {'back':along_path , 'left':other_cave_entrance , 'right':village},
+    villiger : {'back':hut_along_path},
+    other_cave_entrance : {'back':hut_along_path , 'forward':cave_cavern},
+    cave_cavern : {'right':cave_entrance , 'left':other_cave_entrance , 'forward':boss_room},
+    boss_room : {'back':cave_cavern}
 }
 
-
 # Start Story
+hero.room = starter_room
 print('(type help to get a list of actions) ')
-print(hero.name, 'Enters a dark cave, searching for adventure. You will soon face the', monster.name)
+print(hero.name, 'Your story begins' ,hero.room.description)
 
 # Main game loop function
 def Main_loop():

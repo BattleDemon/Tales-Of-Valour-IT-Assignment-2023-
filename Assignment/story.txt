@@ -1,0 +1,12 @@
+Story line
+
+start room = Your story begins in a forest clearing 
+forest = you leave the clearing and venture into the forest 
+cave entrance = as you wonder through the forest you come to a cave entrance
+path in forest = you find a path in the forest
+cave cavern = you continue deeper into the cave and find a large open cavern
+along path = you follow the path deeper into the forest
+cave entrance 2 = you follow one of the paths to an entrance to a cave 
+hut along path = while following the path you come to a hut in the forest. the path splits 
+village = after following the path you come to a village
+boss room = as you explore the cavern the ground seems to move suddenly a large creature rises from the deeps 

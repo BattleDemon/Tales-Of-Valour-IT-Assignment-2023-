@@ -27,7 +27,7 @@ class Player(LivingThing):
         self.name = name
         self.health = 25
         self.status = 'regular'
-        self.inventory = {}
+        self.inventory = []
         self.equipped_weapon = ''
         self.rest_cooldown = 0
 
@@ -82,27 +82,42 @@ class Player(LivingThing):
         else:
             print('You are safe. Not a monster in sight anywhere!')
 
-    def inventory(self, monster):
-        # Displays the player's inventory
+    def show_inventory(self, monster):
+        # Allows the player to view their inventory
         if self.inventory:
             print('You have:')
-            for item_name, item in self.inventory.items():
-                print(f'{item_name}:{item.description}')
+            for item in self.inventory:
+                print(f'{item.name}: {item.description}')
         else:
             print('Your inventory is empty.')
     
     def pick_up_item(self, item):
         # Allows the player to pick up items
-        self.inventory[item.name] = item
+        self.inventory.append(item)  # Add the item to the inventory list
         print(f'You picked up {item.name}.')
 
     def use(self, item_name, monster):
-        # Allows the player to use items
-        pass
+        # Allows the player to use item such as health potions
+        for item in self.inventory:
+            if item.name == item_name:
+                if isinstance(item, Weapon):
+                    print("You can't use a weapon in this way.")
+                else:
+                    item.attributes()  # Call the item's attributes method
+                    self.inventory.remove(item)  # Remove the used item from inventory
+                return
+        print("You don't have that item in your inventory.")
 
-    def equip(self, weapon_name):
-        # Allows the player to Equip weapons
-        pass
+    def equip(self, monster):
+        # Allows the player to equip items they have in their inventory
+        item_name = input('What do you want to equip?\n>> ')
+        item_name = item_name.capitalize()
+        for item in self.inventory:
+            if item.name == item_name:
+                self.equipped_weapon = item
+                print(f'You equipped {item_name}')
+                return  # Exit the function after equipping
+        print("You can't equip that")
 
     def go(self,monster):
         # Allows the player to move between rooms 
@@ -138,14 +153,6 @@ class Monster(LivingThing):
         # Initialize monster attributes
         self.name = name
         self.health = health
-
-
-# Create a class for boss's, inheriting from Monster
-class Boss(Monster):
-    def __init__(self,name,health,level):
-        self.name = name 
-        self.health = health
-        self.level = level 
 
 
 # Create a class for friendly NPC's, also inheriting from LivingThing
@@ -197,7 +204,7 @@ def credits():
     print('Lead Programmer -- Dexter Hart')
     print('Lead Level Designer -- Dexter Hart')
     print('Tester -- Dexter Hart')
-    print('Tester -- Joss Ormes')
+    print('Tester -- ')
     print('Tester -- ')
     print('Tester -- ')
 
@@ -208,8 +215,8 @@ Commands = {
     'explore': Player.explore,
     'run': Player.run,
     'fight': Player.fight,
-    'inventory': Player.inventory,
-    'inv': Player.inventory,
+    'inventory': Player.show_inventory,
+    'inv': Player.show_inventory,
     'use' : Player.use,
     'equip': Player.equip,
     'go' : Player.go,
@@ -300,7 +307,7 @@ goblin_2 = Monster('Goblin',round(5*difficulty))
 
 
 # Create Boss instance
-dragon = Boss('Red Dragon',round(25*difficulty),difficulty)
+dragon = Monster('Red Dragon',round(25*difficulty),)
 
 # list of Monsters
 monsters = [
@@ -339,6 +346,7 @@ room_connections = {
     boss_room : {'back':cave_cavern}
 }
 
+hero.inventory = [sword]
 # Main game loop function
 def Main_loop():
     # Start Story
@@ -348,6 +356,7 @@ def Main_loop():
     # game loop
     while hero.health > 0 and monster.health > 0:
         hero.rest_cooldown = hero.rest_cooldown - 1
+        print(hero.room.description)
         line = input('What do you want to do \n>> ')
         if line in Commands.keys():
             Commands[line](hero, monster)

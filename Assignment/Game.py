@@ -10,7 +10,7 @@ class LivingThing():
         self.health = self.health - 2
 
     def hurt(self):
-        self.health = self.health - randint(0, self.health)
+        self.health = self.health - randint(0, self.health) + self.equipped_weapon.modifier
 
     def heal(self):
         self.health = self.health + 5
@@ -27,6 +27,7 @@ class Player(LivingThing):
         self.health = 25
         self.status = 'regular'
         self.inventory = {}
+        self.equipped_weapon = ''
 
     def help(self, monster):
         # Display available actions for the player
@@ -95,12 +96,12 @@ class Player(LivingThing):
         self.inventory[item.name] = item
         print(f'You picked up {item.name}.')
 
-    def use(self, item, monster):
-        # allows the player to use items
+    def use(self, item_name, monster):
+        # Allows the player to use items
         pass
 
-    def equip(self, weapon):
-        # allows the player to Equip weapons
+    def equip(self, weapon_name):
+        # Allows the player to Equip weapons
         pass
 
 
@@ -180,7 +181,9 @@ Commands = {
     'run': Player.run,
     'fight': Player.fight,
     'inventory': Player.inventory,
-    'inv': Player.inventory
+    'inv': Player.inventory,
+    'use' : Player.use,
+    'equip': Player.equip
 }
 
 # Dictionary of Difficultys 
@@ -214,7 +217,8 @@ difficulty = ''
 def get_difficulty():
     global difficulty
     while difficulty == '':
-        difficulty = input('Please select a difficulty\nReally Easy <1>\nEasy <2>\nNormal <3>\nHard <4>\nExtra Hard <5>\nExtreme <6>\n>>  ')
+        difficulty = input('Please select a difficulty\nReally Easy <1>\nEasy <2>\n'
+                           'Normal <3>\nHard <4>\nExtra Hard <5>\nExtreme <6>\n>>  ')
         if difficulty in Difficulty.keys():
             difficulty = Difficulty[difficulty]
         else:
@@ -258,9 +262,9 @@ health_potion_2 = Item('Health Potion','Restores some health points.',hero.heal)
 health_potion_3 = Item('Health Potion','Restores some health points.',hero.heal)
 health_potion_4 = Item('Health Potion','Restores some health points.',hero.heal)
 mega_health_potion = Item('Mega Health Potion','Restores many health points.',hero.mega_heal)
-magic_sword = Weapon('Magic Sword')
-pitch_folk = Weapon('Pitch Folk')
-teleport = Item('Teloport Stone','Teleports user to any* room',)
+magic_sword = Weapon('Magic Sword','','')
+pitch_folk = Weapon('Pitch Folk','','')
+teleport = Item('Teloport Stone','Teleports user to any* room','')
 
 
 # list of Items
@@ -291,16 +295,16 @@ boss_room = Room('you find your self in a large room but their is, their is some
 
 # Room connections dictionarys
 room_connections = {
-starter_room : {forest : 'forward'},
-forest : {starter_room : 'back',cave_entrance : 'left',path_in_forest : 'right'},
-path_in_forest : {forest : 'back',along_path : 'forward'},
-cave_entrance : {forest : 'back',cave_entrance : 'forward'},
-along_path : {path_in_forest : 'back',hut_along_path : 'forward'},
-hut_along_path : {along_path : 'back',other_cave_entrance : 'left',village : 'right'},
-villiger : {hut_along_path : 'back'},
-other_cave_entrance : {hut_along_path : 'back',cave_cavern : 'forward'},
-cave_cavern : {cave_entrance : 'right', other_cave_entrance : 'left',boss_room : 'forward'},
-boss_room : {cave_cavern : 'back'}
+    starter_room : {forest : 'forward'},
+    forest : {starter_room : 'back',cave_entrance : 'left',path_in_forest : 'right'},
+    path_in_forest : {forest : 'back',along_path : 'forward'},
+    cave_entrance : {forest : 'back',cave_entrance : 'forward'},
+    along_path : {path_in_forest : 'back',hut_along_path : 'forward'},
+    hut_along_path : {along_path : 'back',other_cave_entrance : 'left',village : 'right'},
+    villiger : {hut_along_path : 'back'},
+    other_cave_entrance : {hut_along_path : 'back',cave_cavern : 'forward'},
+    cave_cavern : {cave_entrance : 'right', other_cave_entrance : 'left',boss_room : 'forward'},
+    boss_room : {cave_cavern : 'back'}
 }
 
 

@@ -13,7 +13,7 @@ class LivingThing():
         self.health = self.health - randint(0, self.health) + self.equipped_weapon.modifier
 
     def heal(self):
-        self.health = self.health + 5
+        self.health = self.health + 5 + randint(0,10)
 
     def mega_heal(self):
         self.health = self.health * 2
@@ -29,6 +29,7 @@ class Player(LivingThing):
         self.status = 'regular'
         self.inventory = {}
         self.equipped_weapon = ''
+        self.rest_cooldown = 0
 
     def help(self, monster):
         # Display available actions for the player
@@ -45,8 +46,6 @@ class Player(LivingThing):
 
     def explore(self, monster):
         # Increase player's health and possibly trigger a monster encounter
-        self.heal()
-        print('Your health is now', self.health)
         if randint(0, 1) == 1:
             print(monster.name, 'confronts you')
             self.status = 'Confronted'
@@ -106,8 +105,10 @@ class Player(LivingThing):
         pass
 
     def go(self,monster):
+        # Allows the player to move between rooms 
         try:
             direction = input("Which direction do you want to go? (forward/back/left/right)\n>> ")
+            # checks if the direction that was inputed is an avaliable direction
             if direction in room_connections[self.room]:
                 self.room = room_connections[self.room][direction]
                 print(f'You went {direction}')
@@ -118,7 +119,17 @@ class Player(LivingThing):
             print("Invalid input or no valid connections from this room.")
             
     def die(self,monster):
+        # Allows the player to die at will 
         self.health = 0
+
+    def rest(self,monster):
+        # allows the player to rest (gaining a small amount of health) resting can only happen once every couple of turns
+        if self.rest_cooldown <= 0:
+            self.heal
+            print(f'Your health is now {self.health}')
+            self.rest_cooldown = 5
+        else:
+            print('your not tired enough to rest')
 
 
 # Create a class for monsters, also inheriting from LivingThing
@@ -202,7 +213,8 @@ Commands = {
     'use' : Player.use,
     'equip': Player.equip,
     'go' : Player.go,
-    'die': Player.die
+    'die': Player.die,
+    'rest': Player.rest
 }
 
 # Dictionary of Difficultys 
@@ -327,14 +339,15 @@ room_connections = {
     boss_room : {'back':cave_cavern}
 }
 
-# Start Story
-hero.room = starter_room
-print('(type help to get a list of actions) ')
-print(hero.name, 'Your story begins' ,hero.room.description)
-
 # Main game loop function
 def Main_loop():
+    # Start Story
+    hero.room = starter_room
+    print('(type help to get a list of actions) ')
+    print(hero.name, 'Your story begins' ,hero.room.description)
+    # game loop
     while hero.health > 0 and monster.health > 0:
+        hero.rest_cooldown = hero.rest_cooldown - 1
         line = input('What do you want to do \n>> ')
         if line in Commands.keys():
             Commands[line](hero, monster)

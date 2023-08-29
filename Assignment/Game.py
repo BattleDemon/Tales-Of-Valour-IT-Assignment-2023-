@@ -197,7 +197,7 @@ def credits():
     print('Lead Programmer -- Dexter Hart')
     print('Lead Level Designer -- Dexter Hart')
     print('Tester -- Dexter Hart')
-    print('Tester -- ')
+    print('Tester -- Joss Ormes')
     print('Tester -- ')
     print('Tester -- ')
 

@@ -41,7 +41,7 @@ class Player(LivingThing):
         # Display available actions for the player
         print('Your choices are:')
         for key in Commands.keys():
-            print(key)
+            print(key)               # Make more like joss's help
 
     def stats(self, monster):
         # Display player's stats
@@ -62,7 +62,7 @@ class Player(LivingThing):
         diceroll = randint(0,2)
         if diceroll == 0:
             if self.room.monsters != '':
-                print('You have been confronted by',self.room.monsters)
+                print('You have been confronted by',self.room.monsters.name)
                 monster = self.room.monsters
                 self.status = 'Confronted'
                 return monster
@@ -115,6 +115,10 @@ class Player(LivingThing):
                 print('Victory!\nYou defeated the', monster.name)
         else:
             print('You are safe. Not a monster in sight anywhere!')
+
+    def friendlyencounter(self,monster):
+        # Allows the player to encounter friendlyNPC's
+        pass
 
     def show_inventory(self, monster):
         # Allows the player to view their inventory
@@ -248,7 +252,7 @@ def credits():
     print('Lead Level Designer -- Dexter Hart')
     print('Tester -- Dexter Hart')
     print('Tester -- Joss Ormes')
-    print('Tester -- ')
+    print('Tester -- Samson Droney')
     print('Tester -- ')
 
 # Dictionary of commands mapped to player methods
@@ -412,22 +416,30 @@ def Main_loop():
     hero.room = starter_room
     print('(type help to get a list of actions) ')
     print(hero.name, 'Your story begins' ,hero.room.description)
-    # game loop
+    # Game loop
     while hero.health > 0 and monster.health > 0:
-        print('Your',hero.room.description)
-        line = input('What do you want to do \n>> ')
-        if hero.rest_cooldown < 0:
-            hero.rest_cooldown = 0
-        if line in Commands.keys():
-            Commands[line](hero, monster)
+        if hero.status == 'Confronted':
+            # Force fight
+            hero.fight(monster)
+        elif hero.status == 'Encountered':
+            # Force encounter with FriendlyNPC's
+            hero.friendlyencounter(hero.room.npcs)
         else:
-            print(hero.name, 'does not understand this suggestion.')
+            # User inputs
+            print('Your',hero.room.description)
+            line = input('What do you want to do \n>> ')
+            if hero.rest_cooldown < 0:
+                hero.rest_cooldown = 0
+            if line in Commands.keys():
+                Commands[line](hero, monster)
+            else:
+                print(hero.name, 'does not understand this suggestion.')
 
-    # Ending options
-    if hero.health > 0:
-        print('You Win! Game Over')
-    else:
-        print('Game Over. you lost :(')
+        # Ending options
+        if hero.health > 0:
+            print('You Win! Game Over')
+        else:
+            print('Game Over. you lost :(')
 
 # Run main loop
 Main_loop()

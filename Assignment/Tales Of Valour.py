@@ -85,20 +85,6 @@ class Player(LivingThing):
             else:
                 print("You couldn't find anything")
 
-    def run(self, monster):
-        # Decide whether the player successfully runs from a monster
-        self.rest_cooldown = self.rest_cooldown - 1
-        self.tire()
-        if randint(0, self.health) < randint(0, monster.health):
-            print('A monster has appeared')
-            self.status = 'Confronted'
-            self.fight(monster)
-        else:
-            self.tire()
-            monster.heal()
-            print('Your health suffered by running')
-            print('Your health is now', self.health)
-
     def fight(self, monster):
         # Engage in combat with a monster
         self.rest_cooldown = self.rest_cooldown - 1

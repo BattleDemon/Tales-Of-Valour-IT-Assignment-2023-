@@ -38,7 +38,7 @@ class Player(LivingThing):
             print(key)
 
     def stats(self, monster):
-        # Display player's and monster's stats
+        # Display player's stats
         print('You are', self.name)
         print('You have a health of', self.health)
         print('your status is', self.status)
@@ -101,8 +101,9 @@ class Player(LivingThing):
         self.inventory.append(item)  # Add the item to the inventory list
         print(f'You picked up {item.name}.')
 
-    def use(self, item_name, monster):
+    def use(self, monster):
         # Allows the player to use item such as health potions
+        item_name = input('What item do you want to use?\n>>')
         for item in self.inventory:
             if item.name == item_name:
                 if isinstance(item, Weapon):
@@ -274,16 +275,17 @@ get_difficulty()
 
 
 # Create Item instances
-health_potion = Item('Health Potion','Restores some health points.',hero.heal())
-sword = Weapon("Sword",'Increase damage by 4','') # Add Atribute Later
-axe = Weapon('Axe','Increase damage by 2','')
+health_potion = Item('Health Potion','Restores some health points.',hero.heal)
 health_potion_2 = Item('Health Potion','Restores some health points.',hero.heal)
 health_potion_3 = Item('Health Potion','Restores some health points.',hero.heal)
 health_potion_4 = Item('Health Potion','Restores some health points.',hero.heal)
 mega_health_potion = Item('Mega Health Potion','Restores many health points.',hero.mega_heal)
-magic_sword = Weapon('Magic Sword','','')
-pitch_folk = Weapon('Pitch Folk','','')
-teleport = Item('Teloport Stone','Teleports user to any* room','')
+teleport = Item('Teloport Stone','Teleports user to any* room','') # Add fuc to teleport
+
+magic_sword = Weapon('Magic Sword','Increase damage by 15',15)
+pitch_folk = Weapon('Pitch Folk','Increase damage by 6',6)
+sword = Weapon("Sword",'Increase damage by 4',4)
+axe = Weapon('Axe','Increase damage by 2',2)
 
 # list of Items
 items = [
@@ -323,16 +325,16 @@ monsters = [
 ]
 
 # Create Rooms
-starter_room = Room('Forest Clearing','in a forest clearing','','',health_potion)
-forest = Room('Forest','you leave the clearing and venture into the forest',wolf,'',axe)
-path_in_forest = Room('Path in forest','you find a path in the forest','','','')
-cave_entrance = Room('Cave entrance','as you wonder through the forest you come to a cave entrance',goblin,'','')
-cave_cavern = Room('Cave Cavern','you continue deeper into the cave and find a large open cavern',goblin_2,'',sword)
-along_path = Room('Path in forest','you follow the path deeper into the forest','','','')
-hut_along_path = Room('Hut along path','while following the path you come to a hut in the forest. the path splits','','','')
-village = Room('Village','after following the path you come to a village','','','')
+starter_room = Room('Forest Clearing','in a forest clearing','','',health_potion) # room with health potion
+forest = Room('Forest','you leave the clearing and venture into the forest',wolf,'',axe) # room with wolf and axe
+path_in_forest = Room('Path in forest','you find a path in the forest','',traveler,'') # room with traveler
+cave_entrance = Room('Cave entrance','as you wonder through the forest you come to a cave entrance',goblin,'','') # room with goblin
+cave_cavern = Room('Cave Cavern','you continue deeper into the cave and find a large open cavern',goblin_2,'',sword) # room with goblin and sword
+along_path = Room('Path in forest','you follow the path deeper into the forest',bear,'','') # room with bear
+hut_along_path = Room('Hut along path','while following the path you come to a hut in the forest. the path splits','',hermit,'') # room with hermit
+village = Room('Village','after following the path you come to a village','',villiger,pitch_folk) # room with villiger and pitch folk
 other_cave_entrance = Room('Cave entrance','you follow one of the paths to an entrance to a cave','','','')
-boss_room = Room('Deep Dark Cave','as you explore the cavern the ground seems to move suddenly a large creature rises from the deeps','','','')
+boss_room = Room('Deep Dark Cave','as you explore the cavern the ground seems to move suddenly a large creature rises from the deeps',dragon,'',teleport) # boss room with dragon and teleporter
 
 # Choose a random monster to face
 monster = choice(monsters)
@@ -352,6 +354,7 @@ room_connections = {
 }
 
 hero.inventory = [sword]
+hero.inventory.append(health_potion)
 # Main game loop function
 def Main_loop():
     # Start Story

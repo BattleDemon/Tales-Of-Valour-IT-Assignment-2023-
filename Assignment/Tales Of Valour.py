@@ -435,11 +435,11 @@ def Main_loop():
             else:
                 print(hero.name, 'does not understand this suggestion.')
 
-        # Ending options
-        if hero.health > 0:
-            print('You Win! Game Over')
-        else:
-            print('Game Over. you lost :(')
+# Ending options
+if hero.health > 0:
+    print('You Win! Game Over')
+else:
+    print('Game Over. you lost :(')
 
 # Run main loop
 Main_loop()

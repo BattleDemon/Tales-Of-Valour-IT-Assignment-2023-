@@ -26,7 +26,6 @@ class LivingThing():
     def mega_heal(self):
         self.health = self.health * 2
 
-
 # Create a class for the player, inheriting from LivingThing
 class Player(LivingThing):
     def __init__(self, name,):
@@ -414,8 +413,8 @@ room_connections = {
     boss_room : {'back':cave_cavern}
 }
 
-hero.inventory = [sword]
-hero.inventory.append(health_potion)
+hero.inventory = [sword] # remove
+hero.inventory.append(health_potion) # remove 
 boss = dragon
 monster = ''
 # Main game loop function

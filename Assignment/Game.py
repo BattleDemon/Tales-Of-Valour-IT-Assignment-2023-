@@ -40,9 +40,14 @@ class Player(LivingThing):
     def stats(self, monster):
         # Display player's and monster's stats
         print('You are', self.name)
-        print('with health of', self.health)
+        print('You have a health of', self.health)
         print('your status is', self.status)
-        print(monster.name, 'health is', monster.health)
+        print('You are in', self.room.name)
+        if self.equipped_weapon == '':
+            print("You don't have anything equiped")
+        else:
+            print('You have', self.equipped_weapon.name,'equiped')
+        print("You can't rest for",self.rest_cooldown,'turns')
 
     def explore(self, monster):
         # Increase player's health and possibly trigger a monster encounter
@@ -140,7 +145,7 @@ class Player(LivingThing):
     def rest(self,monster):
         # allows the player to rest (gaining a small amount of health) resting can only happen once every couple of turns
         if self.rest_cooldown <= 0:
-            self.heal
+            self.heal()
             print(f'Your health is now {self.health}')
             self.rest_cooldown = 5
         else:
@@ -358,6 +363,8 @@ def Main_loop():
         hero.rest_cooldown = hero.rest_cooldown - 1
         print(hero.room.description)
         line = input('What do you want to do \n>> ')
+        if hero.rest_cooldown < 0:
+            hero.rest_cooldown = 0
         if line in Commands.keys():
             Commands[line](hero, monster)
         else:

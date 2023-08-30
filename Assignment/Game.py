@@ -152,6 +152,9 @@ class Player(LivingThing):
         else:
             print('your not tired enough to rest')
 
+    def egg(self,monster):
+        print('This is an easter egg')
+
 
 # Create a class for monsters, also inheriting from LivingThing
 class Monster(LivingThing):
@@ -227,7 +230,8 @@ Commands = {
     'equip': Player.equip,
     'go' : Player.go,
     'die': Player.die,
-    'rest': Player.rest
+    'rest': Player.rest,
+    '': Player.egg
 }
 
 # Dictionary of Difficultys 
@@ -252,8 +256,22 @@ Difficulty = {
     '6': 6
 }
 
+# Title
+print(
+    "_________ _______  _        _______  _______        _______  _______               _______  _        _______           _______ \n"
+    "\__   __/(  ___  )( \      (  ____ \(  ____ \      (  ___  )(  ____ \    |\     /|(  ___  )( \      (  ___  )|\     /|(  ____ )\n"
+    "   ) (   | (   ) || (      | (    \/| (    \/      | (   ) || (    \/    | )   ( || (   ) || (      | (   ) || )   ( || (    )|\n"
+    "   | |   | (___) || |      | (__    | (_____       | |   | || (__        | |   | || (___) || |      | |   | || |   | || (____)|\n"
+    "   | |   |  ___  || |      |  __)   (_____  )      | |   | ||  __)       ( (   ) )|  ___  || |      | |   | || |   | ||     __)\n"
+    "   | |   | (   ) || |      | (            ) |      | |   | || (           \ \_/ / | (   ) || |      | |   | || |   | || (\ (   \n"
+    "   | |   | )   ( || (____/\| (____/\/\____) |      | (___) || )            \   /  | )   ( || (____/\| (___) || (___) || ) \ \__\n"
+    "   )_(   |/     \|(_______/(_______/\_______)      (_______)|/              \_/   |/     \|(_______/(_______)(_______)|/   \__/\n"
+)
+input('Press Enter to continue\n>>')
+
 # Get the player's name
-name = input('What is your name?\n>> ')
+print('Welcome hero')
+name = input('What is your name?\n\n>> ')
 hero = Player(name)
 difficulty = ''
 
@@ -364,7 +382,7 @@ def Main_loop():
     # game loop
     while hero.health > 0 and monster.health > 0:
         hero.rest_cooldown = hero.rest_cooldown - 1
-        print(hero.room.description)
+        print('Your',hero.room.description)
         line = input('What do you want to do \n>> ')
         if hero.rest_cooldown < 0:
             hero.rest_cooldown = 0

@@ -51,6 +51,7 @@ class Player(LivingThing):
 
     def explore(self, monster):
         # Increase player's health and possibly trigger a monster encounter
+        hero.rest_cooldown = hero.rest_cooldown - 1
         if randint(0, 1) == 1:
             print(monster.name, 'confronts you')
             self.status = 'Confronted'
@@ -61,6 +62,7 @@ class Player(LivingThing):
 
     def run(self, monster):
         # Decide whether the player successfully runs from a monster
+        hero.rest_cooldown = hero.rest_cooldown - 1
         if randint(0, self.health) < randint(0, monster.health):
             print('A monster has appeared')
             self.status = 'Confronted'
@@ -74,6 +76,7 @@ class Player(LivingThing):
     def fight(self, monster):
         # Engage in combat with a monster
         if self.status == 'Confronted':
+            hero.rest_cooldown = hero.rest_cooldown - 1
             self.hurt()
             monster.hurt()
             print(monster.name, 'attacks you')
@@ -100,6 +103,7 @@ class Player(LivingThing):
         # Allows the player to pick up items
         self.inventory.append(item)  # Add the item to the inventory list
         print(f'You picked up {item.name}.')
+        hero.rest_cooldown = hero.rest_cooldown - 1
 
     def use(self, monster):
         # Allows the player to use item such as health potions
@@ -111,6 +115,7 @@ class Player(LivingThing):
                 else:
                     item.attributes()  # Call the item's attributes method
                     self.inventory.remove(item)  # Remove the used item from inventory
+                    hero.rest_cooldown = hero.rest_cooldown - 1
                 return
         print("You don't have that item in your inventory.")
 
@@ -122,6 +127,7 @@ class Player(LivingThing):
             if item.name == item_name:
                 self.equipped_weapon = item
                 print(f'You equipped {item_name}')
+                hero.rest_cooldown = hero.rest_cooldown - 1
                 return  # Exit the function after equipping
         print("You can't equip that")
 
@@ -134,6 +140,7 @@ class Player(LivingThing):
                 self.room = room_connections[self.room][direction]
                 print(f'You went {direction}')
                 print(f'you are now in the {self.room.name}')
+                hero.rest_cooldown = hero.rest_cooldown - 1
             else:
                 print("You can't go that way.")
         except KeyError:
@@ -291,7 +298,6 @@ def get_difficulty():
 # get difficulty
 get_difficulty()
 
-
 # Create Item instances
 health_potion = Item('Health Potion','Restores some health points.',hero.heal)
 health_potion_2 = Item('Health Potion','Restores some health points.',hero.heal)
@@ -381,7 +387,6 @@ def Main_loop():
     print(hero.name, 'Your story begins' ,hero.room.description)
     # game loop
     while hero.health > 0 and monster.health > 0:
-        hero.rest_cooldown = hero.rest_cooldown - 1
         print('Your',hero.room.description)
         line = input('What do you want to do \n>> ')
         if hero.rest_cooldown < 0:

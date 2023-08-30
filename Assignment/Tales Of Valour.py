@@ -42,8 +42,15 @@ class Player(LivingThing):
     def help(self, monster):
         # Display available actions for the player
         print('Your choices are:')
-        for key in Commands.keys():
-            print(key)               # Make more like joss's help
+        print('help : Shows you what you can do ')
+        print("stats : Display's your stats")
+        print("explore : Allows you to find items and friendly Npc's at the risk of encountering a monster")
+        print('inventory : Allows you to view your inventory')
+        print('use : Allows you to use items in your inventory') 
+        print('equip : Allows you to equip weapons')
+        print('go : Allows you to move between rooms')
+        print('die : Used for testing and if you want to view credits')
+        print('rest : Allows the player to gain health every 5 turns')
 
     def stats(self, monster):
         # Display player's stats
@@ -175,6 +182,13 @@ class Player(LivingThing):
     def die(self,monster):
         # Allows the player to die at will 
         self.health = 0
+        death_message = [
+            'Commited せっぷく',
+            'Disappeared',
+            'Commited Self murder'
+        ]
+        death_message = choice(death_message)
+        print(death_message)
 
     def rest(self,monster):
         # allows the player to rest (gaining a small amount of health) resting can only happen once every couple of turns
@@ -238,6 +252,7 @@ class Room():
 
 # function to roll credits
 def credits():
+    input('Press Enter to continue\n>>')
     print('\n\n\n')
     print('░▀█▀░█░█░█▀█░█▀█░█░█░█▀▀░░░█▀▀░█▀█░█▀▄░░░█▀█░█░░░█▀█░█░█░▀█▀░█▀█░█▀▀\n'
           '░░█░░█▀█░█▀█░█░█░█▀▄░▀▀█░░░█▀▀░█░█░█▀▄░░░█▀▀░█░░░█▀█░░█░░░█░░█░█░█░█\n'

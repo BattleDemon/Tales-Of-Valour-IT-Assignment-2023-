@@ -19,7 +19,9 @@ class LivingThing():
         self.health = self.health - randint(0, self.health) + self.equipped_weapon.modifier
 
     def heal(self):
-        self.health = self.health + 5 + randint(0,10)
+        self.health = self.health + 5
+        self.health = self.health + randint(0,10)
+        print('Your health is now',self.health)
 
     def mega_heal(self):
         self.health = self.health * 2
@@ -109,7 +111,6 @@ class Player(LivingThing):
             self.status = 'regular'
             self.room.monsters = ''
             
-
     def friendlyencounter(self,monster):
         # Allows the player to encounter friendlyNPC's
         pass
@@ -127,11 +128,11 @@ class Player(LivingThing):
         # Allows the player to pick up items
         self.inventory.append(item)  # Add the item to the inventory list
         print(f'You picked up {item.name}.')
-        hero.rest_cooldown = hero.rest_cooldown - 1
 
     def use(self, monster):
         # Allows the player to use item such as health potions
         item_name = input('What item do you want to use?\n>>')
+        item_name = item_name.capitalize()
         for item in self.inventory:
             if item.name == item_name:
                 if isinstance(item, Weapon):
@@ -255,7 +256,6 @@ Commands = {
     'help': Player.help,
     'stats': Player.stats,
     'explore': Player.explore,
-    'run': Player.run,
     'inventory': Player.show_inventory,
     'inv': Player.show_inventory,
     'use' : Player.use,
@@ -324,12 +324,12 @@ def get_difficulty():
 get_difficulty()
 
 # Create Item instances
-health_potion = Item('Health Potion','Restores some health points.',hero.heal)
-health_potion_2 = Item('Health Potion','Restores some health points.',hero.heal)
-health_potion_3 = Item('Health Potion','Restores some health points.',hero.heal)
-health_potion_4 = Item('Health Potion','Restores some health points.',hero.heal)
-mega_health_potion = Item('Mega Health Potion','Restores many health points.',hero.mega_heal)
-teleport = Item('Teloport Stone','Teleports user to any* room','') # Add fuc to teleport
+health_potion = Item('Health potion','Restores some health points.',hero.heal)
+health_potion_2 = Item('Health potion','Restores some health points.',hero.heal)
+health_potion_3 = Item('Health potion','Restores some health points.',hero.heal)
+health_potion_4 = Item('Health potion','Restores some health points.',hero.heal)
+mega_health_potion = Item('Mega health potion','Restores many health points.',hero.mega_heal)
+teleport = Item('Teloport stone','Teleports user to any* room','') # Add fuc to teleport
 
 magic_sword = Weapon('Magic Sword','Increase damage by 15',15)
 pitch_folk = Weapon('Pitch Folk','Increase damage by 6',6)
@@ -428,14 +428,14 @@ def Main_loop():
             else:
                 print(hero.name, 'does not understand this suggestion.')
 
-    # Ending options
+# Run main loop
+Main_loop()
+
+# Ending options
 if hero.health > 0:
     print('You Win! Game Over')
 else:
     print('Game Over. you lost :(')
-
-# Run main loop
-Main_loop()
 
 # roll credits 
 credits()

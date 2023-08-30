@@ -7,7 +7,13 @@ class LivingThing():
         self.health = 1
         
     def tire(self):
-        self.health = self.health - 2
+        diceroll = randint(0,1)
+        if diceroll == 0:
+            self.health = self.health - 2
+            print('You have gotten tired, your health suffered')
+            print('Your health is', hero.health)
+        else:
+            pass
 
     def hurt(self):
         self.health = self.health - randint(0, self.health) + self.equipped_weapon.modifier
@@ -51,18 +57,38 @@ class Player(LivingThing):
 
     def explore(self, monster):
         # Increase player's health and possibly trigger a monster encounter
-        hero.rest_cooldown = hero.rest_cooldown - 1
-        if randint(0, 1) == 1:
-            print(monster.name, 'confronts you')
-            self.status = 'Confronted'
-        else:
+        self.rest_cooldown = self.rest_cooldown - 1
+        self.tire()
+        diceroll = randint(0,2)
+        if diceroll == 0:
+            if self.room.monsters != '':
+                print('You have been confronted by',self.room.monsters)
+                monster = self.room.monsters
+                self.status = 'Confronted'
+                return monster
+            else:
+                print("You couldn't find anything")
+        elif diceroll == 1:
             # Player found an item while exploring
-            random_item = choice(items)
-            hero.pick_up_item(random_item)
+            if self.room.items != '':
+                print('You found a',self.room.items.name)
+                hero.pick_up_item(self.room.items)
+                self.room.items = ''
+                print(self.room.items)
+            else:
+                print("You couldn't find anything")
+        elif diceroll == 2:
+            # Player encountered an FriendlyNPC
+            if self.room.npcs != '':
+                print('You have Encountered the', self.room.npcs)
+                self.status = 'Encountered'
+            else:
+                print("You couldn't find anything")
 
     def run(self, monster):
         # Decide whether the player successfully runs from a monster
-        hero.rest_cooldown = hero.rest_cooldown - 1
+        self.rest_cooldown = self.rest_cooldown - 1
+        self.tire()
         if randint(0, self.health) < randint(0, monster.health):
             print('A monster has appeared')
             self.status = 'Confronted'
@@ -76,7 +102,7 @@ class Player(LivingThing):
     def fight(self, monster):
         # Engage in combat with a monster
         if self.status == 'Confronted':
-            hero.rest_cooldown = hero.rest_cooldown - 1
+            self.rest_cooldown = self.rest_cooldown - 1
             self.hurt()
             monster.hurt()
             print(monster.name, 'attacks you')
@@ -115,7 +141,7 @@ class Player(LivingThing):
                 else:
                     item.attributes()  # Call the item's attributes method
                     self.inventory.remove(item)  # Remove the used item from inventory
-                    hero.rest_cooldown = hero.rest_cooldown - 1
+                    self.rest_cooldown = self.rest_cooldown - 1
                 return
         print("You don't have that item in your inventory.")
 
@@ -127,7 +153,7 @@ class Player(LivingThing):
             if item.name == item_name:
                 self.equipped_weapon = item
                 print(f'You equipped {item_name}')
-                hero.rest_cooldown = hero.rest_cooldown - 1
+                self.rest_cooldown = self.rest_cooldown - 1
                 return  # Exit the function after equipping
         print("You can't equip that")
 
@@ -140,7 +166,8 @@ class Player(LivingThing):
                 self.room = room_connections[self.room][direction]
                 print(f'You went {direction}')
                 print(f'you are now in the {self.room.name}')
-                hero.rest_cooldown = hero.rest_cooldown - 1
+                self.rest_cooldown = self.rest_cooldown - 1
+                self.tire()
             else:
                 print("You can't go that way.")
         except KeyError:

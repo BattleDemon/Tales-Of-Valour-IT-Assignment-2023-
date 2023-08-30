@@ -63,9 +63,8 @@ class Player(LivingThing):
         if diceroll == 0:
             if self.room.monsters != '':
                 print('You have been confronted by',self.room.monsters.name)
-                monster = self.room.monsters
                 self.status = 'Confronted'
-                return monster
+                input('Press Enter to continue\n>>')
             else:
                 print("You couldn't find anything")
         elif diceroll == 1:
@@ -82,6 +81,7 @@ class Player(LivingThing):
             if self.room.npcs != '':
                 print('You have Encountered the', self.room.npcs)
                 self.status = 'Encountered'
+                input('Press Enter to continue\n>>')
             else:
                 print("You couldn't find anything")
 
@@ -101,20 +101,28 @@ class Player(LivingThing):
 
     def fight(self, monster):
         # Engage in combat with a monster
-        if self.status == 'Confronted':
-            self.rest_cooldown = self.rest_cooldown - 1
-            self.hurt()
-            monster.hurt()
+        self.rest_cooldown = self.rest_cooldown - 1
+        monster = self.room.monsters
+        while self.health > 0 and monster.health > 0:
+            # First deals Dmg to the monster then to the hero 
+            monster.health = monster.health - randint(0,15)
+            if self.equipped_weapon != '':
+                monster.health = monster.health - self.equipped_weapon.modifier
+            self.health = self.health - randint(0,monster.maxdamage)
             print(monster.name, 'attacks you')
-            if self.health <= 0:
-                print('You were Killed by the', monster.name)
-            elif monster.health > 0:
-                print('You survived the', monster.name)
-                print('Your health is now', self.health)
-            else:
-                print('Victory!\nYou defeated the', monster.name)
+            print('your health is now',self.health)
+            print(monster.name,'health is now',monster.health)
+            input('Press Enter to continue\n>>')
+
+        if self.health <= 0:
+            print('You were Killed by the', monster.name)
+            self.status = 'regular'
         else:
-            print('You are safe. Not a monster in sight anywhere!')
+            print('Victory!\nYou defeated the', monster.name)
+            print('your health is now',self.health)
+            self.status = 'regular'
+            self.room.monsters = ''
+            
 
     def friendlyencounter(self,monster):
         # Allows the player to encounter friendlyNPC's
@@ -196,10 +204,11 @@ class Player(LivingThing):
 
 # Create a class for monsters, also inheriting from LivingThing
 class Monster(LivingThing):
-    def __init__(self, name, health):
+    def __init__(self, name, health, maxdamage):
         # Initialize monster attributes
         self.name = name
         self.health = health
+        self.maxdamage = maxdamage
 
 
 # Create a class for friendly NPC's, also inheriting from LivingThing
@@ -261,7 +270,6 @@ Commands = {
     'stats': Player.stats,
     'explore': Player.explore,
     'run': Player.run,
-    'fight': Player.fight,
     'inventory': Player.show_inventory,
     'inv': Player.show_inventory,
     'use' : Player.use,
@@ -362,14 +370,14 @@ traveler = FriendlyNPC('Traveler',10,"PLACE HOLDER")
 hermit = FriendlyNPC('Hermit',15,'Place Holder')
 
 # Create monster instances
-goblin = Monster('Goblin', round(15*difficulty))
-wolf = Monster('Wolf',round(10*difficulty))
-bear = Monster('Bear Cub',round(15*difficulty))
-goblin_2 = Monster('Goblin',round(5*difficulty))
+goblin = Monster('Goblin', round(15*difficulty),5*difficulty)
+wolf = Monster('Wolf',round(10*difficulty),5*difficulty)
+bear = Monster('Bear Cub',round(15*difficulty),7*difficulty)
+goblin_2 = Monster('Goblin',round(5*difficulty),7*difficulty)
 
 
 # Create Boss instance
-dragon = Monster('Red Dragon',round(25*difficulty),)
+dragon = Monster('Red Dragon',round(25*difficulty),12*difficulty)
 
 # list of Monsters
 monsters = [
@@ -391,9 +399,6 @@ village = Room('Village','after following the path you come to a village','',vil
 other_cave_entrance = Room('Cave entrance','you follow one of the paths to an entrance to a cave','','','')
 boss_room = Room('Deep Dark Cave','as you explore the cavern the ground seems to move suddenly a large creature rises from the deeps',dragon,'',teleport) # boss room with dragon and teleporter
 
-# Choose a random monster to face
-monster = choice(monsters)
-
 # Room connections dictionarys
 room_connections = {
     starter_room : {'forward':forest},
@@ -410,6 +415,8 @@ room_connections = {
 
 hero.inventory = [sword]
 hero.inventory.append(health_potion)
+boss = dragon
+monster = ''
 # Main game loop function
 def Main_loop():
     # Start Story
@@ -417,7 +424,7 @@ def Main_loop():
     print('(type help to get a list of actions) ')
     print(hero.name, 'Your story begins' ,hero.room.description)
     # Game loop
-    while hero.health > 0 and monster.health > 0:
+    while hero.health > 0 and boss.health > 0:
         if hero.status == 'Confronted':
             # Force fight
             hero.fight(monster)
@@ -435,7 +442,7 @@ def Main_loop():
             else:
                 print(hero.name, 'does not understand this suggestion.')
 
-# Ending options
+    # Ending options
 if hero.health > 0:
     print('You Win! Game Over')
 else:

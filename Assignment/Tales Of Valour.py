@@ -405,14 +405,14 @@ traveler = FriendlyNPC('Traveler',10,"PLACE HOLDER",traveler_sword)
 hermit = FriendlyNPC('Hermit',15,'Place Holder',mega_health_potion)
 
 # Create monster instances
-goblin = Monster('Goblin', round(15*difficulty),5*difficulty,'')
-wolf = Monster('Wolf',round(10*difficulty),5*difficulty,'')
-bear = Monster('Bear Cub',round(15*difficulty),7*difficulty,'')
-goblin_2 = Monster('Goblin',round(5*difficulty),7*difficulty,'')
+goblin = Monster('Goblin', round(15*difficulty),5*difficulty,'','')
+wolf = Monster('Wolf',round(10*difficulty),5*difficulty,'','')
+bear = Monster('Bear Cub',round(15*difficulty),7*difficulty,'','')
+goblin_2 = Monster('Goblin',round(5*difficulty),7*difficulty,'','')
 
 
 # Create Boss instance
-dragon = Monster('Red Dragon',round(25*difficulty),12*difficulty,magic_sword)
+dragon = Monster('Red Dragon',round(25*difficulty),12*difficulty,magic_sword,'')
 
 # list of Monsters
 monsters = [

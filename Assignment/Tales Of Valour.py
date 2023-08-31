@@ -171,10 +171,17 @@ class Player(LivingThing):
         item_name = item_name.capitalize()
         for item in self.inventory:
             if item.name == item_name:
-                self.equipped_weapon = item
-                print(f'You equipped {item_name}')
-                self.rest_cooldown = self.rest_cooldown - 1
-                return  # Exit the function after equipping
+                if self.equipped_weapon == '':
+                    self.equipped_weapon = item
+                    print(f'You equipped {item_name}')
+                    self.rest_cooldown = self.rest_cooldown - 1
+                    return  # Exit the function after equipping
+                else:
+                    self.inventory.append(self.equipped_weapon)
+                    self.equipped_weapon = item
+                    print(f'You equipped {item_name}')
+                    self.rest_cooldown = self.rest_cooldown - 1
+                    return  # Exit the function after equipping
         print("You can't equip that")
 
     def go(self,monster):
@@ -388,14 +395,14 @@ traveler = FriendlyNPC('Traveler',10,"PLACE HOLDER",health_potion_4)
 hermit = FriendlyNPC('Hermit',15,'Place Holder','')
 
 # Create monster instances
-goblin = Monster('Goblin', round(15*difficulty),5*difficulty)
-wolf = Monster('Wolf',round(10*difficulty),5*difficulty)
-bear = Monster('Bear Cub',round(15*difficulty),7*difficulty)
-goblin_2 = Monster('Goblin',round(5*difficulty),7*difficulty)
+goblin = Monster('Goblin', round(15*difficulty),5*difficulty,'')
+wolf = Monster('Wolf',round(10*difficulty),5*difficulty,'')
+bear = Monster('Bear Cub',round(15*difficulty),7*difficulty,'')
+goblin_2 = Monster('Goblin',round(5*difficulty),7*difficulty,'')
 
 
 # Create Boss instance
-dragon = Monster('Red Dragon',round(25*difficulty),12*difficulty)
+dragon = Monster('Red Dragon',round(25*difficulty),12*difficulty,magic_sword)
 
 # list of Monsters
 monsters = [
@@ -468,9 +475,6 @@ if hero.health > 0:
     print('You Win! Game Over')
 else:
     print('Game Over. you lost :(')
-
-# roll credits 
-credits()
 
 # roll credits 
 credits()

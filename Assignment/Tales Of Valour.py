@@ -219,11 +219,12 @@ class Player(LivingThing):
 
 # Create a class for monsters, also inheriting from LivingThing
 class Monster(LivingThing):
-    def __init__(self, name, health, maxdamage):
+    def __init__(self, name, health, maxdamage,drops):
         # Initialize monster attributes
         self.name = name
         self.health = health
         self.maxdamage = maxdamage
+        self.drops = drops
 
 
 # Create a class for friendly NPC's, also inheriting from LivingThing
@@ -279,7 +280,8 @@ def credits():
     print('Tester -- Dexter Hart')
     print('Tester -- Joss Ormes')
     print('Tester -- Samson Droney')
-    print('Tester -- ')
+    print('Tester -- Gabriel Mesquita')
+    print('Tester -- Zen Xeri')
 
 # Dictionary of commands mapped to player methods
 Commands = {
@@ -466,6 +468,9 @@ if hero.health > 0:
     print('You Win! Game Over')
 else:
     print('Game Over. you lost :(')
+
+# roll credits 
+credits()
 
 # roll credits 
 credits()

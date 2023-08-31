@@ -37,6 +37,7 @@ class Player(LivingThing):
         self.inventory = []
         self.equipped_weapon = ''
         self.rest_cooldown = 0
+        self.gold = 0
 
     def help(self, monster):
         # Display available actions for the player
@@ -203,13 +204,7 @@ class Player(LivingThing):
     def die(self,monster):
         # Allows the player to die at will 
         self.health = 0
-        death_message = [
-            'Commited せっぷく',
-            'Disappeared',
-            'Commited Self murder'
-        ]
-        death_message = choice(death_message)
-        print(death_message)
+        print('せっぷく')
 
     def rest(self,monster):
         # allows the player to rest (gaining a small amount of health) resting can only happen once every couple of turns
@@ -220,18 +215,22 @@ class Player(LivingThing):
         else:
             print('your not tired enough to rest')
 
+    def god_mode(self,monster):
+        pass
+
     def egg(self,monster):
         print('This is an easter egg')
 
 
 # Create a class for monsters, also inheriting from LivingThing
 class Monster(LivingThing):
-    def __init__(self, name, health, maxdamage,drops):
+    def __init__(self, name, health, maxdamage,drops,gold_drops):
         # Initialize monster attributes
         self.name = name
         self.health = health
         self.maxdamage = maxdamage
         self.drops = drops
+        self.gold_drops = gold_drops
 
 
 # Create a class for friendly NPC's, also inheriting from LivingThing
@@ -363,36 +362,47 @@ def get_difficulty():
 get_difficulty()
 
 # Create Item instances
-health_potion = Item('Health potion','Restores some health points.',hero.heal)
-health_potion_2 = Item('Health potion','Restores some health points.',hero.heal)
-health_potion_3 = Item('Health potion','Restores some health points.',hero.heal)
-health_potion_4 = Item('Health potion','Restores some health points.',hero.heal)
-mega_health_potion = Item('Mega health potion','Restores many health points.',hero.mega_heal)
-teleport = Item('Teloport stone','Teleports user to any* room','') # Add fuc to teleport
+health_potion = Item('Health potion','Restores some health points.',hero.heal) # found in starter room
+health_potion_2 = Item('Health potion','Restores some health points.',hero.heal) # 
+health_potion_3 = Item('Health potion','Restores some health points.',hero.heal) #
+health_potion_4 = Item('Health potion','Restores some health points.',hero.heal) #
+health_potion_5 = Item('Health potion','Restores some health points.',hero.heal) #
+health_potion_6 = Item('Health potion','Restores some health points.',hero.heal) #
+health_potion_7 = Item('Health potion','Restores some health points.',hero.heal) #
+mega_health_potion = Item('Mega health potion','Restores many health points.',hero.mega_heal) #
+mega_health_potion_2 = Item('Mega health potion','Restores many health points.',hero.mega_heal) # buy from hermit for 200 gold
+teleport = Item('Teloport stone','Teleports user to any* room','') # Add fuc to teleport/ found in boss room
 
-magic_sword = Weapon('Magic Sword','Increase damage by 15',15)
-pitch_folk = Weapon('Pitch Folk','Increase damage by 6',6)
-sword = Weapon("Sword",'Increase damage by 4',4)
-axe = Weapon('Axe','Increase damage by 2',2)
+# Create Weapon instances
+magic_sword = Weapon('Magic Sword','Increase damage by 15',15) # Drops from dragon
+pitch_folk = Weapon('Pitch Folk','Increase damage by 6',6) # found in village
+sword = Weapon("Sword",'Increase damage by 4',4) # found in cave cavern
+axe = Weapon('Axe','Increase damage by 2',2) # found in forest
+traveler_sword = Weapon('Traveler sword','Increase damage by 8',8) # buy from travelar for 250 gold
 
 # list of Items
 items = [
     health_potion,
+    health_potion_2,
+    health_potion_3,
+    health_potion_4,
+    health_potion_5,
+    health_potion_6,
+    health_potion_7,
+    mega_health_potion,
+    mega_health_potion_2,
+    teleport,
     sword,
     axe,
     pitch_folk,
-    teleport,
-    mega_health_potion,
+    traveler_sword,
     magic_sword,
-    health_potion_2,
-    health_potion_3,
-    health_potion_4
 ]
 
 # Create friendly NPC instances
 villiger = FriendlyNPC('Villiger',5,"PLACE HOLDER",'')
-traveler = FriendlyNPC('Traveler',10,"PLACE HOLDER",health_potion_4)
-hermit = FriendlyNPC('Hermit',15,'Place Holder','')
+traveler = FriendlyNPC('Traveler',10,"PLACE HOLDER",traveler_sword)
+hermit = FriendlyNPC('Hermit',15,'Place Holder',mega_health_potion)
 
 # Create monster instances
 goblin = Monster('Goblin', round(15*difficulty),5*difficulty,'')

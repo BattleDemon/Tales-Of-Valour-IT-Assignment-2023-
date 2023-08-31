@@ -7,6 +7,7 @@ class LivingThing():
         self.health = 1
         
     def tire(self):
+        # has the chance to deal 2 dmg to the livingthing
         diceroll = randint(0,1)
         if diceroll == 0:
             self.health = self.health - 2
@@ -15,15 +16,14 @@ class LivingThing():
         else:
             pass
 
-    def hurt(self):
-        self.health = self.health - randint(0, self.health) + self.equipped_weapon.modifier
-
     def heal(self):
+        # adds up to 10 health to the livingthing
         self.health = self.health + 5
-        self.health = self.health + randint(0,10)
+        self.health = self.health + randint(0,5)
         print('Your health is now',self.health)
 
     def mega_heal(self):
+        # doubles the livingthings health
         self.health = self.health * 2
 
 # Create a class for the player, inheriting from LivingThing
@@ -87,7 +87,7 @@ class Player(LivingThing):
         elif diceroll == 2:
             # Player encountered an FriendlyNPC
             if self.room.npcs != '':
-                print('You have Encountered the', self.room.npcs)
+                print('You have Encountered the', self.room.npcs.name)
                 self.status = 'Encountered'
                 input('Press Enter to continue\n>>')
             else:
@@ -116,10 +116,25 @@ class Player(LivingThing):
             print('your health is now',self.health)
             self.status = 'regular'
             self.room.monsters = ''
+
+        def boss_fight(self,monster):
+            pass
             
     def friendlyencounter(self,monster):
         # Allows the player to encounter friendlyNPC's
-        pass
+        option = input('Your options are \n>Leave (leave the Npc you encountered)\n>Buy ()\n>Talk ()\n>>')
+        option = option.capitalize()
+        while self.status == 'Encountered':
+            if option == 'Leave':
+                print(self.name,'walks away')
+                self.status = 'regular'
+                return
+            elif option == 'Buy':
+                pass
+            elif option == 'Talk':
+                pass
+            else:
+                print(self.name,"doesn't understand this suggestion")
 
     def show_inventory(self, monster):
         # Allows the player to view their inventory
@@ -213,11 +228,12 @@ class Monster(LivingThing):
 
 # Create a class for friendly NPC's, also inheriting from LivingThing
 class FriendlyNPC(LivingThing):
-    def __init__(self,name,health,lines):
+    def __init__(self,name,health,lines,items):
         # Initialize friendly NPC attributes
         self.name = name
         self.health = health
         self.lines = lines
+        self.items = items
 
 
 # Create a Class for Items
@@ -365,9 +381,9 @@ items = [
 ]
 
 # Create friendly NPC instances
-villiger = FriendlyNPC('Villiger',5,"PLACE HOLDER")
-traveler = FriendlyNPC('Traveler',10,"PLACE HOLDER")
-hermit = FriendlyNPC('Hermit',15,'Place Holder')
+villiger = FriendlyNPC('Villiger',5,"PLACE HOLDER",'')
+traveler = FriendlyNPC('Traveler',10,"PLACE HOLDER",health_potion_4)
+hermit = FriendlyNPC('Hermit',15,'Place Holder','')
 
 # Create monster instances
 goblin = Monster('Goblin', round(15*difficulty),5*difficulty)

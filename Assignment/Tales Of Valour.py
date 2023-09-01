@@ -16,9 +16,9 @@ class LivingThing():
         else:
             pass
 
-    def heal(self):
+    def heal(self, hp):
         # adds up to 10 health to the livingthing
-        self.health = self.health + 5
+        self.health = self.health + hp
         self.health = self.health + randint(0,5)
         print('Your health is now',self.health)
 
@@ -251,8 +251,12 @@ class Item():
         self.description = description
         self.attributes = attributes
 
+class Potion(Item):
+    def __init__(self, hpIncrease):
+        self.description = 'Restores some health points.'
+        self.hpIncrease = hpIncrease
 
-# Create a class for Weapons, inheriting from Items
+# Create a class for Weapons, inheriting from Item
 class Weapon(Item):
     def __init__(self,name,description,modifier):
         # Initialize Weapons
@@ -363,7 +367,7 @@ get_difficulty()
 
 # Create Item instances
 health_potion = Item('Health potion','Restores some health points.',hero.heal) # found in starter room
-health_potion_2 = Item('Health potion','Restores some health points.',hero.heal) # 
+health_potion_2 = Item('Health potion','Restores some health points.',hero.heal(2)) # 
 health_potion_3 = Item('Health potion','Restores some health points.',hero.heal) #
 health_potion_4 = Item('Health potion','Restores some health points.',hero.heal) #
 health_potion_5 = Item('Health potion','Restores some health points.',hero.heal) #
@@ -375,10 +379,13 @@ teleport = Item('Teloport stone','Teleports user to any* room','') # Add fuc to 
 
 # Create Weapon instances
 magic_sword = Weapon('Magic Sword','Increase damage by 15',15) # Drops from dragon
-pitch_folk = Weapon('Pitch Folk','Increase damage by 6',6) # found in village
-sword = Weapon("Sword",'Increase damage by 4',4) # found in cave cavern
-axe = Weapon('Axe','Increase damage by 2',2) # found in forest
+pitch_folk = Weapon('Pitch Folk','Increase damage by 6',6) # found in 
+sword = Weapon("Sword",'Increase damage by 4',4) # found in
+axe = Weapon('Axe','Increase damage by 2',2) # found 
 traveler_sword = Weapon('Traveler sword','Increase damage by 8',8) # buy from travelar for 250 gold
+village_guard_sword = Weapon('Guard sword','Increase damage by 10',10) # buy from villager for 300 gold
+sharp_stick = Weapon('Sharp stick','Increases damage by 1',1)
+lords_sword = Weapon('Lords Sword',)
 
 # list of Items
 items = [
@@ -397,55 +404,79 @@ items = [
     pitch_folk,
     traveler_sword,
     magic_sword,
+    village_guard_sword,
+    sharp_stick,
+    lords_sword
 ]
 
 # Create friendly NPC instances
 villiger = FriendlyNPC('Villiger',5,"PLACE HOLDER",'')
 traveler = FriendlyNPC('Traveler',10,"PLACE HOLDER",traveler_sword)
 hermit = FriendlyNPC('Hermit',15,'Place Holder',mega_health_potion)
+lord = FriendlyNPC('Lord Joss',20,'','')
 
 # Create monster instances
-goblin = Monster('Goblin', round(15*difficulty),5*difficulty,'','')
-wolf = Monster('Wolf',round(10*difficulty),5*difficulty,'','')
-bear = Monster('Bear Cub',round(15*difficulty),7*difficulty,'','')
-goblin_2 = Monster('Goblin',round(5*difficulty),7*difficulty,'','')
+goblin = Monster('Goblin', round(15*difficulty),5*difficulty,'',50)
+wolf = Monster('Wolf',round(10*difficulty),5*difficulty,'',20)
+wolf_2 = Monster('Wolf',round(10*difficulty),5*difficulty,'',20)
+bear = Monster('Bear Cub',round(15*difficulty),7*difficulty,'',30)
+spider = Monster('Giant Spider',round(15*difficulty),7*difficulty,'',30)
+goblin_2 = Monster('Goblin',round(5*difficulty),7*difficulty,'',50)
+goblin_scout = Monster('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
+goblin_scout_2 = Monster('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
+goblin_scout_3 = Monster('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
+troll = Monster('Troll',round(20*difficulty),9*difficulty,'',100)
+bandit = Monster('Bandit',round(25*difficulty),7*difficulty,'',100)
+thug = Monster('Thug',round(15*difficulty),7*difficulty,'',100)
+goblin_runt = Monster('Goblin Runt',round(2*difficulty),'',30)
+goblin_brute = Monster('Goblin Brute',round(20*difficulty),'',100)
 
 
 # Create Boss instance
-dragon = Monster('Red Dragon',round(25*difficulty),12*difficulty,magic_sword,'')
-
-# list of Monsters
-monsters = [
-    goblin,
-    wolf,
-    bear,
-    goblin_2
-]
+dragon = Monster('Red Dragon',round(25*difficulty),12*difficulty,magic_sword,400)
 
 # Create Rooms
-starter_room = Room('Forest Clearing','in a forest clearing','','',health_potion) # room with health potion
-forest = Room('Forest','you leave the clearing and venture into the forest',wolf,'',axe) # room with wolf and axe
-path_in_forest = Room('Path in forest','you find a path in the forest','',traveler,'') # room with traveler
-cave_entrance = Room('Cave entrance','as you wonder through the forest you come to a cave entrance',goblin,'','') # room with goblin
-cave_cavern = Room('Cave Cavern','you continue deeper into the cave and find a large open cavern',goblin_2,'',sword) # room with goblin and sword
-along_path = Room('Path in forest','you follow the path deeper into the forest',bear,'','') # room with bear
-hut_along_path = Room('Hut along path','while following the path you come to a hut in the forest. the path splits','',hermit,'') # room with hermit
-village = Room('Village','after following the path you come to a village','',villiger,pitch_folk) # room with villiger and pitch folk
-other_cave_entrance = Room('Cave entrance','you follow one of the paths to an entrance to a cave','','','')
-boss_room = Room('Deep Dark Cave','as you explore the cavern the ground seems to move suddenly a large creature rises from the deeps',dragon,'',teleport) # boss room with dragon and teleporter
+forest_clearing = Room('Forest Clearing','you are in a forest clearing','','',health_potion)
+forest = Room('Forest','you are in a forest',wolf,'',sharp_stick)
+path_in_forest = Room('Path in Forest','you find a path in the forest','','',axe)
+deeper_in_forest = Room('Deeper in Forest','you are deeper in the forest',wolf_2,'','')
+along_forest = Room('Along Path','You are following a path',bear,traveler,'')
+deep_forest = Room('Deep Forest','You are in a deep dark forest',spider,'','')
+hut_in_forest = Room('Hut in Forest','you are on a hut along the path','',hermit,'')
+meadow = Room('meadow','You are in a wide open meadow',goblin_scout,'','')
+cross_road = Room('Cross Roads','You are at a cross roads their is a sign pointing west it says village of {}',bandit,'','')
+village = Room('The village','You are in a village',thug,villiger,pitch_folk)
+along_ridge = Room('Along the Ridge','You are along a ridge',goblin,'','')
+tall_ridge = Room('Tall Ridge','You are at a tall ridge',goblin_scout_2,'','')
+path_in_meadow = Room('Path Along Meadow','you are on a path in a meadow',goblin_scout_3,'','')
+keep = Room('The Keep','you are in the keep of {}','',lord,lords_sword)
+cave_entrance_2 = Room('Cave Entrance','You are in a cave entrance',goblin_runt,'','')
+cave_entrance = Room('Cave Entrance','You are in a cave entrance',goblin_brute,'','')
+deep_cave = Room('Deeper in cave','You are in a deep cave',troll,'','')
+cave_cavern = Room('Cave Cavern','You are in a large open cavern','','','')
 
-# Room connections dictionarys
+Boss_Room = Room('Open Cavern','',dragon,'',magic_sword)
+
+# Room connections dict
 room_connections = {
-    starter_room : {'forward':forest},
-    forest : {'back':starter_room , 'left':cave_entrance , 'right':path_in_forest},
-    path_in_forest : {'back':forest , 'forward':along_path},
-    cave_entrance : {'back':forest , 'forward':cave_entrance},
-    along_path : {'back':path_in_forest , 'forward':hut_along_path},
-    hut_along_path : {'back':along_path , 'left':other_cave_entrance , 'right':village},
-    villiger : {'back':hut_along_path},
-    other_cave_entrance : {'back':hut_along_path , 'forward':cave_cavern},
-    cave_cavern : {'right':cave_entrance , 'left':other_cave_entrance , 'forward':boss_room},
-    boss_room : {'back':cave_cavern}
+    forest_clearing : {'north' : forest},
+    forest : {'north' : deeper_in_forest, 'west' : path_in_forest, 'south' : forest_clearing},
+    deeper_in_forest : {'north' : deep_forest, 'west' : along_forest, 'south' : forest},
+    along_forest : {'north' : hut_in_forest, 'east' : deeper_in_forest, 'south' : path_in_forest},
+    deep_forest : {'north' : meadow, 'south' : deeper_in_forest},
+    hut_in_forest : {'north' : cross_road, 'south' : along_forest},
+    meadow : {'north' : tall_ridge, 'south' : deep_forest},
+    cross_road : {'north' : path_in_meadow, 'west' : village, 'south' : hut_in_forest},
+    village : {'north' : keep, 'east' : cross_road},
+    along_ridge : {'north' : cave_entrance_2, 'west' : tall_ridge},
+    tall_ridge : {'north' : cave_entrance, 'east' : along_ridge, 'west' : path_in_meadow, 'south' : meadow},
+    path_in_meadow : {'east' : along_ridge, 'west' : keep, 'south' : cross_road},
+    keep : {'east' : path_in_meadow, 'south' : village},
+    cave_entrance_2 : {'north' : deep_cave, 'south' : along_ridge},
+    cave_entrance : {'north' : cave_cavern, 'south' : tall_ridge},
+    deep_cave : {'west' : cave_cavern, 'south' : cave_entrance_2},
+    cave_cavern : {'east' : deep_cave, 'east' : Boss_Room, 'south' : cave_entrance},
+    Boss_Room : {'east' : cave_cavern}
 }
 
 hero.inventory = [sword] # remove

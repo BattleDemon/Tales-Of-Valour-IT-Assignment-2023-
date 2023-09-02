@@ -16,15 +16,21 @@ class LivingThing():
         else:
             pass
 
-    def heal(self, hp):
+    def heal(self):
         # adds up to 10 health to the livingthing
-        self.health = self.health + hp
+        self.health = self.health + 5
         self.health = self.health + randint(0,5)
         print('Your health is now',self.health)
 
     def mega_heal(self):
         # doubles the livingthings health
         self.health = self.health * 2
+
+    def isAlive(self):
+        if self.health > 0:
+            return True
+        else:
+            return False
 
 # Create a class for the player, inheriting from LivingThing
 class Player(LivingThing):
@@ -188,7 +194,7 @@ class Player(LivingThing):
     def go(self,monster):
         # Allows the player to move between rooms 
         try:
-            direction = input("Which direction do you want to go? (forward/back/left/right)\n>> ")
+            direction = input("Which direction do you want to go? (north/south/east/west)\n>> ")
             # checks if the direction that was inputed is an avaliable direction
             if direction in room_connections[self.room]:
                 self.room = room_connections[self.room][direction]
@@ -215,12 +221,14 @@ class Player(LivingThing):
         else:
             print('your not tired enough to rest')
 
+    def show_exits(self,monster):
+        pass
+
     def god_mode(self,monster):
         pass
 
     def egg(self,monster):
         print('This is an easter egg')
-
 
 # Create a class for monsters, also inheriting from LivingThing
 class Monster(LivingThing):
@@ -232,7 +240,6 @@ class Monster(LivingThing):
         self.drops = drops
         self.gold_drops = gold_drops
 
-
 # Create a class for friendly NPC's, also inheriting from LivingThing
 class FriendlyNPC(LivingThing):
     def __init__(self,name,health,lines,items):
@@ -241,7 +248,6 @@ class FriendlyNPC(LivingThing):
         self.health = health
         self.lines = lines
         self.items = items
-
 
 # Create a Class for Items
 class Item():
@@ -252,9 +258,10 @@ class Item():
         self.attributes = attributes
 
 class Potion(Item):
-    def __init__(self, hpIncrease):
+    def __init__(self,name,attributes):
+        self.name = name 
         self.description = 'Restores some health points.'
-        self.hpIncrease = hpIncrease
+        self.attributes = attributes
 
 # Create a class for Weapons, inheriting from Item
 class Weapon(Item):
@@ -263,7 +270,6 @@ class Weapon(Item):
         self.name = name
         self.description = description
         self.modifier = modifier
-
 
 # Create a class for Rooms
 class Room():
@@ -274,7 +280,6 @@ class Room():
         self.monsters = monsters
         self.npcs = npcs
         self.items = items
-        
 
 # function to roll credits
 def credits():
@@ -345,7 +350,7 @@ input('Press Enter to continue\n>>')
 
 # Get the player's name
 print('Welcome hero')
-name = input('What is your name?\n\n>> ')
+name = input('What is your name?\n>> ')
 hero = Player(name)
 difficulty = ''
 
@@ -366,8 +371,8 @@ def get_difficulty():
 get_difficulty()
 
 # Create Item instances
-health_potion = Item('Health potion','Restores some health points.',hero.heal) # found in starter room
-health_potion_2 = Item('Health potion','Restores some health points.',hero.heal(2)) # 
+health_potion = Potion('Health potion',hero.heal) # found in starter room
+health_potion_2 = Item('Health potion','Restores some health points.',hero.heal) # 
 health_potion_3 = Item('Health potion','Restores some health points.',hero.heal) #
 health_potion_4 = Item('Health potion','Restores some health points.',hero.heal) #
 health_potion_5 = Item('Health potion','Restores some health points.',hero.heal) #
@@ -385,7 +390,7 @@ axe = Weapon('Axe','Increase damage by 2',2) # found
 traveler_sword = Weapon('Traveler sword','Increase damage by 8',8) # buy from travelar for 250 gold
 village_guard_sword = Weapon('Guard sword','Increase damage by 10',10) # buy from villager for 300 gold
 sharp_stick = Weapon('Sharp stick','Increases damage by 1',1)
-lords_sword = Weapon('Lords Sword',)
+lords_sword = Weapon('Lords Sword','Increase damage y 12',12)
 
 # list of Items
 items = [
@@ -428,9 +433,8 @@ goblin_scout_3 = Monster('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
 troll = Monster('Troll',round(20*difficulty),9*difficulty,'',100)
 bandit = Monster('Bandit',round(25*difficulty),7*difficulty,'',100)
 thug = Monster('Thug',round(15*difficulty),7*difficulty,'',100)
-goblin_runt = Monster('Goblin Runt',round(2*difficulty),'',30)
-goblin_brute = Monster('Goblin Brute',round(20*difficulty),'',100)
-
+goblin_runt = Monster('Goblin Runt',round(2*difficulty),3*difficulty,'',30)
+goblin_brute = Monster('Goblin Brute',round(20*difficulty),9*difficulty,'',100)
 
 # Create Boss instance
 dragon = Monster('Red Dragon',round(25*difficulty),12*difficulty,magic_sword,400)
@@ -485,12 +489,12 @@ boss = dragon
 monster = ''
 # Main game loop function
 def Main_loop():
-    # Start Story
-    hero.room = starter_room
+    # Start Storys
+    hero.room = forest_clearing
     print('(type help to get a list of actions) ')
     print(hero.name, 'Your story begins' ,hero.room.description)
     # Game loop
-    while hero.health > 0 and boss.health > 0:
+    while hero.isAlive and boss.isAlive:
         if hero.status == 'Confronted':
             # Force fight
             hero.fight(monster)
@@ -499,7 +503,7 @@ def Main_loop():
             hero.friendlyencounter(hero.room.npcs)
         else:
             # User inputs
-            print('Your',hero.room.description)
+            print(hero.room.description)
             line = input('What do you want to do \n>> ')
             if hero.rest_cooldown < 0:
                 hero.rest_cooldown = 0
@@ -512,7 +516,7 @@ def Main_loop():
 Main_loop()
 
 # Ending options
-if hero.health > 0:
+if hero.isAlive:
     print('You Win! Game Over')
 else:
     print('Game Over. you lost :(')

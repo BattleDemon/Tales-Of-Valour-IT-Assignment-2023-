@@ -137,7 +137,17 @@ class Player(LivingThing):
                 self.status = 'regular'
                 return
             elif option == 'Buy':
-                pass
+                print('You can buy',self.room.npcs.items.name,'for',self.room.npcs.item_cost)
+                option_2 = input('Do you want to buy this item? (yes/no)\n>>')
+                if option_2 == 'yes':
+                    if self.gold >= self.room.npcs.item_cost:
+                        print('You bought',self.room.npcs.items.name,'for',self.room.npcs.item_cost)
+                        self.pick_up_item(self.room.npcs.items)
+                        return
+                    else:
+                        print("you don't have enough gold to buy", self.room.npcs.items.name)
+                else:
+                    return
             elif option == 'Talk':
                 pass
             else:
@@ -178,17 +188,21 @@ class Player(LivingThing):
         item_name = item_name.capitalize()
         for item in self.inventory:
             if item.name == item_name:
-                if self.equipped_weapon == '':
-                    self.equipped_weapon = item
-                    print(f'You equipped {item_name}')
-                    self.rest_cooldown = self.rest_cooldown - 1
-                    return  # Exit the function after equipping
+                if isinstance(item, Weapon):
+                    if self.equipped_weapon == '':
+                        self.equipped_weapon = item
+                        print(f'You equipped {item_name}')
+                        self.rest_cooldown = self.rest_cooldown - 1
+                        return  # Exit the function after equipping
+                    else:
+                        self.inventory.append(self.equipped_weapon)
+                        self.equipped_weapon = item
+                        print(f'You equipped {item_name}')
+                        self.rest_cooldown = self.rest_cooldown - 1
+                        return  # Exit the function after equipping
                 else:
-                    self.inventory.append(self.equipped_weapon)
-                    self.equipped_weapon = item
-                    print(f'You equipped {item_name}')
-                    self.rest_cooldown = self.rest_cooldown - 1
-                    return  # Exit the function after equipping
+                    print('that is not a weapon and can not be equiped')
+                    return # Exits function
         print("You can't equip that")
 
     def go(self,monster):
@@ -242,12 +256,13 @@ class Monster(LivingThing):
 
 # Create a class for friendly NPC's, also inheriting from LivingThing
 class FriendlyNPC(LivingThing):
-    def __init__(self,name,health,lines,items):
+    def __init__(self,name,health,lines,items,item_cost):
         # Initialize friendly NPC attributes
         self.name = name
         self.health = health
         self.lines = lines
         self.items = items
+        self.item_cost = item_cost
 
 # Create a Class for Items
 class Item():
@@ -350,6 +365,8 @@ input('Press Enter to continue\n>>')
 
 # Get the player's name
 print('Welcome hero')
+print('you are a travelar from a far of land')
+print('you came to this land to find valour of die trying')
 name = input('What is your name?\n>> ')
 hero = Player(name)
 difficulty = ''
@@ -372,25 +389,25 @@ get_difficulty()
 
 # Create Item instances
 health_potion = Potion('Health potion',hero.heal) # found in starter room
-health_potion_2 = Item('Health potion','Restores some health points.',hero.heal) # 
-health_potion_3 = Item('Health potion','Restores some health points.',hero.heal) #
-health_potion_4 = Item('Health potion','Restores some health points.',hero.heal) #
-health_potion_5 = Item('Health potion','Restores some health points.',hero.heal) #
-health_potion_6 = Item('Health potion','Restores some health points.',hero.heal) #
-health_potion_7 = Item('Health potion','Restores some health points.',hero.heal) #
-mega_health_potion = Item('Mega health potion','Restores many health points.',hero.mega_heal) #
+health_potion_2 = Item('Health potion','Restores some health points.',hero.heal) # found in
+health_potion_3 = Item('Health potion','Restores some health points.',hero.heal) # found in
+health_potion_4 = Item('Health potion','Restores some health points.',hero.heal) # found in
+health_potion_5 = Item('Health potion','Restores some health points.',hero.heal) # found in
+health_potion_6 = Item('Health potion','Restores some health points.',hero.heal) # found in
+health_potion_7 = Item('Health potion','Restores some health points.',hero.heal) # found in
+mega_health_potion = Item('Mega health potion','Restores many health points.',hero.mega_heal) # drops from 
 mega_health_potion_2 = Item('Mega health potion','Restores many health points.',hero.mega_heal) # buy from hermit for 200 gold
 teleport = Item('Teloport stone','Teleports user to any* room','') # Add fuc to teleport/ found in boss room
 
 # Create Weapon instances
 magic_sword = Weapon('Magic Sword','Increase damage by 15',15) # Drops from dragon
-pitch_folk = Weapon('Pitch Folk','Increase damage by 6',6) # found in 
-sword = Weapon("Sword",'Increase damage by 4',4) # found in
-axe = Weapon('Axe','Increase damage by 2',2) # found 
+pitch_folk = Weapon('Pitch Folk','Increase damage by 6',6) # found in village
+sword = Weapon("Sword",'Increase damage by 4',4) # found in 
+axe = Weapon('Axe','Increase damage by 2',2) # found on path in forest
 traveler_sword = Weapon('Traveler sword','Increase damage by 8',8) # buy from travelar for 250 gold
 village_guard_sword = Weapon('Guard sword','Increase damage by 10',10) # buy from villager for 300 gold
-sharp_stick = Weapon('Sharp stick','Increases damage by 1',1)
-lords_sword = Weapon('Lords Sword','Increase damage y 12',12)
+sharp_stick = Weapon('Sharp stick','Increases damage by 1',1) # found in forest
+lords_sword = Weapon('Lords Sword','Increase damage y 12',12) # found in keep
 
 # list of Items
 items = [
@@ -415,26 +432,25 @@ items = [
 ]
 
 # Create friendly NPC instances
-villiger = FriendlyNPC('Villiger',5,"PLACE HOLDER",'')
-traveler = FriendlyNPC('Traveler',10,"PLACE HOLDER",traveler_sword)
-hermit = FriendlyNPC('Hermit',15,'Place Holder',mega_health_potion)
-lord = FriendlyNPC('Lord Joss',20,'','')
+villiger = FriendlyNPC('Villiger',5,"PLACE HOLDER",'','')
+traveler = FriendlyNPC('Traveler',10,"PLACE HOLDER",traveler_sword,250)
+hermit = FriendlyNPC('Hermit',15,'Place Holder',mega_health_potion,200)
+lord = FriendlyNPC('Lord Joss',20,'','','')
 
 # Create monster instances
-goblin = Monster('Goblin', round(15*difficulty),5*difficulty,'',50)
 wolf = Monster('Wolf',round(10*difficulty),5*difficulty,'',20)
 wolf_2 = Monster('Wolf',round(10*difficulty),5*difficulty,'',20)
 bear = Monster('Bear Cub',round(15*difficulty),7*difficulty,'',30)
 spider = Monster('Giant Spider',round(15*difficulty),7*difficulty,'',30)
-goblin_2 = Monster('Goblin',round(5*difficulty),7*difficulty,'',50)
 goblin_scout = Monster('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
-goblin_scout_2 = Monster('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
-goblin_scout_3 = Monster('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
-troll = Monster('Troll',round(20*difficulty),9*difficulty,'',100)
 bandit = Monster('Bandit',round(25*difficulty),7*difficulty,'',100)
 thug = Monster('Thug',round(15*difficulty),7*difficulty,'',100)
+goblin = Monster('Goblin', round(15*difficulty),5*difficulty,'',50)
+goblin_scout_2 = Monster('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
+goblin_scout_3 = Monster('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
 goblin_runt = Monster('Goblin Runt',round(2*difficulty),3*difficulty,'',30)
 goblin_brute = Monster('Goblin Brute',round(20*difficulty),9*difficulty,'',100)
+troll = Monster('Troll',round(20*difficulty),9*difficulty,'',100)
 
 # Create Boss instance
 dragon = Monster('Red Dragon',round(25*difficulty),12*difficulty,magic_sword,400)
@@ -486,6 +502,8 @@ room_connections = {
 hero.inventory = [sword] # remove
 hero.inventory.append(health_potion) # remove 
 boss = dragon
+forest_clearing.npcs = hermit
+hero.gold = 10000000
 monster = ''
 # Main game loop function
 def Main_loop():

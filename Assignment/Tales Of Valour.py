@@ -25,6 +25,7 @@ class LivingThing():
     def mega_heal(self):
         # doubles the livingthings health
         self.health = self.health * 2
+        print('Your health is now',self.health)
 
     def isAlive(self):
         if self.health > 0:
@@ -64,6 +65,7 @@ class Player(LivingThing):
         print('You have a health of', self.health)
         print('your status is', self.status)
         print('You are in', self.room.name)
+        # checks if the player is holding an item
         if self.equipped_weapon == '':
             print("You don't have anything equiped")
         else:
@@ -71,29 +73,32 @@ class Player(LivingThing):
         print("You can't rest for",self.rest_cooldown,'turns')
 
     def explore(self, monster):
-        # Increase player's health and possibly trigger a monster encounter
+        # has a chance to lower the players health
+        # has a 1/3 chance of finding 1. a monster triggering a fight (if one is in the room) 
+        # 2. a friendlynpc triggering an interaction (if one is in the room)
+        # 3. a chance of finding an item (if one is in the room)
         self.rest_cooldown = self.rest_cooldown - 1
         self.tire()
         diceroll = randint(0,2)
         if diceroll == 0:
             if self.room.monsters != '':
+                # Player confronted a monster
                 print('You have been confronted by',self.room.monsters.name)
                 self.status = 'Confronted'
                 input('Press Enter to continue\n>>')
             else:
                 print("You couldn't find anything")
         elif diceroll == 1:
-            # Player found an item while exploring
             if self.room.items != '':
+                 # Player found an item while exploring
                 print('You found a',self.room.items.name)
                 hero.pick_up_item(self.room.items)
                 self.room.items = ''
-                print(self.room.items)
             else:
                 print("You couldn't find anything")
         elif diceroll == 2:
-            # Player encountered an FriendlyNPC
             if self.room.npcs != '':
+                # Player encountered a FriendlyNPC
                 print('You have Encountered the', self.room.npcs.name)
                 self.status = 'Encountered'
                 input('Press Enter to continue\n>>')
@@ -108,35 +113,40 @@ class Player(LivingThing):
             # First deals Dmg to the monster then to the hero 
             monster.health = monster.health - randint(0,15)
             if self.equipped_weapon != '':
+                # if player has a weapon its added her
                 monster.health = monster.health - self.equipped_weapon.modifier
             self.health = self.health - randint(0,monster.maxdamage)
             print(monster.name, 'attacks you')
             print('your health is now',self.health)
             print(monster.name,'health is now',monster.health)
             input('Press Enter to continue\n>>')
-
-        if self.health <= 0:
-            print('You were Killed by the', monster.name)
-            self.status = 'regular'
-        else:
+        if self.isAlive:
             print('Victory!\nYou defeated the', monster.name)
             print('your health is now',self.health)
             self.status = 'regular'
             self.room.monsters = ''
+        else:
+            # checks if you are still alive
+            print('You were Killed by the', monster.name)
+            self.status = 'regular'
 
         def boss_fight(self,monster):
             pass
             
     def friendlyencounter(self,monster):
         # Allows the player to encounter friendlyNPC's
-        option = input('Your options are \n>Leave (leave the Npc you encountered)\n>Buy ()\n>Talk ()\n>>')
+        print('Your options are \n>Leave (leave the Npc you encountered')
+        print('Buy (allows you to buy items from npc)')
+        option = input('Talk (allows the npc to say a line)\n>>')
         option = option.capitalize()
         while self.status == 'Encountered':
             if option == 'Leave':
+                # leaves the interaction
                 print(self.name,'walks away')
                 self.status = 'regular'
                 return
             elif option == 'Buy':
+                # allows you to buy items from npc
                 print('You can buy',self.room.npcs.items.name,'for',self.room.npcs.item_cost)
                 option_2 = input('Do you want to buy this item? (yes/no)\n>>')
                 if option_2 == 'yes':
@@ -149,7 +159,10 @@ class Player(LivingThing):
                 else:
                     return
             elif option == 'Talk':
-                pass
+                # allows the npc to say a line
+                print(self.room.npcs.lines)
+                input('Press Enter to continue\n>>')
+                return
             else:
                 print(self.name,"doesn't understand this suggestion")
 
@@ -230,19 +243,18 @@ class Player(LivingThing):
         # allows the player to rest (gaining a small amount of health) resting can only happen once every couple of turns
         if self.rest_cooldown <= 0:
             self.heal()
-            print(f'Your health is now {self.health}')
             self.rest_cooldown = 5
         else:
             print('your not tired enough to rest')
+
+    def teleport(self,monster):
+        pass
 
     def show_exits(self,monster):
         pass
 
     def god_mode(self,monster):
         pass
-
-    def egg(self,monster):
-        print('This is an easter egg')
 
 # Create a class for monsters, also inheriting from LivingThing
 class Monster(LivingThing):
@@ -270,12 +282,6 @@ class Item():
         # Initialize Items
         self.name = name 
         self.description = description
-        self.attributes = attributes
-
-class Potion(Item):
-    def __init__(self,name,attributes):
-        self.name = name 
-        self.description = 'Restores some health points.'
         self.attributes = attributes
 
 # Create a class for Weapons, inheriting from Item
@@ -325,7 +331,7 @@ Commands = {
     'go' : Player.go,
     'die': Player.die,
     'rest': Player.rest,
-    '': Player.egg
+    'password': Player.god_mode
 }
 
 # Dictionary of Difficultys 
@@ -369,26 +375,10 @@ print('you are a travelar from a far of land')
 print('you came to this land to find valour of die trying')
 name = input('What is your name?\n>> ')
 hero = Player(name)
-difficulty = ''
-
-# Get difficulty function
-def get_difficulty():
-    global difficulty
-    while difficulty == '':
-        difficulty = input('Please select a difficulty\nReally Easy <1>\nEasy <2>\n'
-                           'Normal <3>\nHard <4>\nExtra Hard <5>\nExtreme <6>\n>>  ')
-        if difficulty in Difficulty.keys():
-            difficulty = Difficulty[difficulty]
-        else:
-            print('!!Please select a real difficulty!!')
-            difficulty = ''
-    return difficulty
-
-# get difficulty
-get_difficulty()
+difficulty = 2
 
 # Create Item instances
-health_potion = Potion('Health potion',hero.heal) # found in starter room
+health_potion = Item('Health potion','Restores some health points.',hero.heal) # found in starter room
 health_potion_2 = Item('Health potion','Restores some health points.',hero.heal) # found in
 health_potion_3 = Item('Health potion','Restores some health points.',hero.heal) # found in
 health_potion_4 = Item('Health potion','Restores some health points.',hero.heal) # found in
@@ -432,10 +422,10 @@ items = [
 ]
 
 # Create friendly NPC instances
-villiger = FriendlyNPC('Villiger',5,"PLACE HOLDER",'','')
-traveler = FriendlyNPC('Traveler',10,"PLACE HOLDER",traveler_sword,250)
-hermit = FriendlyNPC('Hermit',15,'Place Holder',mega_health_potion,200)
-lord = FriendlyNPC('Lord Joss',20,'','','')
+villiger = FriendlyNPC('Villiger',5,"I have heard storys of the horrors out side the village",'','')
+traveler = FriendlyNPC('Traveler',10,"I just got robbed on the trail i suggest you turn back now",traveler_sword,250)
+hermit = FriendlyNPC('Hermit Samson',15,'Those village folk are always scared of what is out of their village',mega_health_potion,200)
+lord = FriendlyNPC('Lord Joss',20,'Have you heard of the goblins to the north, they send war partys to are lands','','')
 
 # Create monster instances
 wolf = Monster('Wolf',round(10*difficulty),5*difficulty,'',20)
@@ -469,12 +459,11 @@ village = Room('The village','You are in a village',thug,villiger,pitch_folk)
 along_ridge = Room('Along the Ridge','You are along a ridge',goblin,'','')
 tall_ridge = Room('Tall Ridge','You are at a tall ridge',goblin_scout_2,'','')
 path_in_meadow = Room('Path Along Meadow','you are on a path in a meadow',goblin_scout_3,'','')
-keep = Room('The Keep','you are in the keep of {}','',lord,lords_sword)
+keep = Room('The Keep','you are in the keep of lord joss','',lord,lords_sword)
 cave_entrance_2 = Room('Cave Entrance','You are in a cave entrance',goblin_runt,'','')
 cave_entrance = Room('Cave Entrance','You are in a cave entrance',goblin_brute,'','')
 deep_cave = Room('Deeper in cave','You are in a deep cave',troll,'','')
 cave_cavern = Room('Cave Cavern','You are in a large open cavern','','','')
-
 Boss_Room = Room('Open Cavern','',dragon,'',magic_sword)
 
 # Room connections dict
@@ -502,8 +491,8 @@ room_connections = {
 hero.inventory = [sword] # remove
 hero.inventory.append(health_potion) # remove 
 boss = dragon
-forest_clearing.npcs = hermit
-hero.gold = 10000000
+forest_clearing.npcs = hermit # remove
+hero.gold = 10000000 # remove
 monster = ''
 # Main game loop function
 def Main_loop():

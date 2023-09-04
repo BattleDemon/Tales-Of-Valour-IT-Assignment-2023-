@@ -222,6 +222,15 @@ class Player(LivingThing):
         # Allows the player to move between rooms 
         try:
             direction = input("Which direction do you want to go? (north/south/east/west)\n>> ")
+            if self.room.monsters != '':
+                # checks if their is still a monster in a room and if their is has a 1/2 chance of encountering it
+                num = randint(1,2)
+                if num == 1:
+                    print('You have been confronted by',self.room.monsters.name)
+                    input('Press Enter to continue\n>>')
+                    self.status = 'Confronted'
+                    monster = self.room.monsters
+                    self.fight(monster)
             # checks if the direction that was inputed is an avaliable direction
             if direction in room_connections[self.room]:
                 self.room = room_connections[self.room][direction]
@@ -254,7 +263,8 @@ class Player(LivingThing):
         pass
 
     def god_mode(self,monster):
-        pass
+        self.health = 1000
+        self.inventory.append(god_weapon)
 
 # Create a class for monsters, also inheriting from LivingThing
 class Monster(LivingThing):
@@ -397,7 +407,8 @@ axe = Weapon('Axe','Increase damage by 2',2) # found on path in forest
 traveler_sword = Weapon('Traveler sword','Increase damage by 8',8) # buy from travelar for 250 gold
 village_guard_sword = Weapon('Guard sword','Increase damage by 10',10) # buy from villager for 300 gold
 sharp_stick = Weapon('Sharp stick','Increases damage by 1',1) # found in forest
-lords_sword = Weapon('Lords Sword','Increase damage y 12',12) # found in keep
+lords_sword = Weapon('Lords Sword','Increase damage by 12',12) # found in keep
+god_weapon = Weapon('Gods sword','Increase damage by 100',100) # if player uses god_mode func
 
 # list of Items
 items = [

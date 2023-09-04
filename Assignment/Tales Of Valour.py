@@ -122,6 +122,7 @@ class Player(LivingThing):
             print('your health is now',self.health)
             print(monster.name,'health is now',monster.health)
             input('Press Enter to continue\n>>')
+              
         if self.health > 0:
             print('Victory!\nYou defeated the', monster.name)
             print('your health is now',self.health)
@@ -290,6 +291,16 @@ class Monster(LivingThing):
         self.drops = drops
         self.gold_drops = gold_drops
 
+# Create a class for humanoid monsters, inheriting from Monster
+class Humanoid(Monster):
+    def __init__(self):
+        pass
+
+# Create a class for beast monsters, inheriting from Monster
+class Beast(Monster):
+    def __inti__(self):
+        pass
+
 # Create a class for friendly NPC's, also inheriting from LivingThing
 class FriendlyNPC(LivingThing):
     def __init__(self,name,health,lines,items,item_cost):
@@ -310,11 +321,14 @@ class Item():
 
 # Create a class for Weapons, inheriting from Item
 class Weapon(Item):
-    def __init__(self,name,description,modifier):
+    def __init__(self,name,description,modifier,action,action2,action3):
         # Initialize Weapons
         self.name = name
         self.description = description
         self.modifier = modifier
+        self.action = action
+        self.action2 = action2
+        self.action3 = action3
 
 # Create a class for Rooms
 class Room():
@@ -341,7 +355,6 @@ def credits():
     print('Tester -- Joss Ormes')
     print('Tester -- Samson Droney')
     print('Tester -- Gabriel Mesquita')
-    print('Tester -- Zen Xeri')
 
 # Dictionary of commands mapped to player methods
 Commands = {

@@ -27,12 +27,6 @@ class LivingThing():
         self.health = self.health * 2
         print('Your health is now',self.health)
 
-    def isAlive(self):
-        if self.health > 0:
-            return True
-        else:
-            return False
-
 # Create a class for the player, inheriting from LivingThing
 class Player(LivingThing):
     def __init__(self, name,):
@@ -45,6 +39,9 @@ class Player(LivingThing):
         self.equipped_weapon = ''
         self.rest_cooldown = 0
         self.gold = 0
+        self.level = 1
+        self.exp = 0
+        self.score = 0
 
     def help(self, monster):
         # Display available actions for the player
@@ -71,6 +68,9 @@ class Player(LivingThing):
         else:
             print('You have', self.equipped_weapon.name,'equiped')
         print("You can't rest for",self.rest_cooldown,'turns')
+        print('You are level',self.level)
+        print('you have',self.exp,'exp')
+        print('Your score is',self.score)
 
     def explore(self, monster):
         # has a chance to lower the players health
@@ -79,6 +79,8 @@ class Player(LivingThing):
         # 3. a chance of finding an item (if one is in the room)
         self.rest_cooldown = self.rest_cooldown - 1
         self.tire()
+        self.score += 50
+        self.exp += 50
         diceroll = randint(0,2)
         if diceroll == 0:
             if self.room.monsters != '':
@@ -120,11 +122,13 @@ class Player(LivingThing):
             print('your health is now',self.health)
             print(monster.name,'health is now',monster.health)
             input('Press Enter to continue\n>>')
-        if self.isAlive:
+        if self.health > 0:
             print('Victory!\nYou defeated the', monster.name)
             print('your health is now',self.health)
             self.status = 'regular'
             self.room.monsters = ''
+            self.score += 100
+            self.exp += 100
         else:
             # checks if you are still alive
             print('You were Killed by the', monster.name)
@@ -176,7 +180,9 @@ class Player(LivingThing):
             print('Your inventory is empty.')
     
     def pick_up_item(self, item):
-        # Allows the player to pick up items
+        # Allows the player to pick up 
+        self.score += 10
+        self.exp += 10
         self.inventory.append(item)  # Add the item to the inventory list
         print(f'You picked up {item.name}.')
 
@@ -192,6 +198,8 @@ class Player(LivingThing):
                     item.attributes()  # Call the item's attributes method
                     self.inventory.remove(item)  # Remove the used item from inventory
                     self.rest_cooldown = self.rest_cooldown - 1
+                    self.score += 10
+                    self.exp += 10
                 return
         print("You don't have that item in your inventory.")
 
@@ -201,6 +209,8 @@ class Player(LivingThing):
         item_name = item_name.capitalize()
         for item in self.inventory:
             if item.name == item_name:
+                self.score += 25
+                self.exp += 25
                 if isinstance(item, Weapon):
                     if self.equipped_weapon == '':
                         self.equipped_weapon = item
@@ -238,6 +248,8 @@ class Player(LivingThing):
                 print(f'you are now in the {self.room.name}')
                 self.rest_cooldown = self.rest_cooldown - 1
                 self.tire()
+                self.score += 25
+                self.exp += 25
             else:
                 print("You can't go that way.")
         except KeyError:
@@ -253,6 +265,8 @@ class Player(LivingThing):
         if self.rest_cooldown <= 0:
             self.heal()
             self.rest_cooldown = 5
+            self.score += 10
+            self.exp += 10
         else:
             print('your not tired enough to rest')
 
@@ -505,20 +519,32 @@ boss = dragon
 forest_clearing.npcs = hermit # remove
 hero.gold = 10000000 # remove
 monster = ''
+exp_to_next_level = 100
 # Main game loop function
 def Main_loop():
     # Start Storys
     hero.room = forest_clearing
     print('(type help to get a list of actions) ')
     print(hero.name, 'Your story begins' ,hero.room.description)
+    exp_to_next_level = 100
     # Game loop
-    while hero.isAlive and boss.isAlive:
+    while hero.health > 0 and boss.health > 0:
         if hero.status == 'Confronted':
             # Force fight
             hero.fight(monster)
         elif hero.status == 'Encountered':
             # Force encounter with FriendlyNPC's
             hero.friendlyencounter(hero.room.npcs)
+        elif hero.exp >= exp_to_next_level:
+            # levels the player up
+            hero.level += 1
+            hero.health += 15
+            print('You leveled up!!')
+            print('You are now level',hero.level)
+            print('You now have',hero.health,'health')
+            hero.exp -= exp_to_next_level
+            exp_to_next_level += exp_to_next_level
+            input('Press Enter to continue\n>>')
         else:
             # User inputs
             print(hero.room.description)
@@ -534,10 +560,15 @@ def Main_loop():
 Main_loop()
 
 # Ending options
-if hero.isAlive:
+if hero.health > 0:
     print('You Win! Game Over')
 else:
     print('Game Over. you lost :(')
+
+input('Press Enter to continue\n>>')
+print('You are level',hero.level)
+print('you have',hero.exp,'exp')
+print('Your score is',hero.score)
 
 # roll credits 
 credits()

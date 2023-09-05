@@ -31,12 +31,12 @@ class LivingThing():
 class Player(LivingThing):
     def __init__(self, name,):
         # Initialize player-specific attributes
-        global starter_room
         self.name = name
         self.health = 25
         self.status = 'regular'
         self.inventory = []
         self.equipped_weapon = ''
+        self.room = ''
         self.rest_cooldown = 0
         self.gold = 0
         self.level = 1
@@ -113,15 +113,30 @@ class Player(LivingThing):
         monster = self.room.monsters
         while self.health > 0 and monster.health > 0:
             # First deals Dmg to the monster then to the hero 
-            monster.health = monster.health - randint(0,15)
             if self.equipped_weapon != '':
-                # if player has a weapon its added her
-                monster.health = monster.health - self.equipped_weapon.modifier
-            self.health = self.health - randint(0,monster.maxdamage)
-            print(monster.name, 'attacks you')
-            print('your health is now',self.health)
-            print(monster.name,'health is now',monster.health)
-            input('Press Enter to continue\n>>')
+                attack = input(f'What action do you want to do?(slash,stab,use)\n>>')
+                if attack == 'slash':
+                    print(self.name,"slash's at the",monster.name)
+                    dmg = randint(2,7) + self.equipped_weapon.modifier
+                    print(self.name,'did',dmg,'damage')
+                    monster.health -= dmg
+                    print(monster.name,'health is now',monster.health)
+                    input('Press Enter to continue\n>>')
+                elif attack == 'stab':
+                    print(self.name,"stab's at the",monster.name)
+                    dmg = randint(3,5) + self.equipped_weapon.modifier
+                    print(self.name,'did',dmg,'damage')
+                    monster.health -= dmg
+                    print(monster.name,'health is now',monster.health)
+                    input('Press Enter to continue\n>>')
+                elif attack == 'use':
+                    self.use
+                else:
+                    print('Please input a real attack')
+            else:
+                print('you punch the',monster.name)
+                monster.health -= randint(0,3)
+                print(monster.name,'now has',monster.health,'health')
               
         if self.health > 0:
             print('Victory!\nYou defeated the', monster.name)
@@ -217,6 +232,7 @@ class Player(LivingThing):
                         self.equipped_weapon = item
                         print(f'You equipped {item_name}')
                         self.rest_cooldown = self.rest_cooldown - 1
+                        self.inventory.remove(self.equipped_weapon)
                         return  # Exit the function after equipping
                     else:
                         self.inventory.append(self.equipped_weapon)
@@ -280,6 +296,7 @@ class Player(LivingThing):
     def god_mode(self,monster):
         self.health = 1000
         self.inventory.append(god_weapon)
+        self.exp += 100000000
 
 # Create a class for monsters, also inheriting from LivingThing
 class Monster(LivingThing):
@@ -293,13 +310,33 @@ class Monster(LivingThing):
 
 # Create a class for humanoid monsters, inheriting from Monster
 class Humanoid(Monster):
-    def __init__(self):
-        pass
+    def __init__(self, name, health, maxdamage, drops, gold_drops):
+        # Initialize humanoid monsters attributes
+        self.name = name
+        self.health = health
+        self.maxdamage = maxdamage
+        self.drops = drops
+        self.gold_drops = gold_drops
+        self.actions = ['slash','stab']
 
 # Create a class for beast monsters, inheriting from Monster
 class Beast(Monster):
-    def __inti__(self):
-        pass
+    def __init__(self, name, health, maxdamage, drops, gold_drops):
+        self.name = name
+        self.health = health
+        self.maxdamage = maxdamage
+        self.drops = drops
+        self.gold_drops = gold_drops
+        self.actions = ['slash','maul']
+
+class Dragon(Monster):
+    def __init__(self, name, health, maxdamage, drops, gold_drops):
+        self.name = name
+        self.health = health
+        self.maxdamage = maxdamage
+        self.drops = drops
+        self.gold_drops = gold_drops
+        self.actions = ['flamebreath','fireball']
 
 # Create a class for friendly NPC's, also inheriting from LivingThing
 class FriendlyNPC(LivingThing):
@@ -321,14 +358,11 @@ class Item():
 
 # Create a class for Weapons, inheriting from Item
 class Weapon(Item):
-    def __init__(self,name,description,modifier,action,action2,action3):
+    def __init__(self,name,description,modifier):
         # Initialize Weapons
         self.name = name
         self.description = description
         self.modifier = modifier
-        self.action = action
-        self.action2 = action2
-        self.action3 = action3
 
 # Create a class for Rooms
 class Room():
@@ -466,22 +500,22 @@ hermit = FriendlyNPC('Hermit Samson',15,'Those village folk are always scared of
 lord = FriendlyNPC('Lord Joss',20,'Have you heard of the goblins to the north, they send war partys to are lands','','')
 
 # Create monster instances
-wolf = Monster('Wolf',round(10*difficulty),5*difficulty,'',20)
-wolf_2 = Monster('Wolf',round(10*difficulty),5*difficulty,'',20)
-bear = Monster('Bear Cub',round(15*difficulty),7*difficulty,'',30)
-spider = Monster('Giant Spider',round(15*difficulty),7*difficulty,'',30)
-goblin_scout = Monster('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
-bandit = Monster('Bandit',round(25*difficulty),7*difficulty,'',100)
-thug = Monster('Thug',round(15*difficulty),7*difficulty,'',100)
-goblin = Monster('Goblin', round(15*difficulty),5*difficulty,'',50)
-goblin_scout_2 = Monster('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
-goblin_scout_3 = Monster('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
-goblin_runt = Monster('Goblin Runt',round(2*difficulty),3*difficulty,'',30)
-goblin_brute = Monster('Goblin Brute',round(20*difficulty),9*difficulty,'',100)
-troll = Monster('Troll',round(20*difficulty),9*difficulty,'',100)
+wolf = Beast('Wolf',round(10*difficulty),5*difficulty,'',20)
+wolf_2 = Beast('Wolf',round(10*difficulty),5*difficulty,'',20)
+bear = Beast('Bear Cub',round(15*difficulty),7*difficulty,'',30)
+spider = Beast('Giant Spider',round(15*difficulty),7*difficulty,'',30)
+goblin_scout = Humanoid('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
+bandit = Humanoid('Bandit',round(25*difficulty),7*difficulty,'',100)
+thug = Humanoid('Thug',round(15*difficulty),7*difficulty,'',100)
+goblin = Humanoid('Goblin', round(15*difficulty),5*difficulty,'',50)
+goblin_scout_2 = Humanoid('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
+goblin_scout_3 = Humanoid('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
+goblin_runt = Humanoid('Goblin Runt',round(2*difficulty),3*difficulty,'',30)
+goblin_brute = Humanoid('Goblin Brute',round(20*difficulty),9*difficulty,'',100)
+troll = Humanoid('Troll',round(20*difficulty),9*difficulty,'',100)
 
 # Create Boss instance
-dragon = Monster('Red Dragon',round(25*difficulty),12*difficulty,magic_sword,400)
+dragon = Dragon('Red Dragon',round(25*difficulty),12*difficulty,magic_sword,400)
 
 # Create Rooms
 forest_clearing = Room('Forest Clearing','you are in a forest clearing','','',health_potion)
@@ -489,7 +523,7 @@ forest = Room('Forest','you are in a forest',wolf,'',sharp_stick)
 path_in_forest = Room('Path in Forest','you find a path in the forest','','',axe)
 deeper_in_forest = Room('Deeper in Forest','you are deeper in the forest',wolf_2,'','')
 along_forest = Room('Along Path','You are following a path',bear,traveler,'')
-deep_forest = Room('Deep Forest','You are in a deep dark forest',spider,'','')
+deep_forest = Room('Deep Dark Forest','You are in a deep dark forest',spider,'','')
 hut_in_forest = Room('Hut in Forest','you are on a hut along the path','',hermit,'')
 meadow = Room('meadow','You are in a wide open meadow',goblin_scout,'','')
 cross_road = Room('Cross Roads','You are at a cross roads their is a sign pointing west it says village of {}',bandit,'','')
@@ -533,10 +567,10 @@ forest_clearing.npcs = hermit # remove
 hero.gold = 10000000 # remove
 monster = ''
 exp_to_next_level = 100
+hero.room = forest_clearing
 # Main game loop function
 def Main_loop():
     # Start Storys
-    hero.room = forest_clearing
     print('(type help to get a list of actions) ')
     print(hero.name, 'Your story begins' ,hero.room.description)
     exp_to_next_level = 100
@@ -577,7 +611,17 @@ if hero.health > 0:
     print('You Win! Game Over')
 else:
     print('Game Over. you lost :(')
+input('Press Enter to continue\n>>')
 
+# shows the player their inventory 
+if hero.inventory:
+    print('You had:')
+    for item in hero.inventory:
+        print(f'{item.name}: {item.description}')
+else:
+    print('Your inventory was empty.')
+
+# Shows the player their important stats
 input('Press Enter to continue\n>>')
 print('You are level',hero.level)
 print('you have',hero.exp,'exp')

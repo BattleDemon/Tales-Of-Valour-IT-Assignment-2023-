@@ -18,13 +18,15 @@ class LivingThing():
 
     def heal(self):
         # adds up to 10 health to the livingthing
-        self.health = self.health + 5
-        self.health = self.health + randint(0,5)
+        heal_amount = randint(0,5) + 5
+        self.health += heal_amount
+        print('You gained',heal_amount,'health')
         print('Your health is now',self.health)
 
     def mega_heal(self):
         # doubles the livingthings health
-        self.health = self.health * 2
+        self.health = self.health + 20
+        print('You gained 20 health')
         print('Your health is now',self.health)
 
 # Create a class for the player, inheriting from LivingThing
@@ -79,14 +81,14 @@ class Player(LivingThing):
         # 3. a chance of finding an item (if one is in the room)
         self.rest_cooldown = self.rest_cooldown - 1
         self.tire()
-        self.score += 50
-        self.exp += 50
         diceroll = randint(0,2)
         if diceroll == 0:
             if self.room.monsters != '':
                 # Player confronted a monster
                 print('You have been confronted by',self.room.monsters.name)
                 self.status = 'Confronted'
+                self.score += 50
+                self.exp += 50
                 input('Press Enter to continue\n>>')
             else:
                 print("You couldn't find anything")
@@ -96,6 +98,8 @@ class Player(LivingThing):
                 print('You found a',self.room.items.name)
                 hero.pick_up_item(self.room.items)
                 self.room.items = ''
+                self.score += 50
+                self.exp += 50
             else:
                 print("You couldn't find anything")
         elif diceroll == 2:
@@ -103,6 +107,8 @@ class Player(LivingThing):
                 # Player encountered a FriendlyNPC
                 print('You have Encountered the', self.room.npcs.name)
                 self.status = 'Encountered'
+                self.score += 50
+                self.exp += 50
                 input('Press Enter to continue\n>>')
             else:
                 print("You couldn't find anything")
@@ -157,14 +163,18 @@ class Player(LivingThing):
                     print('you punch the',monster.name,'for',dmg,'damage')
                     monster.health -= dmg
                     print(monster.name,'now has',monster.health,'health')
+                    input('Press Enter to continue\n>>')
                 elif attack == 'use':
                     self.use(monster)
                 else:
                     print('Please input a real attack')
-            dmg = randint(2,monster.maxdamage)
-            print('The',monster.name,choice(monster.actions),'you for',dmg,'damage')
-            self.health -= dmg
-            print('Your health is now',self.health)
+            if monster.health > 0:
+                mindamage = round(monster.maxdamage/3)
+                dmg = randint(mindamage,monster.maxdamage)
+                print('The',monster.name,choice(monster.actions),'you for',dmg,'damage')
+                self.health -= dmg
+                print('Your health is now',self.health)
+                input('Press Enter to continue\n>>')
               
         if self.health > 0:
             print('Victory!\nYou defeated the', monster.name)
@@ -173,6 +183,7 @@ class Player(LivingThing):
             self.room.monsters = ''
             self.score += 100
             self.exp += 100
+            input('Press Enter to continue\n>>')
         else:
             # checks if you are still alive
             print('You were Killed by the', monster.name)
@@ -418,25 +429,17 @@ Commands = {
 
 # Dictionary of Difficultys 
 Difficulty = {
-    'Really Easy': 1,
     'Easy': 2,
     'Normal': 3,
     'Hard': 4,
-    'Extra Hard': 5,
-    'Extreme': 6,
-    'really easy': 1,
-    'easy': 2,
-    'normal': 3,
-    'hard': 4,
-    'extra hard': 5,
-    'extreme': 6,
-    '1': 1,
-    '2': 2,
-    '3': 3,
-    '4': 4,
-    '5': 5,
-    '6': 6
+    '1' : 2,
+    '2' : 3,
+    '3' : 4
 }
+
+# get difficulty
+def get_difficulty():
+    pass
 
 # Title
 print(
@@ -460,27 +463,30 @@ hero = Player(name)
 difficulty = 2
 
 # Create Item instances
-health_potion = Item('Health potion','Restores some health points.',hero.heal) # found in starter room
-health_potion_2 = Item('Health potion','Restores some health points.',hero.heal) # found in
-health_potion_3 = Item('Health potion','Restores some health points.',hero.heal) # found in
-health_potion_4 = Item('Health potion','Restores some health points.',hero.heal) # found in
-health_potion_5 = Item('Health potion','Restores some health points.',hero.heal) # found in
-health_potion_6 = Item('Health potion','Restores some health points.',hero.heal) # found in
-health_potion_7 = Item('Health potion','Restores some health points.',hero.heal) # found in
-mega_health_potion = Item('Mega health potion','Restores many health points.',hero.mega_heal) # drops from 
-mega_health_potion_2 = Item('Mega health potion','Restores many health points.',hero.mega_heal) # buy from hermit for 200 gold
+health_potion = Item('Health potion','Restores some health points.',hero.heal) # Start with
+health_potion_2 = Item('Health potion','Restores some health points.',hero.heal) # drops from goblin scout
+health_potion_3 = Item('Health potion','Restores some health points.',hero.heal) # drops from goblin scout
+health_potion_4 = Item('Health potion','Restores some health points.',hero.heal) # drops from goblin outcast
+health_potion_5 = Item('Health potion','Restores some health points.',hero.heal) # found in forest
+health_potion_6 = Item('Health potion','Restores some health points.',hero.heal) # found along path
+health_potion_7 = Item('Health potion','Restores some health points.',hero.heal) # found in tall ridge
+mega_health_potion = Item('Mega health potion','Restores many health points.',hero.mega_heal) # buy from hermit for 200 gold
+mega_health_potion_2 = Item('Mega health potion','Restores many health points.',hero.mega_heal) # found in deep forest
+mega_health_potion_3 = Item('Mega health potion','Restores many health points.',hero.mega_heal) # found in cave cavern
 teleport = Item('Teloport stone','Teleports user to any* room','') # Add fuc to teleport/ found in boss room
 
 # Create Weapon instances
 magic_sword = Weapon('Magic Sword','Increase damage by 15',15) # Drops from dragon
 pitch_folk = Weapon('Pitch Folk','Increase damage by 6',6) # found in village
-sword = Weapon("Sword",'Increase damage by 4',4) # found in 
+sword = Weapon("Sword",'Increase damage by 4',4) # found in deeper forest
 axe = Weapon('Axe','Increase damage by 2',2) # found on path in forest
 traveler_sword = Weapon('Traveler sword','Increase damage by 8',8) # buy from travelar for 250 gold
 village_guard_sword = Weapon('Guard sword','Increase damage by 10',10) # buy from villager for 300 gold
 sharp_stick = Weapon('Sharp stick','Increases damage by 1',1) # found in forest
 lords_sword = Weapon('Lords Sword','Increase damage by 12',12) # found in keep
 god_weapon = Weapon('Gods sword','Increase damage by 100',100) # if player uses god_mode func
+rusted_sword = Weapon('Rusted Sword','Increase damage by 3',3) # drops from bandit
+goblin_scimatar = Weapon('Goblin Scimatar','Increases damage by 13',13) # drops from goblin brute
 
 # list of Items
 items = [
@@ -493,6 +499,7 @@ items = [
     health_potion_7,
     mega_health_potion,
     mega_health_potion_2,
+    mega_health_potion_3,
     teleport,
     sword,
     axe,
@@ -501,52 +508,61 @@ items = [
     magic_sword,
     village_guard_sword,
     sharp_stick,
-    lords_sword
+    lords_sword,
+    god_weapon,
+    rusted_sword,
+    goblin_scimatar
 ]
 
 # Create friendly NPC instances
-villiger = FriendlyNPC('Villiger',5,"I have heard storys of the horrors out side the village",'','')
-traveler = FriendlyNPC('Traveler',10,"I just got robbed on the trail i suggest you turn back now",traveler_sword,250)
-hermit = FriendlyNPC('Hermit Samson',15,'Those village folk are always scared of what is out of their village',mega_health_potion,200)
-lord = FriendlyNPC('Lord Joss',20,'Have you heard of the goblins to the north, they send war partys to are lands','','')
+villiger = FriendlyNPC('Villiger',5,"I have heard storys of the horrors out side the village",'','') # found in village
+traveler = FriendlyNPC('Traveler',10,"I just got robbed on the trail i suggest you turn back now",traveler_sword,250) # found along path
+hermit = FriendlyNPC('Hermit Samson',15,'Those village folk are always scared of what is out of their village',mega_health_potion,200) # found in hut along path
+lord = FriendlyNPC('Lord Joss',20,'Have you heard of the goblins to the north, they send war partys to are lands','','') # found in keep
+shepherd = FriendlyNPC('Humble Gabe',10,'','','') # found in meadow
+prisoner = FriendlyNPC() # found in cave entrance 2
+prisoner_2 = FriendlyNPC() # found in deep cave
+village_scout = FriendlyNPC('Zen the scout',10,'','','') # found on path in meadow
 
 # Create monster instances
-wolf = Beast('Wolf',round(10*difficulty),5*difficulty,'',20)
-wolf_2 = Beast('Wolf',round(10*difficulty),5*difficulty,'',20)
-bear = Beast('Bear Cub',round(15*difficulty),7*difficulty,'',30)
-spider = Beast('Giant Spider',round(15*difficulty),7*difficulty,'',30)
-goblin_scout = Humanoid('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
-bandit = Humanoid('Bandit',round(25*difficulty),7*difficulty,'',100)
-thug = Humanoid('Thug',round(15*difficulty),7*difficulty,'',100)
-goblin = Humanoid('Goblin', round(15*difficulty),5*difficulty,'',50)
-goblin_scout_2 = Humanoid('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
-goblin_scout_3 = Humanoid('Goblin Scout',round(5*difficulty),5*difficulty,'',50)
-goblin_runt = Humanoid('Goblin Runt',round(2*difficulty),3*difficulty,'',30)
-goblin_brute = Humanoid('Goblin Brute',round(20*difficulty),9*difficulty,'',100)
-troll = Humanoid('Troll',round(20*difficulty),9*difficulty,'',100)
+wolf = Beast('Wolf',10*difficulty,5*difficulty,'',20) # found in forest
+wolf_2 = Beast('Wolf',10*difficulty,5*difficulty,'',20) # found in deeper forest
+goblin_outcast = Humanoid('Goblin Outcast',7*difficulty,4*difficulty,health_potion_4,20) # found in path in forest
+bear = Beast('Bear Cub',15*difficulty,7*difficulty,'',30) # found along path
+trapper = Humanoid('Trapper',12*difficulty,7*difficulty,'',40) # found in hut in forest
+spider = Beast('Giant Spider',15*difficulty,7*difficulty,'',30) # found in deep forest
+goblin_scout = Humanoid('Goblin Scout',13*difficulty,5*difficulty,health_potion_2,50) # found in meadow
+bandit = Humanoid('Bandit',25*difficulty,7*difficulty,rusted_sword,100) # found on cross roads
+thug = Humanoid('Thug',15*difficulty,7*difficulty,'',100) # found in village
+goblin = Humanoid('Goblin', 15*difficulty,13*difficulty,'',50) # found along ridge
+goblin_scout_2 = Humanoid('Goblin Scout',13*difficulty,5*difficulty,health_potion_3,50) # found on tall ridge
+goblin_scout_3 = Humanoid('Goblin Scout',13*difficulty,5*difficulty,'',50) # found on path in meadow
+goblin_runt = Humanoid('Goblin Runt',7*difficulty,3*difficulty,'',30) # found in cave entrance 2
+goblin_brute = Humanoid('Goblin Brute',20*difficulty,9*difficulty,goblin_scimatar,100) # found in cave entrance 
+troll = Humanoid('Troll',20*difficulty,9*difficulty,'',100) # found in deep cave
 
 # Create Boss instance
-dragon = Dragon('Red Dragon',round(25*difficulty),12*difficulty,magic_sword,400)
+dragon = Dragon('Red Dragon',25*difficulty,12*difficulty,magic_sword,400) #
 
 # Create Rooms
-forest_clearing = Room('Forest Clearing','you are in a forest clearing','','',health_potion)
-forest = Room('Forest','you are in a forest',wolf,'',sharp_stick)
-path_in_forest = Room('Path in Forest','you find a path in the forest','','',axe)
-deeper_in_forest = Room('Deeper in Forest','you are deeper in the forest',wolf_2,'','')
-along_forest = Room('Along Path','You are following a path',bear,traveler,'')
-deep_forest = Room('Deep Dark Forest','You are in a deep dark forest',spider,'','')
-hut_in_forest = Room('Hut in Forest','you are on a hut along the path','',hermit,'')
-meadow = Room('meadow','You are in a wide open meadow',goblin_scout,'','')
-cross_road = Room('Cross Roads','You are at a cross roads their is a sign pointing west it says village of {}',bandit,'','')
+forest_clearing = Room('Forest Clearing','you are in a forest clearing','','',sharp_stick)
+forest = Room('Forest','you are in a forest',wolf,'',health_potion_5)
+path_in_forest = Room('Path in Forest','you find a path in the forest',goblin_outcast,'',axe)
+deeper_in_forest = Room('Deeper in Forest','you are deeper in the forest',wolf_2,'',sword)
+along_forest = Room('Along Path','You are following a path',bear,traveler,health_potion_6)
+deep_forest = Room('Deep Dark Forest','You are in a deep dark forest',spider,'',mega_health_potion_2)
+hut_in_forest = Room('Hut in Forest','you are on a hut along the path',trapper,hermit,'')
+meadow = Room('meadow','You are in a wide open meadow',goblin_scout,shepherd,'')
+cross_road = Room('Cross Roads','You are at a cross roads their is a sign pointing west it says village of lord joss',bandit,'','')
 village = Room('The village','You are in a village',thug,villiger,pitch_folk)
 along_ridge = Room('Along the Ridge','You are along a ridge',goblin,'','')
-tall_ridge = Room('Tall Ridge','You are at a tall ridge',goblin_scout_2,'','')
-path_in_meadow = Room('Path Along Meadow','you are on a path in a meadow',goblin_scout_3,'','')
+tall_ridge = Room('Tall Ridge','You are at a tall ridge',goblin_scout_2,'',health_potion_7)
+path_in_meadow = Room('Path Along Meadow','you are on a path in a meadow',goblin_scout_3,village_scout,'')
 keep = Room('The Keep','you are in the keep of lord joss','',lord,lords_sword)
-cave_entrance_2 = Room('Cave Entrance','You are in a cave entrance',goblin_runt,'','')
+cave_entrance_2 = Room('Cave Entrance','You are in a cave entrance',goblin_runt,prisoner,'')
 cave_entrance = Room('Cave Entrance','You are in a cave entrance',goblin_brute,'','')
-deep_cave = Room('Deeper in cave','You are in a deep cave',troll,'','')
-cave_cavern = Room('Cave Cavern','You are in a large open cavern','','','')
+deep_cave = Room('Deeper in cave','You are in a deep cave',troll,prisoner_2,'')
+cave_cavern = Room('Cave Cavern','You are in a large open cavern','','',mega_health_potion_3)
 Boss_Room = Room('Open Cavern','',dragon,'',magic_sword)
 
 # Room connections dict
@@ -571,15 +587,12 @@ room_connections = {
     Boss_Room : {'east' : cave_cavern}
 }
 
-hero.inventory = [sword] # remove
-hero.inventory.append(health_potion) # remove 
 boss = dragon
-forest_clearing.npcs = hermit # remove
 hero.gold = 10000000 # remove
 monster = ''
 exp_to_next_level = 100
-hero.room = village
-hero.status = 'Confronted'
+hero.room = forest_clearing
+hero.inventory.append(health_potion)
 # Main game loop function
 def Main_loop():
     # Start Storys
@@ -600,7 +613,7 @@ def Main_loop():
             hero.health += 15
             print('You leveled up!!')
             print('You are now level',hero.level)
-            print('You now have',hero.health,'health')
+            print('You health is now',hero.health)
             hero.exp -= exp_to_next_level
             exp_to_next_level += exp_to_next_level
             input('Press Enter to continue\n>>')
@@ -638,6 +651,11 @@ input('Press Enter to continue\n>>')
 print('You are level',hero.level)
 print('you have',hero.exp,'exp')
 print('Your score is',hero.score)
+
+# save score + high score
+file = open('High Score.txt','a')
+file.write(f'{hero.name}  {hero.score}')
+file.close()
 
 # roll credits 
 credits()

@@ -141,14 +141,14 @@ class Player(LivingThing):
                 attack = input(f'What action do you want to do?(slash,stab,use)\n>>')
                 if attack == 'slash':
                     print(self.name,"slash's at the",monster.name)
-                    dmg = randint(2,7) + self.equipped_weapon.modifier
+                    dmg = randint(2,9) + self.equipped_weapon.modifier
                     print(self.name,'did',dmg,'damage')
                     monster.health -= dmg
                     print(monster.name,'health is now',monster.health)
                     input('Press Enter to continue\n>>')
                 elif attack == 'stab':
                     print(self.name,"stab's at the",monster.name)
-                    dmg = randint(3,5) + self.equipped_weapon.modifier
+                    dmg = randint(3,6) + self.equipped_weapon.modifier
                     print(self.name,'did',dmg,'damage')
                     monster.health -= dmg
                     print(monster.name,'health is now',monster.health)
@@ -157,6 +157,7 @@ class Player(LivingThing):
                     self.use(monster)
                 else:
                     print('Please input a real attack')
+                    input('Press Enter to continue\n>>')
             else:
                 attack = input('What action do you want to do?(punch,use)\n>>')
                 if attack == 'punch':
@@ -167,6 +168,7 @@ class Player(LivingThing):
                     input('Press Enter to continue\n>>')
                 elif attack == 'use':
                     self.use(monster)
+                    input('Press Enter to continue\n>>')
                 else:
                     print('Please input a real attack')
             if monster.health > 0:
@@ -446,9 +448,19 @@ Difficulty = {
     '3' : 4
 }
 
+difficulty = ''
+
 # get difficulty
 def get_difficulty():
-    pass
+    global difficulty
+    while difficulty == '':
+        difficulty = input("Please select a difficulty:\nEasy (1),\nNormal (2),\nHard (3)\n>>")
+        if difficulty in Difficulty.keys():
+            difficulty = Difficulty[difficulty]
+        else:
+            print('!!Please select a real difficulty!!')
+            difficulty = ''
+    return difficulty
 
 # Title
 print(
@@ -469,7 +481,7 @@ print('you are a travelar from a far of land')
 print('you came to this land to find valour of die trying')
 name = input('What is your name?\n>> ')
 hero = Player(name)
-difficulty = 2
+get_difficulty()
 
 # Create Item instances
 health_potion = Item('Health potion','Restores some health points.',hero.heal) # Start with
@@ -551,7 +563,7 @@ goblin_brute = Humanoid('Goblin Brute',20*difficulty,9*difficulty,goblin_scimata
 troll = Humanoid('Troll',20*difficulty,9*difficulty,'',100) # found in deep cave
 
 # Create Boss instance
-dragon = Dragon('Red Dragon',25*difficulty,12*difficulty,magic_sword,400) #
+dragon = Dragon('Timόtheos',30*difficulty,12*difficulty,magic_sword,400) #
 
 # Create Rooms
 forest_clearing = Room('Forest Clearing','you are in a forest clearing','','',sharp_stick)
@@ -618,7 +630,7 @@ def Main_loop():
         elif hero.exp >= exp_to_next_level:
             # levels the player up
             hero.level += 1
-            hero.health += 5
+            hero.health += 10
             print('You leveled up!!')
             print('You are now level',hero.level)
             print('You health is now',hero.health)
@@ -665,6 +677,7 @@ else:
     # Ending options
     if hero.health > 0:
         print('You Win! Game Over')
+        hero.score += 1000
     else:
         print('Game Over. you lost :(')
     input('Press Enter to continue\n>>')
@@ -684,8 +697,8 @@ else:
     print('Your score is',hero.score)
 
     # save score + high score
-    file = open('High Score.txt','a')
-    file.write(f'{hero.name}  {hero.score}')
+    file = open('High Score.py','a')
+    file.write(f'{hero.name} = {hero.score}')
     file.close()
 
 # roll credits 

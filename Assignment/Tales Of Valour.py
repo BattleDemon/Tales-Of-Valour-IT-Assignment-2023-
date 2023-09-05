@@ -44,6 +44,7 @@ class Player(LivingThing):
         self.level = 1
         self.exp = 0
         self.score = 0
+        self.dev = False
 
     def help(self, monster):
         # Display available actions for the player
@@ -183,6 +184,11 @@ class Player(LivingThing):
             self.room.monsters = ''
             self.score += 100
             self.exp += 100
+            if monster.drops != '':
+                self.inventory.append(monster.drops)
+                print('you picked up',monster.drops.name,'from',monster.name)
+            self.gold += monster.gold_drops
+            print('you picked up',monster.gold_drops,'gold')
             input('Press Enter to continue\n>>')
         else:
             # checks if you are still alive
@@ -315,10 +321,13 @@ class Player(LivingThing):
     def show_exits(self,monster):
         pass
 
-    def god_mode(self,monster):
+    def dev_mode(self,monster):
         self.health = 1000
         self.inventory.append(god_weapon)
         self.exp += 100000000
+        self.gold += 100000
+        Commands.popitem()
+        self.dev = True
 
 # Create a class for monsters, also inheriting from LivingThing
 class Monster(LivingThing):
@@ -424,7 +433,7 @@ Commands = {
     'go' : Player.go,
     'die': Player.die,
     'rest': Player.rest,
-    'password': Player.god_mode
+    'i am a dev': Player.dev_mode
 }
 
 # Dictionary of Difficultys 
@@ -520,8 +529,8 @@ traveler = FriendlyNPC('Traveler',10,"I just got robbed on the trail i suggest y
 hermit = FriendlyNPC('Hermit Samson',15,'Those village folk are always scared of what is out of their village',mega_health_potion,200) # found in hut along path
 lord = FriendlyNPC('Lord Joss',20,'Have you heard of the goblins to the north, they send war partys to are lands','','') # found in keep
 shepherd = FriendlyNPC('Humble Gabe',10,'','','') # found in meadow
-prisoner = FriendlyNPC() # found in cave entrance 2
-prisoner_2 = FriendlyNPC() # found in deep cave
+prisoner = FriendlyNPC('Prisoner',2,'','','') # found in cave entrance 2
+prisoner_2 = FriendlyNPC('Prisoner',2,'','','') # found in deep cave
 village_scout = FriendlyNPC('Zen the scout',10,'','','') # found on path in meadow
 
 # Create monster instances
@@ -588,7 +597,6 @@ room_connections = {
 }
 
 boss = dragon
-hero.gold = 10000000 # remove
 monster = ''
 exp_to_next_level = 100
 hero.room = forest_clearing
@@ -610,7 +618,7 @@ def Main_loop():
         elif hero.exp >= exp_to_next_level:
             # levels the player up
             hero.level += 1
-            hero.health += 15
+            hero.health += 5
             print('You leveled up!!')
             print('You are now level',hero.level)
             print('You health is now',hero.health)
@@ -631,31 +639,54 @@ def Main_loop():
 # Run main loop
 Main_loop()
 
-# Ending options
-if hero.health > 0:
-    print('You Win! Game Over')
+if hero.dev == True:
+    # Ending options
+    if hero.health > 0:
+        print('You Win! Game Over')
+    else:
+        print('Game Over. you lost :(')
+    input('Press Enter to continue\n>>')
+
+    # shows the player their inventory 
+    if hero.inventory:
+        print('You had:')
+        for item in hero.inventory:
+            print(f'{item.name}: {item.description}')
+    else:
+        print('Your inventory was empty.')
+
+    # Shows the player their important stats
+    input('Press Enter to continue\n>>')
+    print('You are level',hero.level)
+    print('you have',hero.exp,'exp')
+    print('Your score is',hero.score)
+
 else:
-    print('Game Over. you lost :(')
-input('Press Enter to continue\n>>')
+    # Ending options
+    if hero.health > 0:
+        print('You Win! Game Over')
+    else:
+        print('Game Over. you lost :(')
+    input('Press Enter to continue\n>>')
 
-# shows the player their inventory 
-if hero.inventory:
-    print('You had:')
-    for item in hero.inventory:
-        print(f'{item.name}: {item.description}')
-else:
-    print('Your inventory was empty.')
+    # shows the player their inventory 
+    if hero.inventory:
+        print('You had:')
+        for item in hero.inventory:
+            print(f'{item.name}: {item.description}')
+    else:
+        print('Your inventory was empty.')
 
-# Shows the player their important stats
-input('Press Enter to continue\n>>')
-print('You are level',hero.level)
-print('you have',hero.exp,'exp')
-print('Your score is',hero.score)
+    # Shows the player their important stats
+    input('Press Enter to continue\n>>')
+    print('You are level',hero.level)
+    print('you have',hero.exp,'exp')
+    print('Your score is',hero.score)
 
-# save score + high score
-file = open('High Score.txt','a')
-file.write(f'{hero.name}  {hero.score}')
-file.close()
+    # save score + high score
+    file = open('High Score.txt','a')
+    file.write(f'{hero.name}  {hero.score}')
+    file.close()
 
 # roll credits 
 credits()

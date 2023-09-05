@@ -107,6 +107,23 @@ class Player(LivingThing):
             else:
                 print("You couldn't find anything")
 
+    def use(self, monster):
+        # Allows the player to use item such as health potions
+        item_name = input('What item do you want to use?\n>>')
+        item_name = item_name.capitalize()
+        for item in self.inventory:
+            if item.name == item_name:
+                if isinstance(item, Weapon):
+                    print("You can't use a weapon in this way.")
+                else:
+                    item.attributes()  # Call the item's attributes method
+                    self.inventory.remove(item)  # Remove the used item from inventory
+                    self.rest_cooldown = self.rest_cooldown - 1
+                    self.score += 10
+                    self.exp += 10
+                return
+        print("You don't have that item in your inventory.")
+
     def fight(self, monster):
         # Engage in combat with a monster
         self.rest_cooldown = self.rest_cooldown - 1
@@ -130,13 +147,24 @@ class Player(LivingThing):
                     print(monster.name,'health is now',monster.health)
                     input('Press Enter to continue\n>>')
                 elif attack == 'use':
-                    self.use
+                    self.use(monster)
                 else:
                     print('Please input a real attack')
             else:
-                print('you punch the',monster.name)
-                monster.health -= randint(0,3)
-                print(monster.name,'now has',monster.health,'health')
+                attack = input('What action do you want to do?(punch,use)\n>>')
+                if attack == 'punch':
+                    dmg = randint(0,5)
+                    print('you punch the',monster.name,'for',dmg,'damage')
+                    monster.health -= dmg
+                    print(monster.name,'now has',monster.health,'health')
+                elif attack == 'use':
+                    self.use(monster)
+                else:
+                    print('Please input a real attack')
+            dmg = randint(2,monster.maxdamage)
+            print('The',monster.name,choice(monster.actions),'you for',dmg,'damage')
+            self.health -= dmg
+            print('Your health is now',self.health)
               
         if self.health > 0:
             print('Victory!\nYou defeated the', monster.name)
@@ -201,23 +229,6 @@ class Player(LivingThing):
         self.exp += 10
         self.inventory.append(item)  # Add the item to the inventory list
         print(f'You picked up {item.name}.')
-
-    def use(self, monster):
-        # Allows the player to use item such as health potions
-        item_name = input('What item do you want to use?\n>>')
-        item_name = item_name.capitalize()
-        for item in self.inventory:
-            if item.name == item_name:
-                if isinstance(item, Weapon):
-                    print("You can't use a weapon in this way.")
-                else:
-                    item.attributes()  # Call the item's attributes method
-                    self.inventory.remove(item)  # Remove the used item from inventory
-                    self.rest_cooldown = self.rest_cooldown - 1
-                    self.score += 10
-                    self.exp += 10
-                return
-        print("You don't have that item in your inventory.")
 
     def equip(self, monster):
         # Allows the player to equip items they have in their inventory
@@ -567,7 +578,8 @@ forest_clearing.npcs = hermit # remove
 hero.gold = 10000000 # remove
 monster = ''
 exp_to_next_level = 100
-hero.room = forest_clearing
+hero.room = village
+hero.status = 'Confronted'
 # Main game loop function
 def Main_loop():
     # Start Storys

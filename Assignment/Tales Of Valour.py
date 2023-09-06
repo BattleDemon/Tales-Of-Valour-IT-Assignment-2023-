@@ -8,7 +8,7 @@ class LivingThing():
         
     def tire(self):
         # has the chance to deal 2 dmg to the livingthing
-        diceroll = randint(0,2)
+        diceroll = randint(0,1)
         if diceroll == 0:
             self.health = self.health - 2
             print('You have gotten tired, your health suffered')
@@ -167,9 +167,9 @@ class Player(LivingThing):
         # Engage in combat with a monster
         self.rest_cooldown = self.rest_cooldown - 1
         monster = self.room.monsters
-        non_comabat_action = False
         while self.health > 0 and monster.health > 0:
             # First deals Dmg to the monster then to the hero 
+            non_comabat_action = False
             if self.equipped_weapon != '':
                 attack = input(f'What action do you want to do?(slash,stab,use,inv)\n>>')
                 if attack == 'slash':
@@ -196,7 +196,6 @@ class Player(LivingThing):
                 else:
                     print('Please input a real attack')
                     non_comabat_action = True
-                    input('Press Enter to continue\n>>')
             else:
                 attack = input('What action do you want to do?(punch,use,inv)\n>>')
                 if attack == 'punch':
@@ -215,7 +214,6 @@ class Player(LivingThing):
                 else:
                     print('Please input a real attack')
                     non_comabat_action = True
-                    input('Press Enter to continue\n>>')
             if monster.health > 0:
                 if non_comabat_action == True:
                     pass
@@ -584,13 +582,6 @@ file.close()
 print('the current highscore holder is',high_score_holder,'with a score of',high_score)
 print('')
 
-# give player instructions on how to play 
-#new_player = input('do you want a tutorial (yes,no)\n>>')
-#if new_player == 'yes':
- #   pass
-#else:
- #   pass
-
 # Create Item instances
 health_potion = Item('Health potion','Restores some health points.',hero.heal) # Start with
 health_potion_2 = Item('Health potion','Restores some health points.',hero.heal) # drops from goblin scout
@@ -617,7 +608,7 @@ sharp_stick = Weapon('Sharp stick','Increases damage by 1',1) # found in forest
 lords_sword = Weapon('Lords sword','Increase damage by 12',12) # found in keep
 god_weapon = Weapon('Gods sword','Increase damage by 100',100) # if player uses god_mode func
 rusted_sword = Weapon('Rusted sword','Increase damage by 3',3) # drops from bandit
-goblin_scimatar = Weapon('Goblin Scimatar','Increases damage by 13',13) # drops from goblin brute
+goblin_scimatar = Weapon('Goblin scimatar','Increases damage by 13',13) # drops from goblin brute
 
 # Create armour instances
 traveler_armour = Armour('Travelers armour','Reduces damage taken by 2',2) #
@@ -738,6 +729,15 @@ def Main_loop():
             hero.exp -= exp_to_next_level
             exp_to_next_level += exp_to_next_level
             input('Press Enter to continue\n>>')
+        elif hero.room == Boss_Room:
+            option = input('are you sure you want to enter the boss room this will trigger the boss fight (yes/no)\n>>')
+            if option == 'no':
+                print('you turn back')
+                hero.room = cave_cavern
+            else:
+                print('you enter the room and see a towering figure')
+                hero.status = 'Boss fight'
+                hero.boss_fight(boss)
         else:
             # User inputs
             print(hero.room.description)
@@ -794,8 +794,8 @@ else:
 
     # Shows the player their important stats
     input('Press Enter to continue\n>>')
-    print('You are level',hero.level)
-    print('you have',hero.exp,'exp')
+    print('You were',hero.level)
+    print('you had',hero.exp,'exp')
     print('Your score is',hero.score)
 
     if high_score < hero.score:

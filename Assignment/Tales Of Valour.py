@@ -29,6 +29,9 @@ class LivingThing():
         print('You gained 20 health')
         print('Your health is now',self.health)
 
+    def nothing(self):
+        pass
+
 # Create a class for the player, inheriting from LivingThing
 class Player(LivingThing):
     def __init__(self, name,):
@@ -133,6 +136,24 @@ class Player(LivingThing):
                     print("You can't use a weapon in this way.")
                 elif isinstance(item, Armour):
                     print("You can't use armour in this way.")
+                elif item_name == 'Key':
+                    if locket in self.inventory:
+                        print('you notice the key matches the lock on the locket')
+                        print('you turn the key')
+                        print('after you hear the click of the lock the locket disapears')
+                        print('you gain 500 xp')
+                        self.inventory.remove(locket)
+                        self.exp += 500
+                        self.score += 500
+                elif item_name == 'Locket':
+                    if key in self.inventory:
+                        print('you notice the lock on the locket matches the shape of the key ')
+                        print('you turn the key')
+                        print('after you hear the click of the lock the locket disapears')
+                        print('you gain 500 xp')
+                        self.inventory.remove(locket)
+                        self.exp += 500
+                        self.score += 500
                 else:
                     item.attributes()  # Call the item's attributes method
                     self.inventory.remove(item)  # Remove the used item from inventory
@@ -174,6 +195,7 @@ class Player(LivingThing):
                     non_comabat_action = True
                 else:
                     print('Please input a real attack')
+                    non_comabat_action = True
                     input('Press Enter to continue\n>>')
             else:
                 attack = input('What action do you want to do?(punch,use,inv)\n>>')
@@ -192,6 +214,8 @@ class Player(LivingThing):
                     non_comabat_action = True
                 else:
                     print('Please input a real attack')
+                    non_comabat_action = True
+                    input('Press Enter to continue\n>>')
             if monster.health > 0:
                 if non_comabat_action == True:
                     pass
@@ -248,6 +272,7 @@ class Player(LivingThing):
                         if self.gold >= self.room.npcs.item_cost:
                             print('You bought',self.room.npcs.items.name,'for',self.room.npcs.item_cost)
                             self.pick_up_item(self.room.npcs.items)
+                            self.gold -= self.room.npcs.item_cost
                             return
                         else:
                             print("you don't have enough gold to buy", self.room.npcs.items.name)
@@ -362,9 +387,6 @@ class Player(LivingThing):
             self.exp += 10
         else:
             print('your not tired enough to rest')
-
-    def teleport(self,monster):
-        pass
 
     def show_exits(self,monster):
         pass
@@ -580,21 +602,21 @@ health_potion_7 = Item('Health potion','Restores some health points.',hero.heal)
 mega_health_potion = Item('Mega health potion','Restores many health points.',hero.mega_heal) # buy from hermit for 200 gold
 mega_health_potion_2 = Item('Mega health potion','Restores many health points.',hero.mega_heal) # found in deep forest
 mega_health_potion_3 = Item('Mega health potion','Restores many health points.',hero.mega_heal) # found in cave cavern
-seedling = Item('Seedling','This item serves no purpose','') # found in forest grove
+seedling = Item('Seedling','This item serves no purpose',hero.nothing) # found in forest grove
 key = Item('Key','This is a key to something i dont know what','') # found in dungeon
-crown = Item('Old Crown','This crown used to belong to a old king','') # found in old vault
+crown = Item('Old Crown','This crown used to belong to a old king',hero.nothing) # found in old vault
 locket = Item('Old Locket','This locket seems locked maybe a key will unlock it','') # buy from goblin adventurer
 
 # Create Weapon instances
 magic_sword = Weapon('Magic Sword','Increase damage by 15',15) # Drops from dragon
-pitch_fork = Weapon('Pitch Fork','Increase damage by 6',6) # found in village
+pitch_fork = Weapon('Pitch fork','Increase damage by 6',6) # found in village
 sword = Weapon("Sword",'Increase damage by 4',4) # found in deeper forest
 axe = Weapon('Axe','Increase damage by 2',2) # found on path in forest
 village_guard_sword = Weapon('Guard sword','Increase damage by 10',10) # buy from villager for 300 gold
 sharp_stick = Weapon('Sharp stick','Increases damage by 1',1) # found in forest
-lords_sword = Weapon('Lords Sword','Increase damage by 12',12) # found in keep
+lords_sword = Weapon('Lords sword','Increase damage by 12',12) # found in keep
 god_weapon = Weapon('Gods sword','Increase damage by 100',100) # if player uses god_mode func
-rusted_sword = Weapon('Rusted Sword','Increase damage by 3',3) # drops from bandit
+rusted_sword = Weapon('Rusted sword','Increase damage by 3',3) # drops from bandit
 goblin_scimatar = Weapon('Goblin Scimatar','Increases damage by 13',13) # drops from goblin brute
 
 # Create armour instances
@@ -606,7 +628,7 @@ troll_armour = Armour('Troll armour','Reduces damage by 6',6) #
 villiger = FriendlyNPC('Villiger',5,"I have heard storys of the horrors out side the village",'','') # found in village
 traveler = FriendlyNPC('Traveler',10,"I just got robbed on the trail i suggest you turn back now",traveler_armour,50) # found along path
 hermit = FriendlyNPC('Hermit Samson',15,'Those village folk are always scared of what is out of their village',mega_health_potion,200) # found in hut along path
-lord = FriendlyNPC('Lord Joss',20,'Have you heard of the goblins to the north, they send war partys to are lands','','') # found in keep
+lord = FriendlyNPC('Lord Joss',20,'Have you heard of the goblins to the north, they send war partys to our lands','','') # found in keep
 shepherd = FriendlyNPC('Humble Gabe',10,'I am but a humble shepherd, but i have heard rumors of the goblins to the north','','') # found in meadow
 prisoner = FriendlyNPC('Prisoner',2,'','','') # found in cave entrance 2
 prisoner_2 = FriendlyNPC('Prisoner',2,'','','') # found in deep cave
@@ -659,7 +681,7 @@ Boss_Room = Room('Open Cavern','',dragon,'','')
 
 # bonus rooms
 forest_grove = Room('Forest Grove','you are in a forest grove','',satyr,seedling)
-dungeon = Room('Dungeon','you are in a dungeon',excaped_prisoner,key,prison_guard)
+dungeon = Room('Dungeon','you are in a dungeon',excaped_prisoner,prison_guard,key)
 old_vault = Room('Old Vault','You are in an old vault','',crown,goblin_adventurer)
 
 # Room connections dict

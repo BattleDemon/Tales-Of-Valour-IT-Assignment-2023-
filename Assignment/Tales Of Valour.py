@@ -8,7 +8,7 @@ class LivingThing():
         
     def tire(self):
         # has the chance to deal 2 dmg to the livingthing
-        diceroll = randint(0,1)
+        diceroll = randint(0,2)
         if diceroll == 0:
             self.health = self.health - 2
             print('You have gotten tired, your health suffered')
@@ -38,6 +38,7 @@ class Player(LivingThing):
         self.status = 'regular'
         self.inventory = []
         self.equipped_weapon = ''
+        self.equipped_armour = ''
         self.room = ''
         self.rest_cooldown = 0
         self.gold = 0
@@ -56,7 +57,7 @@ class Player(LivingThing):
         print('use : Allows you to use items in your inventory') 
         print('equip : Allows you to equip weapons')
         print('go : Allows you to move between rooms')
-        print('die : Used for testing and if you want to view credits')
+        print('quit : allows you to quit the game')
         print('rest : Allows the player to gain health every 5 turns')
 
     def stats(self, monster):
@@ -65,12 +66,20 @@ class Player(LivingThing):
         print('You have a health of', self.health)
         print('your status is', self.status)
         print('You are in', self.room.name)
-        # checks if the player is holding an item
+        # checks if the player is holding a weapon
         if self.equipped_weapon == '':
-            print("You don't have anything equiped")
+            print("You don't have any weapon equiped")
         else:
             print('You have', self.equipped_weapon.name,'equiped')
+            print(self.equipped_weapon.name,'Increases damage by',self.equipped_weapon.modifier)
+        # checks if the player is wearing armour
+        if self.equipped_armour == '':
+            print("You don't have any armour equiped")
+        else:
+            print('You have', self.equipped_armour.name,'equiped')
+            print(self.equipped_armour.name,'Reduces damage taken by',self.equipped_armour.modifier)
         print("You can't rest for",self.rest_cooldown,'turns')
+        print('you have',self.gold,'gold')
         print('You are level',self.level)
         print('you have',self.exp,'exp')
         print('Your score is',self.score)
@@ -122,6 +131,8 @@ class Player(LivingThing):
             if item.name == item_name:
                 if isinstance(item, Weapon):
                     print("You can't use a weapon in this way.")
+                elif isinstance(item, Armour):
+                    print("You can't use armour in this way.")
                 else:
                     item.attributes()  # Call the item's attributes method
                     self.inventory.remove(item)  # Remove the used item from inventory
@@ -135,10 +146,11 @@ class Player(LivingThing):
         # Engage in combat with a monster
         self.rest_cooldown = self.rest_cooldown - 1
         monster = self.room.monsters
+        non_comabat_action = False
         while self.health > 0 and monster.health > 0:
             # First deals Dmg to the monster then to the hero 
             if self.equipped_weapon != '':
-                attack = input(f'What action do you want to do?(slash,stab,use)\n>>')
+                attack = input(f'What action do you want to do?(slash,stab,use,inv)\n>>')
                 if attack == 'slash':
                     print(self.name,"slash's at the",monster.name)
                     dmg = randint(2,9) + self.equipped_weapon.modifier
@@ -155,11 +167,16 @@ class Player(LivingThing):
                     input('Press Enter to continue\n>>')
                 elif attack == 'use':
                     self.use(monster)
+                    non_comabat_action = True
+                    input('Press Enter to continue\n>>')
+                elif attack == 'inv':
+                    self.show_inventory(monster)
+                    non_comabat_action = True
                 else:
                     print('Please input a real attack')
                     input('Press Enter to continue\n>>')
             else:
-                attack = input('What action do you want to do?(punch,use)\n>>')
+                attack = input('What action do you want to do?(punch,use,inv)\n>>')
                 if attack == 'punch':
                     dmg = randint(0,5)
                     print('you punch the',monster.name,'for',dmg,'damage')
@@ -168,16 +185,25 @@ class Player(LivingThing):
                     input('Press Enter to continue\n>>')
                 elif attack == 'use':
                     self.use(monster)
+                    non_comabat_action = True
                     input('Press Enter to continue\n>>')
+                elif attack == 'inv':
+                    self.show_inventory(monster)
+                    non_comabat_action = True
                 else:
                     print('Please input a real attack')
             if monster.health > 0:
-                mindamage = round(monster.maxdamage/3)
-                dmg = randint(mindamage,monster.maxdamage)
-                print('The',monster.name,choice(monster.actions),'you for',dmg,'damage')
-                self.health -= dmg
-                print('Your health is now',self.health)
-                input('Press Enter to continue\n>>')
+                if non_comabat_action == True:
+                    pass
+                else:
+                    mindamage = round(monster.maxdamage/3)
+                    dmg = randint(mindamage,monster.maxdamage)
+                    if self.equipped_armour != '':
+                        dmg -= self.equipped_armour.modifier
+                    print('The',monster.name,choice(monster.actions),'you for',dmg,'damage')
+                    self.health -= dmg
+                    print('Your health is now',self.health)
+                    input('Press Enter to continue\n>>')
               
         if self.health > 0:
             print('Victory!\nYou defeated the', monster.name)
@@ -214,16 +240,22 @@ class Player(LivingThing):
                 return
             elif option == 'Buy':
                 # allows you to buy items from npc
-                print('You can buy',self.room.npcs.items.name,'for',self.room.npcs.item_cost)
-                option_2 = input('Do you want to buy this item? (yes/no)\n>>')
-                if option_2 == 'yes':
-                    if self.gold >= self.room.npcs.item_cost:
-                        print('You bought',self.room.npcs.items.name,'for',self.room.npcs.item_cost)
-                        self.pick_up_item(self.room.npcs.items)
-                        return
+                if self.room.npcs.items != '':
+                    print('you have',self.gold,'gold')
+                    print('You can buy',self.room.npcs.items.name,'for',self.room.npcs.item_cost)
+                    option_2 = input('Do you want to buy this item? (yes/no)\n>>')
+                    if option_2 == 'yes':
+                        if self.gold >= self.room.npcs.item_cost:
+                            print('You bought',self.room.npcs.items.name,'for',self.room.npcs.item_cost)
+                            self.pick_up_item(self.room.npcs.items)
+                            return
+                        else:
+                            print("you don't have enough gold to buy", self.room.npcs.items.name)
                     else:
-                        print("you don't have enough gold to buy", self.room.npcs.items.name)
+                        return
                 else:
+                    print("this Npc doesn't have an item to sell")
+                    input('Press Enter to continue\n>>')
                     return
             elif option == 'Talk':
                 # allows the npc to say a line
@@ -267,11 +299,26 @@ class Player(LivingThing):
                     else:
                         self.inventory.append(self.equipped_weapon)
                         self.equipped_weapon = item
+                        self.inventory.remove(item)
+                        print(f'You equipped {item_name}')
+                        self.rest_cooldown = self.rest_cooldown - 1
+                        return  # Exit the function after equipping
+                elif isinstance(item, Armour):
+                    if self.equipped_armour == '':
+                        self.equipped_armour = item
+                        print(f'You equipped {item_name}')
+                        self.rest_cooldown = self.rest_cooldown - 1
+                        self.inventory.remove(self.equipped_armour)
+                        return  # Exit the function after equipping
+                    else:
+                        self.inventory.append(self.equipped_armour)
+                        self.equipped_armour = item
+                        self.inventory.remove(item)
                         print(f'You equipped {item_name}')
                         self.rest_cooldown = self.rest_cooldown - 1
                         return  # Exit the function after equipping
                 else:
-                    print('that is not a weapon and can not be equiped')
+                    print('that is not a weapon or armour and can not be equiped')
                     return # Exits function
         print("You can't equip that")
 
@@ -302,10 +349,9 @@ class Player(LivingThing):
         except KeyError:
             print("Invalid input or no valid connections from this room.")
             
-    def die(self,monster):
+    def quit(self,monster):
         # Allows the player to die at will 
-        self.health = 0
-        print('せっぷく')
+        self.health = 0                            
 
     def rest(self,monster):
         # allows the player to rest (gaining a small amount of health) resting can only happen once every couple of turns
@@ -324,12 +370,21 @@ class Player(LivingThing):
         pass
 
     def dev_mode(self,monster):
+        # allows the player to activate dev mode making them over powered 
         self.health = 1000
         self.inventory.append(god_weapon)
         self.exp += 100000000
         self.gold += 100000
         Commands.popitem()
         self.dev = True
+
+    def save(self,monster):
+        # Allows the player to save the game
+        pass
+
+    def load(self,monster):
+        # Allow the player to load a saved game
+        pass
 
 # Create a class for monsters, also inheriting from LivingThing
 class Monster(LivingThing):
@@ -397,6 +452,14 @@ class Weapon(Item):
         self.description = description
         self.modifier = modifier
 
+# Create a class for armour, inheriting from weapon
+class Armour(Item):
+    def __init__(self,name,description,modifier):
+        # initialize Armour
+        self.name = name
+        self.description = description
+        self.modifier = modifier
+
 # Create a class for Rooms
 class Room():
     def __init__(self,name ,description, monsters, npcs, items):
@@ -418,10 +481,11 @@ def credits():
     print('Lead Artist -- Dexter Hart')
     print('Lead Programmer -- Dexter Hart')
     print('Lead Level Designer -- Dexter Hart')
+    print('Tester -- Samson Droney') 
+    print('Tester -- Will Garner')
     print('Tester -- Dexter Hart')
-    print('Tester -- Joss Ormes')
-    print('Tester -- Samson Droney')
     print('Tester -- Gabriel Mesquita')
+    print('Tester -- Joss Ormes')
 
 # Dictionary of commands mapped to player methods
 Commands = {
@@ -433,19 +497,19 @@ Commands = {
     'use' : Player.use,
     'equip': Player.equip,
     'go' : Player.go,
-    'die': Player.die,
+    'quit': Player.quit,
     'rest': Player.rest,
     'i am a dev': Player.dev_mode
 }
 
 # Dictionary of Difficultys 
 Difficulty = {
-    'Easy': 2,
-    'Normal': 3,
-    'Hard': 4,
-    '1' : 2,
-    '2' : 3,
-    '3' : 4
+    'Easy': 1,
+    'Normal': 2,
+    'Hard': 3,
+    '1' : 1,
+    '2' : 2,
+    '3' : 3
 }
 
 difficulty = ''
@@ -477,11 +541,12 @@ input('Press Enter to continue\n>>')
 
 # Get the player's name
 print('Welcome hero')
-print('you are a travelar from a far of land')
-print('you came to this land to find valour of die trying')
+print('you are a travelar from a far off land')
+print('you came to this land to find valour or die trying')
 name = input('What is your name?\n>> ')
 hero = Player(name)
 get_difficulty()
+
 
 # get high score 
 file = open("highscore.txt",'r')
@@ -495,6 +560,14 @@ file.close()
 
 # tell player high score and its holder
 print('the current highscore holder is',high_score_holder,'with a score of',high_score)
+print('')
+
+# give player instructions on how to play 
+#new_player = input('do you want a tutorial (yes,no)\n>>')
+#if new_player == 'yes':
+ #   pass
+#else:
+ #   pass
 
 # Create Item instances
 health_potion = Item('Health potion','Restores some health points.',hero.heal) # Start with
@@ -507,7 +580,6 @@ health_potion_7 = Item('Health potion','Restores some health points.',hero.heal)
 mega_health_potion = Item('Mega health potion','Restores many health points.',hero.mega_heal) # buy from hermit for 200 gold
 mega_health_potion_2 = Item('Mega health potion','Restores many health points.',hero.mega_heal) # found in deep forest
 mega_health_potion_3 = Item('Mega health potion','Restores many health points.',hero.mega_heal) # found in cave cavern
-teleport = Item('Teloport stone','Teleports user to any* room','') # Add fuc to teleport/ found in boss room
 seedling = Item('Seedling','This item serves no purpose','') # found in forest grove
 key = Item('Key','This is a key to something i dont know what','') # found in dungeon
 crown = Item('Old Crown','This crown used to belong to a old king','') # found in old vault
@@ -515,10 +587,9 @@ locket = Item('Old Locket','This locket seems locked maybe a key will unlock it'
 
 # Create Weapon instances
 magic_sword = Weapon('Magic Sword','Increase damage by 15',15) # Drops from dragon
-pitch_folk = Weapon('Pitch Folk','Increase damage by 6',6) # found in village
+pitch_fork = Weapon('Pitch Fork','Increase damage by 6',6) # found in village
 sword = Weapon("Sword",'Increase damage by 4',4) # found in deeper forest
 axe = Weapon('Axe','Increase damage by 2',2) # found on path in forest
-traveler_sword = Weapon('Traveler sword','Increase damage by 8',8) # buy from travelar for 250 gold
 village_guard_sword = Weapon('Guard sword','Increase damage by 10',10) # buy from villager for 300 gold
 sharp_stick = Weapon('Sharp stick','Increases damage by 1',1) # found in forest
 lords_sword = Weapon('Lords Sword','Increase damage by 12',12) # found in keep
@@ -526,38 +597,17 @@ god_weapon = Weapon('Gods sword','Increase damage by 100',100) # if player uses 
 rusted_sword = Weapon('Rusted Sword','Increase damage by 3',3) # drops from bandit
 goblin_scimatar = Weapon('Goblin Scimatar','Increases damage by 13',13) # drops from goblin brute
 
-# list of Items
-items = [
-    health_potion,
-    health_potion_2,
-    health_potion_3,
-    health_potion_4,
-    health_potion_5,
-    health_potion_6,
-    health_potion_7,
-    mega_health_potion,
-    mega_health_potion_2,
-    mega_health_potion_3,
-    teleport,
-    sword,
-    axe,
-    pitch_folk,
-    traveler_sword,
-    magic_sword,
-    village_guard_sword,
-    sharp_stick,
-    lords_sword,
-    god_weapon,
-    rusted_sword,
-    goblin_scimatar
-]
+# Create armour instances
+traveler_armour = Armour('Travelers armour','Reduces damage taken by 2',2) #
+village_armour = Armour('Village armour','Reduces damage by 4',4) #
+troll_armour = Armour('Troll armour','Reduces damage by 6',6) #
 
 # Create friendly NPC instances
 villiger = FriendlyNPC('Villiger',5,"I have heard storys of the horrors out side the village",'','') # found in village
-traveler = FriendlyNPC('Traveler',10,"I just got robbed on the trail i suggest you turn back now",traveler_sword,250) # found along path
+traveler = FriendlyNPC('Traveler',10,"I just got robbed on the trail i suggest you turn back now",traveler_armour,50) # found along path
 hermit = FriendlyNPC('Hermit Samson',15,'Those village folk are always scared of what is out of their village',mega_health_potion,200) # found in hut along path
 lord = FriendlyNPC('Lord Joss',20,'Have you heard of the goblins to the north, they send war partys to are lands','','') # found in keep
-shepherd = FriendlyNPC('Humble Gabe',10,'','','') # found in meadow
+shepherd = FriendlyNPC('Humble Gabe',10,'I am but a humble shepherd, but i have heard rumors of the goblins to the north','','') # found in meadow
 prisoner = FriendlyNPC('Prisoner',2,'','','') # found in cave entrance 2
 prisoner_2 = FriendlyNPC('Prisoner',2,'','','') # found in deep cave
 village_scout = FriendlyNPC('Zen the scout',10,'','','') # found on path in meadow
@@ -566,25 +616,25 @@ prison_guard = FriendlyNPC('Prison guard',10,'i am the guard of this here prison
 goblin_adventurer = FriendlyNPC('Goblin Adventurer',10,'gih fuu feufeueu ueu gfeufg eug eu yeuhgewufiw whfyyw ygvu fhvw',locket,20) # found in old vault
 
 # Create monster instances
-wolf = Beast('Wolf',10*difficulty,5*difficulty,'',20) # found in forest
-wolf_2 = Beast('Wolf',10*difficulty,5*difficulty,'',20) # found in deeper forest
+wolf = Beast('Wolf',7*difficulty,5*difficulty,'',20) # found in forest
+wolf_2 = Beast('Wolf',7*difficulty,5*difficulty,'',20) # found in deeper forest
 goblin_outcast = Humanoid('Goblin Outcast',7*difficulty,4*difficulty,health_potion_4,20) # found in path in forest
-bear = Beast('Bear Cub',15*difficulty,7*difficulty,'',30) # found along path
-trapper = Humanoid('Trapper',12*difficulty,7*difficulty,'',40) # found in hut in forest
-spider = Beast('Giant Spider',15*difficulty,7*difficulty,'',30) # found in deep forest
+bear = Beast('Bear Cub',9*difficulty,7*difficulty,'',30) # found along path
+trapper = Humanoid('Trapper',10*difficulty,7*difficulty,'',40) # found in hut in forest
+spider = Beast('Giant Spider',10*difficulty,7*difficulty,'',30) # found in deep forest
 goblin_scout = Humanoid('Goblin Scout',13*difficulty,5*difficulty,health_potion_2,50) # found in meadow
-bandit = Humanoid('Bandit',25*difficulty,7*difficulty,rusted_sword,100) # found on cross roads
-thug = Humanoid('Thug',15*difficulty,7*difficulty,'',100) # found in village
+bandit = Humanoid('Bandit',4*difficulty,7*difficulty,rusted_sword,100) # found on cross roads
+thug = Humanoid('Thug',8*difficulty,7*difficulty,'',100) # found in village
 goblin = Humanoid('Goblin', 15*difficulty,13*difficulty,'',50) # found along ridge
 goblin_scout_2 = Humanoid('Goblin Scout',13*difficulty,5*difficulty,health_potion_3,50) # found on tall ridge
 goblin_scout_3 = Humanoid('Goblin Scout',13*difficulty,5*difficulty,'',50) # found on path in meadow
 goblin_runt = Humanoid('Goblin Runt',7*difficulty,3*difficulty,'',30) # found in cave entrance 2
 goblin_brute = Humanoid('Goblin Brute',20*difficulty,9*difficulty,goblin_scimatar,100) # found in cave entrance 
-troll = Humanoid('Troll',20*difficulty,9*difficulty,'',100) # found in deep cave
+troll = Humanoid('Troll',20*difficulty,9*difficulty,troll_armour,100) # found in cave cavern
 excaped_prisoner = Humanoid('Excaped prisoner',3*difficulty,2*difficulty,'','') # found in dungeon
 
 # Create Boss instance
-dragon = Dragon('Timόtheos',30*difficulty,12*difficulty,magic_sword,400) #
+dragon = Dragon('Timόtheos',30*difficulty,12*difficulty,'',400) # found in boss room
 
 # Create Rooms
 forest_clearing = Room('Forest Clearing','you are in a forest clearing','','',sharp_stick)
@@ -596,19 +646,18 @@ deep_forest = Room('Deep Dark Forest','You are in a deep dark forest',spider,'',
 hut_in_forest = Room('Hut in Forest','you are on a hut along the path',trapper,hermit,'')
 meadow = Room('meadow','You are in a wide open meadow',goblin_scout,shepherd,'')
 cross_road = Room('Cross Roads','You are at a cross roads their is a sign pointing west it says village of lord joss',bandit,'','')
-village = Room('The village','You are in a village',thug,villiger,pitch_folk)
+village = Room('The village','You are in a village',thug,villiger,pitch_fork)
 along_ridge = Room('Along the Ridge','You are along a ridge',goblin,'','')
 tall_ridge = Room('Tall Ridge','You are at a tall ridge',goblin_scout_2,'',health_potion_7)
 path_in_meadow = Room('Path Along Meadow','you are on a path in a meadow',goblin_scout_3,village_scout,'')
 keep = Room('The Keep','you are in the keep of lord joss','',lord,lords_sword)
 cave_entrance_2 = Room('Cave Entrance','You are in a cave entrance',goblin_runt,prisoner,'')
 cave_entrance = Room('Cave Entrance','You are in a cave entrance',goblin_brute,'','')
-deep_cave = Room('Deeper in cave','You are in a deep cave',troll,prisoner_2,'')
-cave_cavern = Room('Cave Cavern','You are in a large open cavern','','',mega_health_potion_3)
-Boss_Room = Room('Open Cavern','',dragon,'',magic_sword)
+deep_cave = Room('Deeper in cave','You are in a deep cave','',prisoner_2,'')
+cave_cavern = Room('Cave Cavern','You are in a large open cavern',troll,'',mega_health_potion_3)
+Boss_Room = Room('Open Cavern','',dragon,'','')
 
 # bonus rooms
-easter_egg_room = Room('','','','','')
 forest_grove = Room('Forest Grove','you are in a forest grove','',satyr,seedling)
 dungeon = Room('Dungeon','you are in a dungeon',excaped_prisoner,key,prison_guard)
 old_vault = Room('Old Vault','You are in an old vault','',crown,goblin_adventurer)
@@ -618,6 +667,7 @@ room_connections = {
     forest_clearing : {'north' : forest},
     forest : {'north' : deeper_in_forest, 'west' : path_in_forest, 'south' : forest_clearing},
     deeper_in_forest : {'north' : deep_forest, 'west' : along_forest, 'south' : forest, 'east' : forest_grove},
+    path_in_forest : {'north': along_forest, 'east' : forest },
     along_forest : {'north' : hut_in_forest, 'east' : deeper_in_forest, 'south' : path_in_forest},
     deep_forest : {'north' : meadow, 'south' : deeper_in_forest},
     hut_in_forest : {'north' : cross_road, 'south' : along_forest},
@@ -635,13 +685,11 @@ room_connections = {
     Boss_Room : {'east' : cave_cavern},
     forest_grove : {'west' : deeper_in_forest},
     dungeon : {'south' : keep},
-    old_vault : {'north' : along_ridge},
-    easter_egg_room : {'south' : forest_clearing}
+    old_vault : {'north' : along_ridge}
 }
 
 boss = dragon
 monster = ''
-exp_to_next_level = 100
 hero.room = forest_clearing
 hero.inventory.append(health_potion)
 # Main game loop function
@@ -682,6 +730,7 @@ def Main_loop():
 # Run main loop
 Main_loop()
 
+# checks if the player has activated dev mode
 if hero.dev == True:
     # Ending options
     if hero.health > 0:

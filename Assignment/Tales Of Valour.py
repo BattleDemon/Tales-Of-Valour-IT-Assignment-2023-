@@ -483,6 +483,19 @@ name = input('What is your name?\n>> ')
 hero = Player(name)
 get_difficulty()
 
+# get high score 
+file = open("highscore.txt",'r')
+high_score = int(file.read())
+file.close()
+
+# get player with high score
+file = open('highscoreholder.txt','r')
+high_score_holder = file.read()
+file.close()
+
+# tell player high score and its holder
+print('the current highscore holder is',high_score_holder,'with a score of',high_score)
+
 # Create Item instances
 health_potion = Item('Health potion','Restores some health points.',hero.heal) # Start with
 health_potion_2 = Item('Health potion','Restores some health points.',hero.heal) # drops from goblin scout
@@ -495,6 +508,10 @@ mega_health_potion = Item('Mega health potion','Restores many health points.',he
 mega_health_potion_2 = Item('Mega health potion','Restores many health points.',hero.mega_heal) # found in deep forest
 mega_health_potion_3 = Item('Mega health potion','Restores many health points.',hero.mega_heal) # found in cave cavern
 teleport = Item('Teloport stone','Teleports user to any* room','') # Add fuc to teleport/ found in boss room
+seedling = Item('Seedling','This item serves no purpose','') # found in forest grove
+key = Item('Key','This is a key to something i dont know what','') # found in dungeon
+crown = Item('Old Crown','This crown used to belong to a old king','') # found in old vault
+locket = Item('Old Locket','This locket seems locked maybe a key will unlock it','') # buy from goblin adventurer
 
 # Create Weapon instances
 magic_sword = Weapon('Magic Sword','Increase damage by 15',15) # Drops from dragon
@@ -544,6 +561,9 @@ shepherd = FriendlyNPC('Humble Gabe',10,'','','') # found in meadow
 prisoner = FriendlyNPC('Prisoner',2,'','','') # found in cave entrance 2
 prisoner_2 = FriendlyNPC('Prisoner',2,'','','') # found in deep cave
 village_scout = FriendlyNPC('Zen the scout',10,'','','') # found on path in meadow
+satyr = FriendlyNPC('Friendly satyr',10,'This grove has been guarded by my kind for centuries we dont bother our selves with the outside world','','') # found in forest grove
+prison_guard = FriendlyNPC('Prison guard',10,'i am the guard of this here prison we have never had an excepee','','') # found in dungeon
+goblin_adventurer = FriendlyNPC('Goblin Adventurer',10,'gih fuu feufeueu ueu gfeufg eug eu yeuhgewufiw whfyyw ygvu fhvw',locket,20) # found in old vault
 
 # Create monster instances
 wolf = Beast('Wolf',10*difficulty,5*difficulty,'',20) # found in forest
@@ -561,6 +581,7 @@ goblin_scout_3 = Humanoid('Goblin Scout',13*difficulty,5*difficulty,'',50) # fou
 goblin_runt = Humanoid('Goblin Runt',7*difficulty,3*difficulty,'',30) # found in cave entrance 2
 goblin_brute = Humanoid('Goblin Brute',20*difficulty,9*difficulty,goblin_scimatar,100) # found in cave entrance 
 troll = Humanoid('Troll',20*difficulty,9*difficulty,'',100) # found in deep cave
+excaped_prisoner = Humanoid('Excaped prisoner',3*difficulty,2*difficulty,'','') # found in dungeon
 
 # Create Boss instance
 dragon = Dragon('Timόtheos',30*difficulty,12*difficulty,magic_sword,400) #
@@ -586,26 +607,36 @@ deep_cave = Room('Deeper in cave','You are in a deep cave',troll,prisoner_2,'')
 cave_cavern = Room('Cave Cavern','You are in a large open cavern','','',mega_health_potion_3)
 Boss_Room = Room('Open Cavern','',dragon,'',magic_sword)
 
+# bonus rooms
+easter_egg_room = Room('','','','','')
+forest_grove = Room('Forest Grove','you are in a forest grove','',satyr,seedling)
+dungeon = Room('Dungeon','you are in a dungeon',excaped_prisoner,key,prison_guard)
+old_vault = Room('Old Vault','You are in an old vault','',crown,goblin_adventurer)
+
 # Room connections dict
 room_connections = {
     forest_clearing : {'north' : forest},
     forest : {'north' : deeper_in_forest, 'west' : path_in_forest, 'south' : forest_clearing},
-    deeper_in_forest : {'north' : deep_forest, 'west' : along_forest, 'south' : forest},
+    deeper_in_forest : {'north' : deep_forest, 'west' : along_forest, 'south' : forest, 'east' : forest_grove},
     along_forest : {'north' : hut_in_forest, 'east' : deeper_in_forest, 'south' : path_in_forest},
     deep_forest : {'north' : meadow, 'south' : deeper_in_forest},
     hut_in_forest : {'north' : cross_road, 'south' : along_forest},
     meadow : {'north' : tall_ridge, 'south' : deep_forest},
     cross_road : {'north' : path_in_meadow, 'west' : village, 'south' : hut_in_forest},
     village : {'north' : keep, 'east' : cross_road},
-    along_ridge : {'north' : cave_entrance_2, 'west' : tall_ridge},
+    along_ridge : {'north' : cave_entrance_2, 'west' : tall_ridge, 'south' : old_vault },
     tall_ridge : {'north' : cave_entrance, 'east' : along_ridge, 'west' : path_in_meadow, 'south' : meadow},
     path_in_meadow : {'east' : along_ridge, 'west' : keep, 'south' : cross_road},
-    keep : {'east' : path_in_meadow, 'south' : village},
+    keep : {'east' : path_in_meadow, 'south' : village, 'north' : dungeon},
     cave_entrance_2 : {'north' : deep_cave, 'south' : along_ridge},
     cave_entrance : {'north' : cave_cavern, 'south' : tall_ridge},
     deep_cave : {'west' : cave_cavern, 'south' : cave_entrance_2},
     cave_cavern : {'east' : deep_cave, 'east' : Boss_Room, 'south' : cave_entrance},
-    Boss_Room : {'east' : cave_cavern}
+    Boss_Room : {'east' : cave_cavern},
+    forest_grove : {'west' : deeper_in_forest},
+    dungeon : {'south' : keep},
+    old_vault : {'north' : along_ridge},
+    easter_egg_room : {'south' : forest_clearing}
 }
 
 boss = dragon
@@ -696,10 +727,14 @@ else:
     print('you have',hero.exp,'exp')
     print('Your score is',hero.score)
 
-    # save score + high score
-    file = open('High Score.py','a')
-    file.write(f'{hero.name} = {hero.score}')
-    file.close()
+    if high_score < hero.score:
+        file = open('highscore.txt','w')
+        file.write(str(hero.score))
+        file.close()
+        print('you set a new high score')
+        file = open('highscoreholder.txt','w')
+        file.write(hero.name)
+        file.close()
 
 # roll credits 
 credits()

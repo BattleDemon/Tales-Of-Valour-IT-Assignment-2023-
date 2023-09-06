@@ -1,7 +1,7 @@
 from random import randint, choice
 
 class LivingThing():
-    def __inti__(self):
+    def __init__(self):
         self.name ='some name'
         self.health = 1
 
@@ -15,7 +15,7 @@ class LivingThing():
         self.health = self.health + 1
 
 class Player(LivingThing):
-    def __inti__(self,name):
+    def __init__(self,name):
         self.name = name
         self.health = 15
         self.status = 'regular'
@@ -67,7 +67,7 @@ class Player(LivingThing):
             print('You are safe. Not a monster in sight anywhere!')
 
 class Monster(LivingThing):
-    def __inti__(self,name,health):
+    def __init__(self,name,health):
         self.name = name
         self.health = health
 

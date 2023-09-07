@@ -103,6 +103,8 @@ class Player(LivingThing):
                 self.score += 50
                 self.exp += 50
                 input('Press Enter to continue\n>>')
+                monster = self.room.monsters
+                return monster
             else:
                 print("You couldn't find anything")
         elif diceroll == 1:
@@ -166,7 +168,6 @@ class Player(LivingThing):
     def fight(self, monster):
         # Engage in combat with a monster
         self.rest_cooldown = self.rest_cooldown - 1
-        monster = self.room.monsters
         while self.health > 0 and monster.health > 0:
             # First deals Dmg to the monster then to the hero 
             non_comabat_action = False
@@ -245,9 +246,97 @@ class Player(LivingThing):
             print('You were Killed by the', monster.name)
             self.status = 'regular'
 
-        def boss_fight(self,monster):
-            pass
-            
+    def boss_fight(self,monster):
+        global fight_stage
+        if fight_stage == 1:
+            print(boss.name,': Petty mortal')
+            print('you have entered my realm ')
+            print('Yet you still are not worthy to challenge me')
+            print('you need to prove that you are worth my time')
+            print(self.name,'you see a gate open behind you and a goblin brute enters')
+            monster = goblin_brute_2
+            self.fight(monster)
+            fight_stage += 1
+        elif fight_stage == 2:
+            print(boss.name,': hmmn')
+            print('well done mortal')
+            print('NOW YOU CHALLENGE ME')
+            print('YOU CANT TURN BACK NOW')
+            print('LETS SEE HOW LONG YOU CAN LIVE')
+            input('Press Enter to continue\n>>')
+            fight_stage += 1
+        elif fight_stage == 3:
+            first_round = True
+            while self.health > 0 and monster.health > 0:
+                # First deals Dmg to the monster then to the hero 
+                non_comabat_action = False
+                if first_round == True:
+                    first_round = False
+                else:
+                    if self.equipped_weapon != '':
+                        attack = input(f'What action do you want to do?(slash,stab,use,inv)\n>>')
+                        if attack == 'slash':
+                            print(self.name,"slash's at the",boss.name)
+                            dmg = randint(2,9) + self.equipped_weapon.modifier
+                            print(self.name,'did',dmg,'damage')
+                            boss.health -= dmg
+                            print(boss.name,'health is now',boss.health)
+                            input('Press Enter to continue\n>>')
+                        elif attack == 'stab':
+                            print(self.name,"stab's at the",boss.name)
+                            dmg = randint(3,6) + self.equipped_weapon.modifier
+                            print(self.name,'did',dmg,'damage')
+                            boss.health -= dmg
+                            print(boss.name,'health is now',boss.health)
+                            input('Press Enter to continue\n>>')
+                        elif attack == 'use':
+                            self.use(boss)
+                            non_comabat_action = True
+                            input('Press Enter to continue\n>>')
+                        elif attack == 'inv':
+                            self.show_inventory(boss)
+                            non_comabat_action = True
+                        else:
+                            print('Please input a real attack')
+                            non_comabat_action = True
+                    else:
+                        attack = input('What action do you want to do?(punch,use,inv)\n>>')
+                        if attack == 'punch':
+                            dmg = randint(0,5)
+                            print('you punch the',boss.name,'for',dmg,'damage')
+                            boss.health -= dmg
+                            print(boss.name,'now has',boss.health,'health')
+                            input('Press Enter to continue\n>>')
+                        elif attack == 'use':
+                            self.use(boss)
+                            non_comabat_action = True
+                            input('Press Enter to continue\n>>')
+                        elif attack == 'inv':
+                            self.show_inventory(boss)
+                            non_comabat_action = True
+                        else:
+                            print('Please input a real attack')
+                            non_comabat_action = True
+                if boss.health >= 0:
+                    if non_comabat_action == True:
+                        pass
+                    else:
+                        mindamage = round(boss.maxdamage/3)
+                        dmg = randint(mindamage,boss.maxdamage)
+                        if self.equipped_armour != '':
+                            dmg -= self.equipped_armour.modifier
+                        print('The',boss.name,choice(boss.actions),'you for',dmg,'damage')
+                        self.health -= dmg
+                        print('Your health is now',self.health)
+                        input('Press Enter to continue\n>>')
+            if self.health > 0:
+                # checks if you are still alive
+                print('Victory!\nYou defeated the', boss.name)
+                self.room.monsters = ''
+                input('Press Enter to continue\n>>')
+            else:
+                print('You were Killed by', boss.name)
+
     def friendlyencounter(self,monster):
         # Allows the player to encounter friendlyNPC's
         print('Your options are \n>Leave (leave the Npc you encountered')
@@ -373,7 +462,7 @@ class Player(LivingThing):
             print("Invalid input or no valid connections from this room.")
             
     def quit(self,monster):
-        # Allows the player to die at will 
+        # Allows the player to quit the game 
         self.health = 0                            
 
     def rest(self,monster):
@@ -392,7 +481,7 @@ class Player(LivingThing):
     def dev_mode(self,monster):
         # allows the player to activate dev mode making them over powered 
         self.health = 1000
-        self.inventory.append(god_weapon)
+        self.equipped_weapon = god_weapon
         self.exp += 100000000
         self.gold += 100000
         Commands.popitem()
@@ -647,7 +736,8 @@ troll = Humanoid('Troll',20*difficulty,9*difficulty,troll_armour,100) # found in
 excaped_prisoner = Humanoid('Excaped prisoner',3*difficulty,2*difficulty,'','') # found in dungeon
 
 # Create Boss instance
-dragon = Dragon('Timόtheos',30*difficulty,12*difficulty,'',400) # found in boss room
+dragon = Dragon('Timόtheos',45*difficulty,15*difficulty,'',400) # found in boss room
+goblin_brute_2 = Humanoid('Goblin Brute',20*difficulty,9*difficulty,'',100)
 
 # Create Rooms
 forest_clearing = Room('Forest Clearing','you are in a forest clearing','','',sharp_stick)
@@ -702,9 +792,11 @@ room_connections = {
 }
 
 boss = dragon
+fight_stage = 1
 monster = ''
-hero.room = forest_clearing
+hero.room = Boss_Room
 hero.inventory.append(health_potion)
+hero.dev_mode(monster)
 # Main game loop function
 def Main_loop():
     # Start Storys
@@ -730,12 +822,17 @@ def Main_loop():
             exp_to_next_level += exp_to_next_level
             input('Press Enter to continue\n>>')
         elif hero.room == Boss_Room:
-            option = input('are you sure you want to enter the boss room this will trigger the boss fight (yes/no)\n>>')
-            if option == 'no':
-                print('you turn back')
-                hero.room = cave_cavern
+            if fight_stage == 1:
+                option = input('are you sure you want to enter the boss room this will trigger the boss fight (yes/no)\n>>')
+                if option == 'no':
+                    print('you turn back')
+                    hero.room = cave_cavern
+                else:
+                    print('you enter the room and see a towering figure')
+                    hero.status = 'Boss fight'
+                    hero.boss_fight(boss)
             else:
-                print('you enter the room and see a towering figure')
+
                 hero.status = 'Boss fight'
                 hero.boss_fight(boss)
         else:

@@ -35,7 +35,7 @@ class LivingThing():
 # Create a class for the player, inheriting from LivingThing
 class Player(LivingThing):
     def __init__(self, name,):
-        # Initialize player-specific attributes
+        # Initialize player-specific attributes c
         self.name = name
         self.health = 25
         self.status = 'regular'
@@ -656,20 +656,23 @@ name = input('What is your name?\n>> ')
 hero = Player(name)
 get_difficulty()
 
+try:
+    # get high score 
+    file = open("highscore.txt",'r')
+    high_score = int(file.read())
+    file.close()
 
-# get high score 
-file = open("highscore.txt",'r')
-high_score = int(file.read())
-file.close()
+    # get player with high score
+    file = open('highscoreholder.txt','r')
+    high_score_holder = file.read()
+    file.close()
 
-# get player with high score
-file = open('highscoreholder.txt','r')
-high_score_holder = file.read()
-file.close()
-
-# tell player high score and its holder
-print('the current highscore holder is',high_score_holder,'with a score of',high_score)
-print('')
+    # tell player high score and its holder
+    print('the current highscore holder is',high_score_holder,'with a score of',high_score)
+    print('')
+except FileNotFoundError:
+    high_score = 0
+    pass
 
 # Create Item instances
 health_potion = Item('Health potion','Restores some health points.',hero.heal) # Start with
@@ -794,9 +797,8 @@ room_connections = {
 boss = dragon
 fight_stage = 1
 monster = ''
-hero.room = Boss_Room
+hero.room = forest_clearing
 hero.inventory.append(health_potion)
-hero.dev_mode(monster)
 # Main game loop function
 def Main_loop():
     # Start Storys

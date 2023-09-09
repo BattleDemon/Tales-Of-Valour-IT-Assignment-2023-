@@ -3,11 +3,12 @@ from random import randint, choice
 # Create a base class representing a living thing
 class LivingThing():
     def __init__(self):
+        # Initialize LivingThing attributes
         self.name = 'some name'
         self.health = 1
         
     def tire(self):
-        # has the chance to deal 2 dmg to the livingthing
+        # has a 1/2 chance to deal 2 dmg to the livingthing
         diceroll = randint(0,1)
         if diceroll == 0:
             self.health = self.health - 2
@@ -24,7 +25,7 @@ class LivingThing():
         print('Your health is now',self.health)
 
     def mega_heal(self):
-        # doubles the livingthings health
+        # adds 2o health to the livingthing
         self.health = self.health + 20
         print('You gained 20 health')
         print('Your health is now',self.health)
@@ -38,7 +39,7 @@ class Player(LivingThing):
         # Initialize player-specific attributes c
         self.name = name
         self.health = 25
-        self.status = 'regular'
+        self.status = 'regular' 
         self.inventory = []
         self.equipped_weapon = ''
         self.equipped_armour = ''
@@ -133,37 +134,41 @@ class Player(LivingThing):
         item_name = input('What item do you want to use?\n>>')
         item_name = item_name.capitalize()
         for item in self.inventory:
+            # checks if the item is in the players inventory 
             if item.name == item_name:
-                if isinstance(item, Weapon):
-                    print("You can't use a weapon in this way.")
-                elif isinstance(item, Armour):
-                    print("You can't use armour in this way.")
-                elif item_name == 'Key':
-                    if locket in self.inventory:
-                        print('you notice the key matches the lock on the locket')
-                        print('you turn the key')
-                        print('after you hear the click of the lock the locket disapears')
-                        print('you gain 500 xp')
-                        self.inventory.remove(locket)
-                        self.exp += 500
-                        self.score += 500
-                elif item_name == 'Locket':
-                    if key in self.inventory:
-                        print('you notice the lock on the locket matches the shape of the key ')
-                        print('you turn the key')
-                        print('after you hear the click of the lock the locket disapears')
-                        print('you gain 500 xp')
-                        self.inventory.remove(locket)
-                        self.exp += 500
-                        self.score += 500
+                if isinstance(item, Consumables):
+                    # cheaks if the item is a Consumable item
+                    if item_name == 'Key':
+                        # checks if the item is a key
+                        if locket in self.inventory:
+                            print('you notice the key matches the lock on the locket')
+                            print('you turn the key')
+                            print('after you hear the click of the lock the locket disapears')
+                            print('you gain 500 xp')
+                            self.inventory.remove(locket)
+                            self.exp += 500
+                            self.score += 500
+                    elif item_name == 'Locket':
+                        # checks if the item is a locket
+                        if key in self.inventory:
+                            print('you notice the lock on the locket matches the shape of the key ')
+                            print('you turn the key')
+                            print('after you hear the click of the lock the locket disapears')
+                            print('you gain 500 xp')
+                            self.inventory.remove(locket)
+                            self.exp += 500
+                            self.score += 500
+                    else:
+                        item.attributes()  # Call the item's attributes method
+                        self.inventory.remove(item)  # Remove the used item from inventory
+                        self.rest_cooldown = self.rest_cooldown - 1
+                        self.score += 10
+                        self.exp += 10
+                    return
                 else:
-                    item.attributes()  # Call the item's attributes method
-                    self.inventory.remove(item)  # Remove the used item from inventory
-                    self.rest_cooldown = self.rest_cooldown - 1
-                    self.score += 10
-                    self.exp += 10
-                return
-        print("You don't have that item in your inventory.")
+                    print('This item is not consumable')
+            else:
+                print('That is not in your inventory or not an item')
 
     def fight(self, monster):
         # Engage in combat with a monster
@@ -172,26 +177,29 @@ class Player(LivingThing):
             # First deals Dmg to the monster then to the hero 
             non_comabat_action = False
             if self.equipped_weapon != '':
-                attack = input(f'What action do you want to do?(slash,stab,use,inv)\n>>')
+                # checks if the player has a weapon
+                attack = input(f'What action do you want to do?(slash [has a chance to deal a small to a large amout of dmg],stab [deals a smaller range of damage],use,inv)\n>>')
                 if attack == 'slash':
                     print(self.name,"slash's at the",monster.name)
-                    dmg = randint(2,9) + self.equipped_weapon.modifier
+                    dmg = randint(1,10) + self.equipped_weapon.modifier
                     print(self.name,'did',dmg,'damage')
                     monster.health -= dmg
                     print(monster.name,'health is now',monster.health)
                     input('Press Enter to continue\n>>')
                 elif attack == 'stab':
                     print(self.name,"stab's at the",monster.name)
-                    dmg = randint(3,6) + self.equipped_weapon.modifier
+                    dmg = randint(5,6) + self.equipped_weapon.modifier
                     print(self.name,'did',dmg,'damage')
                     monster.health -= dmg
                     print(monster.name,'health is now',monster.health)
                     input('Press Enter to continue\n>>')
                 elif attack == 'use':
+                    # Allows the player to use items during combat
                     self.use(monster)
                     non_comabat_action = True
                     input('Press Enter to continue\n>>')
                 elif attack == 'inv':
+                    # Allows the player to view their inventory during combat
                     self.show_inventory(monster)
                     non_comabat_action = True
                 else:
@@ -206,17 +214,21 @@ class Player(LivingThing):
                     print(monster.name,'now has',monster.health,'health')
                     input('Press Enter to continue\n>>')
                 elif attack == 'use':
+                    # Allows the player to use items during combat
                     self.use(monster)
                     non_comabat_action = True
                     input('Press Enter to continue\n>>')
                 elif attack == 'inv':
+                    # Allows the player to view their inventory during combat
                     self.show_inventory(monster)
                     non_comabat_action = True
                 else:
                     print('Please input a real attack')
                     non_comabat_action = True
             if monster.health > 0:
+                # Monster attack
                 if non_comabat_action == True:
+                    # checks if the player used: use, inv or didn't input an option
                     pass
                 else:
                     mindamage = round(monster.maxdamage/3)
@@ -229,6 +241,7 @@ class Player(LivingThing):
                     input('Press Enter to continue\n>>')
               
         if self.health > 0:
+            # checks if the player survived
             print('Victory!\nYou defeated the', monster.name)
             print('your health is now',self.health)
             self.status = 'regular'
@@ -242,13 +255,15 @@ class Player(LivingThing):
             print('you picked up',monster.gold_drops,'gold')
             input('Press Enter to continue\n>>')
         else:
-            # checks if you are still alive
+            # if the player died
             print('You were Killed by the', monster.name)
             self.status = 'regular'
 
     def boss_fight(self,monster):
+        # Triggered when entered the boss room
         global fight_stage
         if fight_stage == 1:
+            # displays dialog then the player has to fight a monster
             print(boss.name,': Petty mortal')
             print('you have entered my realm ')
             print('Yet you still are not worthy to challenge me')
@@ -258,6 +273,7 @@ class Player(LivingThing):
             self.fight(monster)
             fight_stage += 1
         elif fight_stage == 2:
+            # displays dialog
             print(boss.name,': hmmn')
             print('well done mortal')
             print('NOW YOU CHALLENGE ME')
@@ -266,34 +282,38 @@ class Player(LivingThing):
             input('Press Enter to continue\n>>')
             fight_stage += 1
         elif fight_stage == 3:
+            # Triggers a fight with the boss
             first_round = True
             while self.health > 0 and monster.health > 0:
-                # First deals Dmg to the monster then to the hero 
+                # the boss attacks first
                 non_comabat_action = False
                 if first_round == True:
                     first_round = False
                 else:
                     if self.equipped_weapon != '':
-                        attack = input(f'What action do you want to do?(slash,stab,use,inv)\n>>')
+                        # cheaks if the player has a weapon equiped
+                        attack = input(f'What action do you want to do?(slash [has a chance to deal a small to a large amout of dmg],stab [deals a smaller range of damage],use,inv)\n>>')
                         if attack == 'slash':
                             print(self.name,"slash's at the",boss.name)
-                            dmg = randint(2,9) + self.equipped_weapon.modifier
+                            dmg = randint(1,10) + self.equipped_weapon.modifier
                             print(self.name,'did',dmg,'damage')
                             boss.health -= dmg
                             print(boss.name,'health is now',boss.health)
                             input('Press Enter to continue\n>>')
                         elif attack == 'stab':
                             print(self.name,"stab's at the",boss.name)
-                            dmg = randint(3,6) + self.equipped_weapon.modifier
+                            dmg = randint(5,6) + self.equipped_weapon.modifier
                             print(self.name,'did',dmg,'damage')
                             boss.health -= dmg
                             print(boss.name,'health is now',boss.health)
                             input('Press Enter to continue\n>>')
                         elif attack == 'use':
+                            # Allows the player to use items in combat 
                             self.use(boss)
                             non_comabat_action = True
                             input('Press Enter to continue\n>>')
                         elif attack == 'inv':
+                            # Allows the player to view their inventory during combat
                             self.show_inventory(boss)
                             non_comabat_action = True
                         else:
@@ -308,17 +328,21 @@ class Player(LivingThing):
                             print(boss.name,'now has',boss.health,'health')
                             input('Press Enter to continue\n>>')
                         elif attack == 'use':
+                            # Allows the player to use items in combat 
                             self.use(boss)
                             non_comabat_action = True
                             input('Press Enter to continue\n>>')
                         elif attack == 'inv':
+                            # Allows the player to view their inventory during combat
                             self.show_inventory(boss)
                             non_comabat_action = True
                         else:
                             print('Please input a real attack')
                             non_comabat_action = True
                 if boss.health >= 0:
+                    # cheaks if the boss is alive
                     if non_comabat_action == True:
+                        # checks if the player used: use, inv or didn't input an option
                         pass
                     else:
                         mindamage = round(boss.maxdamage/3)
@@ -335,6 +359,7 @@ class Player(LivingThing):
                 self.room.monsters = ''
                 input('Press Enter to continue\n>>')
             else:
+                # if you died
                 print('You were Killed by', boss.name)
 
     def friendlyencounter(self,monster):
@@ -357,6 +382,7 @@ class Player(LivingThing):
                     option_2 = input('Do you want to buy this item? (yes/no)\n>>')
                     if option_2 == 'yes':
                         if self.gold >= self.room.npcs.item_cost:
+                            # cheaks if the player has enough gold
                             print('You bought',self.room.npcs.items.name,'for',self.room.npcs.item_cost)
                             self.pick_up_item(self.room.npcs.items)
                             self.gold -= self.room.npcs.item_cost
@@ -402,7 +428,9 @@ class Player(LivingThing):
                 self.score += 25
                 self.exp += 25
                 if isinstance(item, Weapon):
+                    # cheaks if the item is a weapon 
                     if self.equipped_weapon == '':
+                        # cheaks if the player all ready has a weapon equiped 
                         self.equipped_weapon = item
                         print(f'You equipped {item_name}')
                         self.rest_cooldown = self.rest_cooldown - 1
@@ -416,7 +444,9 @@ class Player(LivingThing):
                         self.rest_cooldown = self.rest_cooldown - 1
                         return  # Exit the function after equipping
                 elif isinstance(item, Armour):
+                    # cheaks if the item is armour
                     if self.equipped_armour == '':
+                        # cheaks if the player all ready has armour equiped 
                         self.equipped_armour = item
                         print(f'You equipped {item_name}')
                         self.rest_cooldown = self.rest_cooldown - 1
@@ -479,7 +509,7 @@ class Player(LivingThing):
         pass
 
     def dev_mode(self,monster):
-        # allows the player to activate dev mode making them over powered 
+        # allows the player to activate dev mode making them overpowered 
         self.health = 1000
         self.equipped_weapon = god_weapon
         self.exp += 100000000
@@ -519,7 +549,7 @@ class Humanoid(Monster):
 # Create a class for beast monsters, inheriting from Monster
 class Beast(Monster):
     def __init__(self, name, health, maxdamage, drops, gold_drops):
-        self.name = name
+        # Initialize Beast monsters attributes
         self.health = health
         self.maxdamage = maxdamage
         self.drops = drops
@@ -528,6 +558,7 @@ class Beast(Monster):
 
 class Dragon(Monster):
     def __init__(self, name, health, maxdamage, drops, gold_drops):
+        # Initialize Dragon monsters attributes
         self.name = name
         self.health = health
         self.maxdamage = maxdamage
@@ -549,6 +580,13 @@ class FriendlyNPC(LivingThing):
 class Item():
     def __init__(self,name,description,attributes):
         # Initialize Items
+        self.name = name 
+        self.description = description
+        self.attributes = attributes
+
+class Consumables(Item):
+    def __init__(self,name,description,attributes):
+        # Initialize Consumables
         self.name = name 
         self.description = description
         self.attributes = attributes
@@ -675,20 +713,20 @@ except FileNotFoundError:
     pass
 
 # Create Item instances
-health_potion = Item('Health potion','Restores some health points.',hero.heal) # Start with
-health_potion_2 = Item('Health potion','Restores some health points.',hero.heal) # drops from goblin scout
-health_potion_3 = Item('Health potion','Restores some health points.',hero.heal) # drops from goblin scout
-health_potion_4 = Item('Health potion','Restores some health points.',hero.heal) # drops from goblin outcast
-health_potion_5 = Item('Health potion','Restores some health points.',hero.heal) # found in forest
-health_potion_6 = Item('Health potion','Restores some health points.',hero.heal) # found along path
-health_potion_7 = Item('Health potion','Restores some health points.',hero.heal) # found in tall ridge
-mega_health_potion = Item('Mega health potion','Restores many health points.',hero.mega_heal) # buy from hermit for 200 gold
-mega_health_potion_2 = Item('Mega health potion','Restores many health points.',hero.mega_heal) # found in deep forest
-mega_health_potion_3 = Item('Mega health potion','Restores many health points.',hero.mega_heal) # found in cave cavern
-seedling = Item('Seedling','This item serves no purpose',hero.nothing) # found in forest grove
-key = Item('Key','This is a key to something i dont know what','') # found in dungeon
+health_potion = Consumables('Health potion','Restores some health points.',hero.heal) # Start with
+health_potion_2 = Consumables('Health potion','Restores some health points.',hero.heal) # drops from goblin scout
+health_potion_3 = Consumables('Health potion','Restores some health points.',hero.heal) # drops from goblin scout
+health_potion_4 = Consumables('Health potion','Restores some health points.',hero.heal) # drops from goblin outcast
+health_potion_5 = Consumables('Health potion','Restores some health points.',hero.heal) # found in forest
+health_potion_6 = Consumables('Health potion','Restores some health points.',hero.heal) # found along path
+health_potion_7 = Consumables('Health potion','Restores some health points.',hero.heal) # found in tall ridge
+mega_health_potion = Consumables('Mega health potion','Restores many health points.',hero.mega_heal) # buy from hermit for 200 gold
+mega_health_potion_2 = Consumables('Mega health potion','Restores many health points.',hero.mega_heal) # found in deep forest
+mega_health_potion_3 = Consumables('Mega health potion','Restores many health points.',hero.mega_heal) # found in cave cavern
+seedling = Item('Seedling','This item is a seedling from the grove',hero.nothing) # found in forest grove
+key = Consumables('Key','This is a key to something i dont know what','') # found in dungeon
 crown = Item('Old Crown','This crown used to belong to a old king',hero.nothing) # found in old vault
-locket = Item('Old Locket','This locket seems locked maybe a key will unlock it','') # buy from goblin adventurer
+locket = Consumables('Old Locket','This locket seems locked maybe a key will unlock it','') # buy from goblin adventurer
 
 # Create Weapon instances
 magic_sword = Weapon('Magic Sword','Increase damage by 15',15) # Drops from dragon
@@ -703,9 +741,9 @@ rusted_sword = Weapon('Rusted sword','Increase damage by 3',3) # drops from band
 goblin_scimatar = Weapon('Goblin scimatar','Increases damage by 13',13) # drops from goblin brute
 
 # Create armour instances
-traveler_armour = Armour('Travelers armour','Reduces damage taken by 2',2) #
-village_armour = Armour('Village armour','Reduces damage by 4',4) #
-troll_armour = Armour('Troll armour','Reduces damage by 6',6) #
+traveler_armour = Armour('Travelers armour','Reduces damage taken by 2',2) # buy from NPC
+village_armour = Armour('Village armour','Reduces damage by 4',4) # nowhere
+troll_armour = Armour('Troll armour','Reduces damage by 6',6) # drops from troll
 
 # Create friendly NPC instances
 villiger = FriendlyNPC('Villiger',5,"I have heard storys of the horrors out side the village",'','') # found in village

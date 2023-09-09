@@ -105,7 +105,7 @@ class Player(LivingThing):
                 self.exp += 50
                 input('Press Enter to continue\n>>')
                 monster = self.room.monsters
-                return monster
+                self.fight(monster)
             else:
                 print("You couldn't find anything")
         elif diceroll == 1:
@@ -550,6 +550,7 @@ class Humanoid(Monster):
 class Beast(Monster):
     def __init__(self, name, health, maxdamage, drops, gold_drops):
         # Initialize Beast monsters attributes
+        self.name = name
         self.health = health
         self.maxdamage = maxdamage
         self.drops = drops
@@ -690,7 +691,9 @@ input('Press Enter to continue\n>>')
 print('Welcome hero')
 print('you are a travelar from a far off land')
 print('you came to this land to find valour or die trying')
-name = input('What is your name?\n>> ')
+name = input("What is your name?\n>> ")
+if len(name) > 15:
+    print ("Please keep the name below 20 characters!")
 hero = Player(name)
 get_difficulty()
 
@@ -845,10 +848,7 @@ def Main_loop():
     exp_to_next_level = 100
     # Game loop
     while hero.health > 0 and boss.health > 0:
-        if hero.status == 'Confronted':
-            # Force fight
-            hero.fight(monster)
-        elif hero.status == 'Encountered':
+        if hero.status == 'Encountered':
             # Force encounter with FriendlyNPC's
             hero.friendlyencounter(hero.room.npcs)
         elif hero.exp >= exp_to_next_level:

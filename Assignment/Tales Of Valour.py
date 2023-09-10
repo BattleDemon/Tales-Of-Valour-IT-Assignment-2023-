@@ -8,8 +8,8 @@ class LivingThing():
         self.health = 1
         
     def tire(self):
-        # has a 1/2 chance to deal 2 dmg to the livingthing
-        diceroll = randint(0,1)
+        # has a 1/3 chance to deal 2 dmg to the livingthing
+        diceroll = randint(0,2)
         if diceroll == 0:
             self.health = self.health - 2
             print('You have gotten tired, your health suffered')
@@ -425,10 +425,10 @@ class Player(LivingThing):
         item_name = item_name.capitalize()
         for item in self.inventory:
             if item.name == item_name:
-                self.score += 25
-                self.exp += 25
                 if isinstance(item, Weapon):
-                    # cheaks if the item is a weapon 
+                    # cheaks if the item is a weapon
+                    self.score += 25
+                    self.exp += 25
                     if self.equipped_weapon == '':
                         # cheaks if the player all ready has a weapon equiped 
                         self.equipped_weapon = item
@@ -445,6 +445,8 @@ class Player(LivingThing):
                         return  # Exit the function after equipping
                 elif isinstance(item, Armour):
                     # cheaks if the item is armour
+                    self.score += 25
+                    self.exp += 25
                     if self.equipped_armour == '':
                         # cheaks if the player all ready has armour equiped 
                         self.equipped_armour = item
@@ -465,9 +467,12 @@ class Player(LivingThing):
         print("You can't equip that")
 
     def go(self,monster):
+        global directions
         # Allows the player to move between rooms 
         try:
-            direction = input("Which direction do you want to go? (north/south/east/west)\n>> ")
+            self.show_exits(monster)
+            print(directions)
+            direction = input("Which direction do you want to go? \n>> ")
             if self.room.monsters != '':
                 # checks if their is still a monster in a room and if their is has a 1/2 chance of encountering it
                 num = randint(1,2)
@@ -506,7 +511,12 @@ class Player(LivingThing):
             print('your not tired enough to rest')
 
     def show_exits(self,monster):
-        pass
+        # Shows the exits to a room
+        global directions
+        directions = 'You can go: '
+        for key in room_connections[self.room]:
+            directions += key
+            directions += ' , '
 
     def dev_mode(self,monster):
         # allows the player to activate dev mode making them overpowered 
@@ -693,7 +703,7 @@ print('you are a travelar from a far off land')
 print('you came to this land to find valour or die trying')
 name = input("What is your name?\n>> ")
 if len(name) > 15:
-    print ("Please keep the name below 20 characters!")
+    print ("Please keep the name below 15 characters!")
 hero = Player(name)
 get_difficulty()
 
@@ -712,7 +722,11 @@ try:
     print('the current highscore holder is',high_score_holder,'with a score of',high_score)
     print('')
 except FileNotFoundError:
-    high_score = 0
+    high_score_holder = 'Dexter'
+    high_score = 6050
+    # tell player high score and its holder
+    print('the current highscore holder is',high_score_holder,'with a score of',high_score)
+    print('')
     pass
 
 # Create Item instances
@@ -839,15 +853,17 @@ boss = dragon
 fight_stage = 1
 monster = ''
 hero.room = forest_clearing
-hero.inventory.append(health_potion)
+hero.inventory.append(health_potion) # Player starts with a health potion
+
 # Main game loop function
 def Main_loop():
     # Start Storys
-    print('(type help to get a list of actions) ')
+    print('(type help to get a list of actions) \n')
     print(hero.name, 'Your story begins' ,hero.room.description)
     exp_to_next_level = 100
     # Game loop
     while hero.health > 0 and boss.health > 0:
+        print('')
         if hero.status == 'Encountered':
             # Force encounter with FriendlyNPC's
             hero.friendlyencounter(hero.room.npcs)
@@ -864,6 +880,7 @@ def Main_loop():
         elif hero.room == Boss_Room:
             if fight_stage == 1:
                 option = input('are you sure you want to enter the boss room this will trigger the boss fight (yes/no)\n>>')
+                # Allows the player to back out of the boss fight 
                 if option == 'no':
                     print('you turn back')
                     hero.room = cave_cavern
@@ -872,12 +889,10 @@ def Main_loop():
                     hero.status = 'Boss fight'
                     hero.boss_fight(boss)
             else:
-
                 hero.status = 'Boss fight'
                 hero.boss_fight(boss)
         else:
             # User inputs
-            print(hero.room.description)
             line = input('What do you want to do \n>> ')
             if hero.rest_cooldown < 0:
                 hero.rest_cooldown = 0
@@ -885,6 +900,8 @@ def Main_loop():
                 Commands[line](hero, monster)
             else:
                 print(hero.name, 'does not understand this suggestion.')
+
+hero.show_exits(monster)
 
 # Run main loop
 Main_loop()
@@ -928,6 +945,9 @@ else:
             print(f'{item.name}: {item.description}')
     else:
         print('Your inventory was empty.')
+
+    # increses the Players score by their difficulty
+    hero.score *= round(difficulty)
 
     # Shows the player their important stats
     input('Press Enter to continue\n>>')

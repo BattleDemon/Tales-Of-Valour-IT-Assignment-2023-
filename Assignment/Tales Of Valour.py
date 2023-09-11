@@ -30,9 +30,6 @@ class LivingThing():
         print('You gained 20 health')
         print('Your health is now',self.health)
 
-    def nothing(self):
-        pass
-
 # Create a class for the player, inheriting from LivingThing
 class Player(LivingThing):
     def __init__(self, name,):
@@ -589,11 +586,10 @@ class FriendlyNPC(LivingThing):
 
 # Create a Class for Items
 class Item():
-    def __init__(self,name,description,attributes):
+    def __init__(self,name,description):
         # Initialize Items
         self.name = name 
         self.description = description
-        self.attributes = attributes
 
 class Consumables(Item):
     def __init__(self,name,description,attributes):
@@ -727,7 +723,6 @@ except FileNotFoundError:
     # tell player high score and its holder
     print('the current highscore holder is',high_score_holder,'with a score of',high_score)
     print('')
-    pass
 
 # Create Item instances
 health_potion = Consumables('Health potion','Restores some health points.',hero.heal) # Start with
@@ -740,9 +735,9 @@ health_potion_7 = Consumables('Health potion','Restores some health points.',her
 mega_health_potion = Consumables('Mega health potion','Restores many health points.',hero.mega_heal) # buy from hermit for 200 gold
 mega_health_potion_2 = Consumables('Mega health potion','Restores many health points.',hero.mega_heal) # found in deep forest
 mega_health_potion_3 = Consumables('Mega health potion','Restores many health points.',hero.mega_heal) # found in cave cavern
-seedling = Item('Seedling','This item is a seedling from the grove',hero.nothing) # found in forest grove
+seedling = Item('Seedling','This item is a seedling from the grove') # found in forest grove
 key = Consumables('Key','This is a key to something i dont know what','') # found in dungeon
-crown = Item('Old Crown','This crown used to belong to a old king',hero.nothing) # found in old vault
+crown = Item('Old Crown','This crown used to belong to a old king') # found in old vault
 locket = Consumables('Old Locket','This locket seems locked maybe a key will unlock it','') # buy from goblin adventurer
 
 # Create Weapon instances
@@ -901,8 +896,6 @@ def Main_loop():
             else:
                 print(hero.name, 'does not understand this suggestion.')
 
-hero.show_exits(monster)
-
 # Run main loop
 Main_loop()
 
@@ -925,9 +918,8 @@ if hero.dev == True:
 
     # Shows the player their important stats
     input('Press Enter to continue\n>>')
-    print('You are level',hero.level)
-    print('you have',hero.exp,'exp')
-    print('Your score is',hero.score)
+    print('You were level',hero.level)
+    print('you had',hero.exp,'exp')
 
 else:
     # Ending options

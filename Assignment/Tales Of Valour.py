@@ -145,6 +145,7 @@ class Player(LivingThing):
                             self.inventory.remove(locket)
                             self.exp += 500
                             self.score += 500
+                            return
                     elif item_name == 'Locket':
                         # checks if the item is a locket
                         if key in self.inventory:
@@ -155,6 +156,7 @@ class Player(LivingThing):
                             self.inventory.remove(locket)
                             self.exp += 500
                             self.score += 500
+                            return
                     else:
                         item.attributes()  # Call the item's attributes method
                         self.inventory.remove(item)  # Remove the used item from inventory
@@ -182,43 +184,46 @@ class Player(LivingThing):
                     print(self.name,'did',dmg,'damage')
                     monster.health -= dmg
                     print(monster.name,'health is now',monster.health)
-                    input('Press Enter to continue\n>>')
                 elif attack == 'stab':
                     print(self.name,"stab's at the",monster.name)
                     dmg = randint(5,6) + self.equipped_weapon.modifier
                     print(self.name,'did',dmg,'damage')
                     monster.health -= dmg
                     print(monster.name,'health is now',monster.health)
-                    input('Press Enter to continue\n>>')
                 elif attack == 'use':
                     # Allows the player to use items during combat
                     self.use(monster)
                     non_comabat_action = True
-                    input('Press Enter to continue\n>>')
                 elif attack == 'inv':
                     # Allows the player to view their inventory during combat
                     self.show_inventory(monster)
+                    non_comabat_action = True
+                elif attack == 'stats':
+                    # Allows the player to view their stats in combat
+                    self.stats(boss)
                     non_comabat_action = True
                 else:
                     print('Please input a real attack')
                     non_comabat_action = True
             else:
-                attack = input('What action do you want to do?(punch,use,inv)\n>>')
+                attack = input('What action do you want to do?(punch,use,inv,stats)\n>>')
                 if attack == 'punch':
                     dmg = randint(0,5)
                     print('you punch the',monster.name,'for',dmg,'damage')
                     monster.health -= dmg
                     print(monster.name,'now has',monster.health,'health')
-                    input('Press Enter to continue\n>>')
                 elif attack == 'use':
                     # Allows the player to use items during combat
                     self.use(monster)
                     non_comabat_action = True
-                    input('Press Enter to continue\n>>')
                 elif attack == 'inv':
                     # Allows the player to view their inventory during combat
                     self.show_inventory(monster)
                     non_comabat_action = True
+                elif attack == 'stats':
+                        # Allows the player to view their stats in combat
+                        self.stats(boss)
+                        non_comabat_action = True
                 else:
                     print('Please input a real attack')
                     non_comabat_action = True
@@ -235,7 +240,6 @@ class Player(LivingThing):
                     print('The',monster.name,choice(monster.actions),'you for',dmg,'damage')
                     self.health -= dmg
                     print('Your health is now',self.health)
-                    input('Press Enter to continue\n>>')
               
         if self.health > 0:
             # checks if the player survived
@@ -289,49 +293,52 @@ class Player(LivingThing):
                 else:
                     if self.equipped_weapon != '':
                         # cheaks if the player has a weapon equiped
-                        attack = input(f'What action do you want to do?(slash [has a chance to deal a small to a large amout of dmg],stab [deals a smaller range of damage],use,inv)\n>>')
+                        attack = input(f'What action do you want to do?(slash [has a chance to deal a small to a large amout of dmg],stab [deals a smaller range of damage],use,inv,stats)\n>>')
                         if attack == 'slash':
                             print(self.name,"slash's at the",boss.name)
                             dmg = randint(1,10) + self.equipped_weapon.modifier
                             print(self.name,'did',dmg,'damage')
                             boss.health -= dmg
                             print(boss.name,'health is now',boss.health)
-                            input('Press Enter to continue\n>>')
                         elif attack == 'stab':
                             print(self.name,"stab's at the",boss.name)
                             dmg = randint(5,6) + self.equipped_weapon.modifier
                             print(self.name,'did',dmg,'damage')
                             boss.health -= dmg
                             print(boss.name,'health is now',boss.health)
-                            input('Press Enter to continue\n>>')
                         elif attack == 'use':
                             # Allows the player to use items in combat 
                             self.use(boss)
                             non_comabat_action = True
-                            input('Press Enter to continue\n>>')
                         elif attack == 'inv':
                             # Allows the player to view their inventory during combat
                             self.show_inventory(boss)
+                            non_comabat_action = True
+                        elif attack == 'stats':
+                            # Allows the player to view their stats in combat
+                            self.stats(boss)
                             non_comabat_action = True
                         else:
                             print('Please input a real attack')
                             non_comabat_action = True
                     else:
-                        attack = input('What action do you want to do?(punch,use,inv)\n>>')
+                        attack = input('What action do you want to do?(punch,use,inv,stats)\n>>')
                         if attack == 'punch':
                             dmg = randint(0,5)
                             print('you punch the',boss.name,'for',dmg,'damage')
                             boss.health -= dmg
                             print(boss.name,'now has',boss.health,'health')
-                            input('Press Enter to continue\n>>')
                         elif attack == 'use':
                             # Allows the player to use items in combat 
                             self.use(boss)
                             non_comabat_action = True
-                            input('Press Enter to continue\n>>')
                         elif attack == 'inv':
                             # Allows the player to view their inventory during combat
                             self.show_inventory(boss)
+                            non_comabat_action = True
+                        elif attack == 'stats':
+                            # Allows the player to view their stats in combat
+                            self.stats(boss)
                             non_comabat_action = True
                         else:
                             print('Please input a real attack')
@@ -349,7 +356,6 @@ class Player(LivingThing):
                         print('The',boss.name,choice(boss.actions),'you for',dmg,'damage')
                         self.health -= dmg
                         print('Your health is now',self.health)
-                        input('Press Enter to continue\n>>')
             if self.health > 0:
                 # checks if you are still alive
                 print('Victory!\nYou defeated the', boss.name)
@@ -703,6 +709,7 @@ if len(name) > 15:
 hero = Player(name)
 get_difficulty()
 
+# attemps to get a high score and high score holder
 try:
     # get high score 
     file = open("highscore.txt",'r')
@@ -718,11 +725,10 @@ try:
     print('the current highscore holder is',high_score_holder,'with a score of',high_score)
     print('')
 except FileNotFoundError:
-    high_score_holder = 'Dexter'
-    high_score = 6050
-    # tell player high score and its holder
-    print('the current highscore holder is',high_score_holder,'with a score of',high_score)
-    print('')
+    # if one doesn't exist it sets high score to 0
+    high_score = 0
+    print('currently there is no highscore')
+    pass
 
 # Create Item instances
 health_potion = Consumables('Health potion','Restores some health points.',hero.heal) # Start with
@@ -738,7 +744,7 @@ mega_health_potion_3 = Consumables('Mega health potion','Restores many health po
 seedling = Item('Seedling','This item is a seedling from the grove') # found in forest grove
 key = Consumables('Key','This is a key to something i dont know what','') # found in dungeon
 crown = Item('Old Crown','This crown used to belong to a old king') # found in old vault
-locket = Consumables('Old Locket','This locket seems locked maybe a key will unlock it','') # buy from goblin adventurer
+locket = Consumables('Locket','This locket seems locked maybe a key will unlock it','') # buy from goblin adventurer
 
 # Create Weapon instances
 magic_sword = Weapon('Magic Sword','Increase damage by 15',15) # Drops from dragon
@@ -754,11 +760,11 @@ goblin_scimatar = Weapon('Goblin scimatar','Increases damage by 13',13) # drops 
 
 # Create armour instances
 traveler_armour = Armour('Travelers armour','Reduces damage taken by 2',2) # buy from NPC
-village_armour = Armour('Village armour','Reduces damage by 4',4) # nowhere
+village_armour = Armour('Village armour','Reduces damage by 4',4) # buy from villager for 150 gold
 troll_armour = Armour('Troll armour','Reduces damage by 6',6) # drops from troll
 
 # Create friendly NPC instances
-villiger = FriendlyNPC('Villiger',5,"I have heard storys of the horrors out side the village",'','') # found in village
+villiger = FriendlyNPC('Villiger',5,"I have heard storys of the horrors out side the village",village_armour,150) # found in village
 traveler = FriendlyNPC('Traveler',10,"I just got robbed on the trail i suggest you turn back now",traveler_armour,50) # found along path
 hermit = FriendlyNPC('Hermit Samson',15,'Those village folk are always scared of what is out of their village',mega_health_potion,200) # found in hut along path
 lord = FriendlyNPC('Lord Joss',20,'Have you heard of the goblins to the north, they send war partys to our lands','','') # found in keep
@@ -847,8 +853,10 @@ room_connections = {
 boss = dragon
 fight_stage = 1
 monster = ''
-hero.room = forest_clearing
+hero.room = Boss_Room
 hero.inventory.append(health_potion) # Player starts with a health potion
+hero.inventory.append(locket)
+hero.inventory.append(key)
 
 # Main game loop function
 def Main_loop():

@@ -30,6 +30,7 @@ class LivingThing():
         print('You gained 20 health')
         print('Your health is now',self.health)
 
+
 # Create a class for the player, inheriting from LivingThing
 class Player(LivingThing):
     def __init__(self, name,):
@@ -105,6 +106,7 @@ class Player(LivingThing):
                 self.fight(monster)
             else:
                 print("You couldn't find anything")
+
         elif diceroll == 1:
             if self.room.items != '':
                  # Player found an item while exploring
@@ -115,6 +117,7 @@ class Player(LivingThing):
                 self.exp += 50
             else:
                 print("You couldn't find anything")
+
         elif diceroll == 2:
             if self.room.npcs != '':
                 # Player encountered a FriendlyNPC
@@ -146,6 +149,7 @@ class Player(LivingThing):
                             self.exp += 500
                             self.score += 500
                             return
+                        
                     elif item_name == 'Locket':
                         # checks if the item is a locket
                         if key in self.inventory:
@@ -157,6 +161,7 @@ class Player(LivingThing):
                             self.exp += 500
                             self.score += 500
                             return
+                        
                     else:
                         item.attributes()  # Call the item's attributes method
                         self.inventory.remove(item)  # Remove the used item from inventory
@@ -164,6 +169,7 @@ class Player(LivingThing):
                         self.score += 10
                         self.exp += 10
                     return
+                
                 else:
                     print('This item is not consumable')
             else:
@@ -178,60 +184,74 @@ class Player(LivingThing):
             if self.equipped_weapon != '':
                 # checks if the player has a weapon
                 attack = input(f'What action do you want to do?(slash [has a chance to deal a small to a large amout of dmg],stab [deals a smaller range of damage],use,inv)\n>>')
+
                 if attack == 'slash':
                     print(self.name,"slash's at the",monster.name)
                     dmg = randint(1,10) + self.equipped_weapon.modifier
                     print(self.name,'did',dmg,'damage')
                     monster.health -= dmg
                     print(monster.name,'health is now',monster.health)
+
                 elif attack == 'stab':
                     print(self.name,"stab's at the",monster.name)
                     dmg = randint(5,6) + self.equipped_weapon.modifier
                     print(self.name,'did',dmg,'damage')
                     monster.health -= dmg
                     print(monster.name,'health is now',monster.health)
+
                 elif attack == 'use':
                     # Allows the player to use items during combat
                     self.use(monster)
                     non_comabat_action = True
+
                 elif attack == 'inv':
                     # Allows the player to view their inventory during combat
                     self.show_inventory(monster)
                     non_comabat_action = True
+
                 elif attack == 'stats':
                     # Allows the player to view their stats in combat
                     self.stats(boss)
                     non_comabat_action = True
+
                 else:
                     print('Please input a real attack')
                     non_comabat_action = True
+
             else:
                 attack = input('What action do you want to do?(punch,use,inv,stats)\n>>')
+
                 if attack == 'punch':
                     dmg = randint(0,5)
                     print('you punch the',monster.name,'for',dmg,'damage')
                     monster.health -= dmg
                     print(monster.name,'now has',monster.health,'health')
+
                 elif attack == 'use':
                     # Allows the player to use items during combat
                     self.use(monster)
                     non_comabat_action = True
+
                 elif attack == 'inv':
                     # Allows the player to view their inventory during combat
                     self.show_inventory(monster)
                     non_comabat_action = True
+
                 elif attack == 'stats':
                         # Allows the player to view their stats in combat
                         self.stats(boss)
                         non_comabat_action = True
+
                 else:
                     print('Please input a real attack')
                     non_comabat_action = True
+
             if monster.health > 0:
                 # Monster attack
                 if non_comabat_action == True:
                     # checks if the player used: use, inv or didn't input an option
                     pass
+
                 else:
                     mindamage = round(monster.maxdamage/3)
                     dmg = randint(mindamage,monster.maxdamage)
@@ -252,9 +272,11 @@ class Player(LivingThing):
             if monster.drops != '':
                 self.inventory.append(monster.drops)
                 print('you picked up',monster.drops.name,'from',monster.name)
+
             self.gold += monster.gold_drops
             print('you picked up',monster.gold_drops,'gold')
             input('Press Enter to continue\n>>')
+
         else:
             # if the player died
             print('You were Killed by the', monster.name)
@@ -263,6 +285,7 @@ class Player(LivingThing):
     def boss_fight(self,monster):
         # Triggered when entered the boss room
         global fight_stage
+
         if fight_stage == 1:
             # displays dialog then the player has to fight a monster
             print(boss.name,': Petty mortal')
@@ -273,6 +296,7 @@ class Player(LivingThing):
             monster = goblin_brute_2
             self.fight(monster)
             fight_stage += 1
+
         elif fight_stage == 2:
             # displays dialog
             print(boss.name,': hmmn')
@@ -282,6 +306,7 @@ class Player(LivingThing):
             print('LETS SEE HOW LONG YOU CAN LIVE')
             input('Press Enter to continue\n>>')
             fight_stage += 1
+
         elif fight_stage == 3:
             # Triggers a fight with the boss
             first_round = True
@@ -290,64 +315,79 @@ class Player(LivingThing):
                 non_comabat_action = False
                 if first_round == True:
                     first_round = False
+
                 else:
                     if self.equipped_weapon != '':
                         # cheaks if the player has a weapon equiped
                         attack = input(f'What action do you want to do?(slash [has a chance to deal a small to a large amout of dmg],stab [deals a smaller range of damage],use,inv,stats)\n>>')
+
                         if attack == 'slash':
                             print(self.name,"slash's at the",boss.name)
                             dmg = randint(1,10) + self.equipped_weapon.modifier
                             print(self.name,'did',dmg,'damage')
                             boss.health -= dmg
                             print(boss.name,'health is now',boss.health)
+
                         elif attack == 'stab':
                             print(self.name,"stab's at the",boss.name)
                             dmg = randint(5,6) + self.equipped_weapon.modifier
                             print(self.name,'did',dmg,'damage')
                             boss.health -= dmg
                             print(boss.name,'health is now',boss.health)
+
                         elif attack == 'use':
                             # Allows the player to use items in combat 
                             self.use(boss)
                             non_comabat_action = True
+
                         elif attack == 'inv':
                             # Allows the player to view their inventory during combat
                             self.show_inventory(boss)
                             non_comabat_action = True
+
                         elif attack == 'stats':
                             # Allows the player to view their stats in combat
                             self.stats(boss)
                             non_comabat_action = True
+
                         else:
                             print('Please input a real attack')
                             non_comabat_action = True
+
                     else:
                         attack = input('What action do you want to do?(punch,use,inv,stats)\n>>')
+
                         if attack == 'punch':
                             dmg = randint(0,5)
                             print('you punch the',boss.name,'for',dmg,'damage')
                             boss.health -= dmg
                             print(boss.name,'now has',boss.health,'health')
+
                         elif attack == 'use':
                             # Allows the player to use items in combat 
                             self.use(boss)
                             non_comabat_action = True
+
                         elif attack == 'inv':
                             # Allows the player to view their inventory during combat
                             self.show_inventory(boss)
                             non_comabat_action = True
+
                         elif attack == 'stats':
                             # Allows the player to view their stats in combat
                             self.stats(boss)
                             non_comabat_action = True
+
                         else:
                             print('Please input a real attack')
                             non_comabat_action = True
+
                 if boss.health >= 0:
                     # cheaks if the boss is alive
                     if non_comabat_action == True:
                         # checks if the player used: use, inv or didn't input an option
                         pass
+
                     else:
                         mindamage = round(boss.maxdamage/3)
                         dmg = randint(mindamage,boss.maxdamage)
@@ -356,6 +396,7 @@ class Player(LivingThing):
                         print('The',boss.name,choice(boss.actions),'you for',dmg,'damage')
                         self.health -= dmg
                         print('Your health is now',self.health)
+
             if self.health > 0:
                 # checks if you are still alive
                 print('Victory!\nYou defeated the', boss.name)
@@ -371,12 +412,14 @@ class Player(LivingThing):
         print('Buy (allows you to buy items from npc)')
         option = input('Talk (allows the npc to say a line)\n>>')
         option = option.capitalize()
+
         while self.status == 'Encountered':
             if option == 'Leave':
                 # leaves the interaction
                 print(self.name,'walks away')
                 self.status = 'regular'
                 return
+            
             elif option == 'Buy':
                 # allows you to buy items from npc
                 if self.room.npcs.items != '':
@@ -390,19 +433,24 @@ class Player(LivingThing):
                             self.pick_up_item(self.room.npcs.items)
                             self.gold -= self.room.npcs.item_cost
                             return
+                        
                         else:
                             print("you don't have enough gold to buy", self.room.npcs.items.name)
+
                     else:
                         return
+                    
                 else:
                     print("this Npc doesn't have an item to sell")
                     input('Press Enter to continue\n>>')
                     return
+                
             elif option == 'Talk':
                 # allows the npc to say a line
                 print(self.room.npcs.lines)
                 input('Press Enter to continue\n>>')
                 return
+            
             else:
                 print(self.name,"doesn't understand this suggestion")
 
@@ -432,6 +480,7 @@ class Player(LivingThing):
                     # cheaks if the item is a weapon
                     self.score += 25
                     self.exp += 25
+
                     if self.equipped_weapon == '':
                         # cheaks if the player all ready has a weapon equiped 
                         self.equipped_weapon = item
@@ -439,6 +488,7 @@ class Player(LivingThing):
                         self.rest_cooldown = self.rest_cooldown - 1
                         self.inventory.remove(self.equipped_weapon)
                         return  # Exit the function after equipping
+                    
                     else:
                         self.inventory.append(self.equipped_weapon)
                         self.equipped_weapon = item
@@ -446,10 +496,12 @@ class Player(LivingThing):
                         print(f'You equipped {item_name}')
                         self.rest_cooldown = self.rest_cooldown - 1
                         return  # Exit the function after equipping
+                    
                 elif isinstance(item, Armour):
                     # cheaks if the item is armour
                     self.score += 25
                     self.exp += 25
+
                     if self.equipped_armour == '':
                         # cheaks if the player all ready has armour equiped 
                         self.equipped_armour = item
@@ -457,6 +509,7 @@ class Player(LivingThing):
                         self.rest_cooldown = self.rest_cooldown - 1
                         self.inventory.remove(self.equipped_armour)
                         return  # Exit the function after equipping
+                    
                     else:
                         self.inventory.append(self.equipped_armour)
                         self.equipped_armour = item
@@ -464,9 +517,11 @@ class Player(LivingThing):
                         print(f'You equipped {item_name}')
                         self.rest_cooldown = self.rest_cooldown - 1
                         return  # Exit the function after equipping
+                    
                 else:
                     print('that is not a weapon or armour and can not be equiped')
                     return # Exits function
+                
         print("You can't equip that")
 
     def go(self,monster):
@@ -485,6 +540,7 @@ class Player(LivingThing):
                     self.status = 'Confronted'
                     monster = self.room.monsters
                     self.fight(monster)
+
             # checks if the direction that was inputed is an avaliable direction
             if direction in room_connections[self.room]:
                 self.room = room_connections[self.room][direction]
@@ -494,6 +550,7 @@ class Player(LivingThing):
                 self.tire()
                 self.score += 25
                 self.exp += 25
+
             else:
                 print("You can't go that way.")
         except KeyError:
@@ -538,6 +595,7 @@ class Player(LivingThing):
         # Allow the player to load a saved game
         pass
 
+
 # Create a class for monsters, also inheriting from LivingThing
 class Monster(LivingThing):
     def __init__(self, name, health, maxdamage,drops,gold_drops):
@@ -547,6 +605,7 @@ class Monster(LivingThing):
         self.maxdamage = maxdamage
         self.drops = drops
         self.gold_drops = gold_drops
+
 
 # Create a class for humanoid monsters, inheriting from Monster
 class Humanoid(Monster):
@@ -559,6 +618,7 @@ class Humanoid(Monster):
         self.gold_drops = gold_drops
         self.actions = ['slash','stab']
 
+
 # Create a class for beast monsters, inheriting from Monster
 class Beast(Monster):
     def __init__(self, name, health, maxdamage, drops, gold_drops):
@@ -570,6 +630,7 @@ class Beast(Monster):
         self.gold_drops = gold_drops
         self.actions = ['slash','maul']
 
+
 class Dragon(Monster):
     def __init__(self, name, health, maxdamage, drops, gold_drops):
         # Initialize Dragon monsters attributes
@@ -579,6 +640,7 @@ class Dragon(Monster):
         self.drops = drops
         self.gold_drops = gold_drops
         self.actions = ['flamebreath','fireball']
+
 
 # Create a class for friendly NPC's, also inheriting from LivingThing
 class FriendlyNPC(LivingThing):
@@ -590,6 +652,7 @@ class FriendlyNPC(LivingThing):
         self.items = items
         self.item_cost = item_cost
 
+
 # Create a Class for Items
 class Item():
     def __init__(self,name,description):
@@ -597,12 +660,14 @@ class Item():
         self.name = name 
         self.description = description
 
+
 class Consumables(Item):
     def __init__(self,name,description,attributes):
         # Initialize Consumables
         self.name = name 
         self.description = description
         self.attributes = attributes
+
 
 # Create a class for Weapons, inheriting from Item
 class Weapon(Item):
@@ -612,6 +677,7 @@ class Weapon(Item):
         self.description = description
         self.modifier = modifier
 
+
 # Create a class for armour, inheriting from weapon
 class Armour(Item):
     def __init__(self,name,description,modifier):
@@ -619,6 +685,7 @@ class Armour(Item):
         self.name = name
         self.description = description
         self.modifier = modifier
+
 
 # Create a class for Rooms
 class Room():
@@ -629,6 +696,7 @@ class Room():
         self.monsters = monsters
         self.npcs = npcs
         self.items = items
+
 
 # function to roll credits
 def credits():
@@ -681,6 +749,7 @@ def get_difficulty():
         difficulty = input("Please select a difficulty:\nEasy (1),\nNormal (2),\nHard (3)\n>>")
         if difficulty in Difficulty.keys():
             difficulty = Difficulty[difficulty]
+
         else:
             print('!!Please select a real difficulty!!')
             difficulty = ''
@@ -724,6 +793,7 @@ try:
     # tell player high score and its holder
     print('the current highscore holder is',high_score_holder,'with a score of',high_score)
     print('')
+
 except FileNotFoundError:
     # if one doesn't exist it sets high score to 0
     high_score = 0
@@ -864,6 +934,7 @@ def Main_loop():
     print('(type help to get a list of actions) \n')
     print(hero.name, 'Your story begins' ,hero.room.description)
     exp_to_next_level = 100
+
     # Game loop
     while hero.health > 0 and boss.health > 0:
         print('')
@@ -880,6 +951,7 @@ def Main_loop():
             hero.exp -= exp_to_next_level
             exp_to_next_level += exp_to_next_level
             input('Press Enter to continue\n>>')
+
         elif hero.room == Boss_Room:
             if fight_stage == 1:
                 option = input('are you sure you want to enter the boss room this will trigger the boss fight (yes/no)\n>>')
@@ -887,13 +959,16 @@ def Main_loop():
                 if option == 'no':
                     print('you turn back')
                     hero.room = cave_cavern
+
                 else:
                     print('you enter the room and see a towering figure')
                     hero.status = 'Boss fight'
                     hero.boss_fight(boss)
+
             else:
                 hero.status = 'Boss fight'
                 hero.boss_fight(boss)
+
         else:
             # User inputs
             line = input('What do you want to do \n>> ')
@@ -912,6 +987,7 @@ if hero.dev == True:
     # Ending options
     if hero.health > 0:
         print('You Win! Game Over')
+
     else:
         print('Game Over. you lost :(')
     input('Press Enter to continue\n>>')
@@ -921,6 +997,7 @@ if hero.dev == True:
         print('You had:')
         for item in hero.inventory:
             print(f'{item.name}: {item.description}')
+
     else:
         print('Your inventory was empty.')
 
@@ -934,6 +1011,7 @@ else:
     if hero.health > 0:
         print('You Win! Game Over')
         hero.score += 1000
+
     else:
         print('Game Over. you lost :(')
     input('Press Enter to continue\n>>')
@@ -943,6 +1021,7 @@ else:
         print('You had:')
         for item in hero.inventory:
             print(f'{item.name}: {item.description}')
+
     else:
         print('Your inventory was empty.')
 

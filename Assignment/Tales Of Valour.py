@@ -582,6 +582,7 @@ class Player(LivingThing):
         # allows the player to activate dev mode making them overpowered 
         self.health = 1000
         self.equipped_weapon = god_weapon
+        self.equipped_armour = god_armour
         self.exp += 100000000
         self.gold += 100000
         Commands.popitem()
@@ -795,10 +796,19 @@ try:
     print('')
 
 except FileNotFoundError:
-    # if one doesn't exist it sets high score to 0
-    high_score = 0
-    print('currently there is no highscore')
-    pass
+    # Allows the player to pick if they want to use my score or start from 0
+    want_dev_score = input('Do you want to go up against Dexters high score of 6050:(y/n)\n>>')
+    if want_dev_score == 'y':
+        # Sets the highscore and highscore holder to 'Dexter' and 6050 respectivly 
+        high_score_holder = 'Dexter'
+        high_score = 6050
+        print('the current highscore holder is',high_score_holder,'with a score of',high_score)
+        pass
+
+    else:
+        # If one doesn't exist it sets high score to 0
+        print('currently there is no highscore')
+        pass
 
 # Create Item instances
 health_potion = Consumables('Health potion','Restores some health points.',hero.heal) # Start with
@@ -829,9 +839,10 @@ rusted_sword = Weapon('Rusted sword','Increase damage by 3',3) # drops from band
 goblin_scimatar = Weapon('Goblin scimatar','Increases damage by 13',13) # drops from goblin brute
 
 # Create armour instances
-traveler_armour = Armour('Travelers armour','Reduces damage taken by 2',2) # buy from NPC
-village_armour = Armour('Village armour','Reduces damage by 4',4) # buy from villager for 150 gold
-troll_armour = Armour('Troll armour','Reduces damage by 6',6) # drops from troll
+traveler_armour = Armour('Travelers armour','Reduces damage taken by 2',2) # buy from traveler for 5
+village_armour = Armour('Village armour','Reduces damage by 4',6) # buy from villager for 150 gold
+troll_armour = Armour('Troll armour','Reduces damage by 6',8) # drops from troll
+god_armour = Armour('Gods Armour','Reduces damage taken by 100',100) # if player uses god_mode func
 
 # Create friendly NPC instances
 villiger = FriendlyNPC('Villiger',5,"I have heard storys of the horrors out side the village",village_armour,150) # found in village
@@ -865,7 +876,7 @@ troll = Humanoid('Troll',20*difficulty,9*difficulty,troll_armour,100) # found in
 excaped_prisoner = Humanoid('Excaped prisoner',3*difficulty,2*difficulty,'','') # found in dungeon
 
 # Create Boss instance
-dragon = Dragon('Timόtheos',45*difficulty,15*difficulty,'',400) # found in boss room
+dragon = Dragon('Timόtheos',45*difficulty,17*difficulty,'',400) # found in boss room
 goblin_brute_2 = Humanoid('Goblin Brute',20*difficulty,9*difficulty,'',100)
 
 # Create Rooms
@@ -923,10 +934,8 @@ room_connections = {
 boss = dragon
 fight_stage = 1
 monster = ''
-hero.room = Boss_Room
+hero.room = forest_clearing
 hero.inventory.append(health_potion) # Player starts with a health potion
-hero.inventory.append(locket)
-hero.inventory.append(key)
 
 # Main game loop function
 def Main_loop():

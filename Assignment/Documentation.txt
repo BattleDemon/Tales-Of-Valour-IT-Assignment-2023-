@@ -1,1 +1,3 @@
-Tales of Valour Documentation
+Tales Of Valour Documentation 
+
+  The original game was a bit of a mess full of exploits and bugs. You could explore repeatedly always gaining infinite health.  

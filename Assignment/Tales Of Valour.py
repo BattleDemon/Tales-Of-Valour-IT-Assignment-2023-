@@ -13,6 +13,8 @@ class LivingThing():
         if diceroll == 0:
             self.health = self.health - 2
             print('You have gotten tired, your health suffered')
+            if self.health < 0:
+                self.health = 0
             print('Your health is', hero.health)
         else:
             pass
@@ -190,6 +192,8 @@ class Player(LivingThing):
                     dmg = randint(1,10) + self.equipped_weapon.modifier
                     print(self.name,'did',dmg,'damage')
                     monster.health -= dmg
+                    if monster.health < 0:
+                            monster.health = 0
                     print(monster.name,'health is now',monster.health)
 
                 elif attack == 'stab':
@@ -197,6 +201,8 @@ class Player(LivingThing):
                     dmg = randint(5,6) + self.equipped_weapon.modifier
                     print(self.name,'did',dmg,'damage')
                     monster.health -= dmg
+                    if monster.health < 0:
+                            monster.health = 0
                     print(monster.name,'health is now',monster.health)
 
                 elif attack == 'use':
@@ -225,6 +231,8 @@ class Player(LivingThing):
                     dmg = randint(0,5)
                     print('you punch the',monster.name,'for',dmg,'damage')
                     monster.health -= dmg
+                    if monster.health < 0:
+                            monster.health = 0
                     print(monster.name,'now has',monster.health,'health')
 
                 elif attack == 'use':
@@ -259,6 +267,8 @@ class Player(LivingThing):
                         dmg -= self.equipped_armour.modifier
                     print('The',monster.name,choice(monster.actions),'you for',dmg,'damage')
                     self.health -= dmg
+                    if self.health < 0:
+                            self.health = 0
                     print('Your health is now',self.health)
               
         if self.health > 0:
@@ -326,6 +336,8 @@ class Player(LivingThing):
                             dmg = randint(1,10) + self.equipped_weapon.modifier
                             print(self.name,'did',dmg,'damage')
                             boss.health -= dmg
+                            if boss.health < 0:
+                                boss.health = 0
                             print(boss.name,'health is now',boss.health)
 
                         elif attack == 'stab':
@@ -333,6 +345,8 @@ class Player(LivingThing):
                             dmg = randint(5,6) + self.equipped_weapon.modifier
                             print(self.name,'did',dmg,'damage')
                             boss.health -= dmg
+                            if boss.health < 0:
+                                boss.health = 0
                             print(boss.name,'health is now',boss.health)
 
                         elif attack == 'use':
@@ -361,6 +375,8 @@ class Player(LivingThing):
                             dmg = randint(0,5)
                             print('you punch the',boss.name,'for',dmg,'damage')
                             boss.health -= dmg
+                            if boss.health < 0:
+                                boss.health = 0
                             print(boss.name,'now has',boss.health,'health')
 
                         elif attack == 'use':
@@ -395,6 +411,8 @@ class Player(LivingThing):
                             dmg -= self.equipped_armour.modifier
                         print('The',boss.name,choice(boss.actions),'you for',dmg,'damage')
                         self.health -= dmg
+                        if self.health < 0:
+                            self.health = 0
                         print('Your health is now',self.health)
 
             if self.health > 0:

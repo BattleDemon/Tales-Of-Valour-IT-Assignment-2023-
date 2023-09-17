@@ -606,14 +606,6 @@ class Player(LivingThing):
         Commands.popitem()
         self.dev = True
 
-    def save(self,monster):
-        # Allows the player to save the game
-        pass
-
-    def load(self,monster):
-        # Allow the player to load a saved game
-        pass
-
 
 # Create a class for monsters, also inheriting from LivingThing
 class Monster(LivingThing):

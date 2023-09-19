@@ -103,7 +103,7 @@ class Player(LivingThing):
                 self.status = 'Confronted'
                 self.score += 50
                 self.exp += 50
-                input('Press Enter to continue\n>>')
+                input('Press Enter to continue\n>> ')
                 monster = self.room.monsters
                 self.fight(monster)
             else:
@@ -127,13 +127,13 @@ class Player(LivingThing):
                 self.status = 'Encountered'
                 self.score += 50
                 self.exp += 50
-                input('Press Enter to continue\n>>')
+                input('Press Enter to continue\n>> ')
             else:
                 print("You couldn't find anything")
 
     def use(self, monster):
         # Allows the player to use item such as health potions
-        item_name = input('What item do you want to use?\n>>')
+        item_name = input('What item do you want to use?\n>> ')
         item_name = item_name.capitalize()
         for item in self.inventory:
             # checks if the item is in the players inventory 
@@ -185,7 +185,7 @@ class Player(LivingThing):
             non_comabat_action = False
             if self.equipped_weapon != '':
                 # checks if the player has a weapon
-                attack = input(f'What action do you want to do?(slash [has a chance to deal a small to a large amout of dmg],stab [deals a smaller range of damage],use,inv)\n>>')
+                attack = input(f'What action do you want to do?(slash [has a chance to deal a small to a large amout of dmg],stab [deals a smaller range of damage],use,inv)\n>> ')
 
                 if attack == 'slash':
                     print(self.name,"slash's at the",monster.name)
@@ -225,7 +225,7 @@ class Player(LivingThing):
                     non_comabat_action = True
 
             else:
-                attack = input('What action do you want to do?(punch,use,inv,stats)\n>>')
+                attack = input('What action do you want to do?(punch,use,inv,stats)\n>> ')
 
                 if attack == 'punch':
                     dmg = randint(0,5)
@@ -314,7 +314,7 @@ class Player(LivingThing):
             print('NOW YOU CHALLENGE ME')
             print('YOU CANT TURN BACK NOW')
             print('LETS SEE HOW LONG YOU CAN LIVE')
-            input('Press Enter to continue\n>>')
+            input('Press Enter to continue\n>> ')
             fight_stage += 1
 
         elif fight_stage == 3:
@@ -329,7 +329,7 @@ class Player(LivingThing):
                 else:
                     if self.equipped_weapon != '':
                         # cheaks if the player has a weapon equiped
-                        attack = input(f'What action do you want to do?(slash [has a chance to deal a small to a large amout of dmg],stab [deals a smaller range of damage],use,inv,stats)\n>>')
+                        attack = input(f'What action do you want to do?(slash [has a chance to deal a small to a large amout of dmg],stab [deals a smaller range of damage],use,inv,stats)\n>> ')
 
                         if attack == 'slash':
                             print(self.name,"slash's at the",boss.name)
@@ -369,7 +369,7 @@ class Player(LivingThing):
                             non_comabat_action = True
 
                     else:
-                        attack = input('What action do you want to do?(punch,use,inv,stats)\n>>')
+                        attack = input('What action do you want to do?(punch,use,inv,stats)\n>> ')
 
                         if attack == 'punch':
                             dmg = randint(0,5)
@@ -419,7 +419,7 @@ class Player(LivingThing):
                 # checks if you are still alive
                 print('Victory!\nYou defeated the', boss.name)
                 self.room.monsters = ''
-                input('Press Enter to continue\n>>')
+                input('Press Enter to continue\n>> ')
             else:
                 # if you died
                 print('You were Killed by', boss.name)
@@ -428,7 +428,7 @@ class Player(LivingThing):
         # Allows the player to encounter friendlyNPC's
         print('Your options are \n>Leave (leave the Npc you encountered')
         print('Buy (allows you to buy items from npc)')
-        option = input('Talk (allows the npc to say a line)\n>>')
+        option = input('Talk (allows the npc to say a line)\n>> ')
         option = option.capitalize()
 
         while self.status == 'Encountered':
@@ -443,7 +443,7 @@ class Player(LivingThing):
                 if self.room.npcs.items != '':
                     print('you have',self.gold,'gold')
                     print('You can buy',self.room.npcs.items.name,'for',self.room.npcs.item_cost)
-                    option_2 = input('Do you want to buy this item? (yes/no)\n>>')
+                    option_2 = input('Do you want to buy this item? (yes/no)\n>> ')
                     if option_2 == 'yes':
                         if self.gold >= self.room.npcs.item_cost:
                             # cheaks if the player has enough gold
@@ -460,13 +460,13 @@ class Player(LivingThing):
                     
                 else:
                     print("this Npc doesn't have an item to sell")
-                    input('Press Enter to continue\n>>')
+                    input('Press Enter to continue\n>> ')
                     return
                 
             elif option == 'Talk':
                 # allows the npc to say a line
                 print(self.room.npcs.lines)
-                input('Press Enter to continue\n>>')
+                input('Press Enter to continue\n>> ')
                 return
             
             else:
@@ -554,7 +554,7 @@ class Player(LivingThing):
                 num = randint(1,2)
                 if num == 1:
                     print('You have been confronted by',self.room.monsters.name)
-                    input('Press Enter to continue\n>>')
+                    input('Press Enter to continue\n>> ')
                     self.status = 'Confronted'
                     monster = self.room.monsters
                     self.fight(monster)
@@ -757,7 +757,7 @@ difficulty = ''
 def get_difficulty():
     global difficulty
     while difficulty == '':
-        difficulty = input("Please select a difficulty:\nEasy (1),\nNormal (2),\nHard (3)\n>>")
+        difficulty = input("Please select a difficulty:\nEasy (1),\nNormal (2),\nHard (3)\n>> ")
         if difficulty in Difficulty.keys():
             difficulty = Difficulty[difficulty]
 
@@ -777,7 +777,7 @@ print(
     "   | |   | )   ( || (____/\| (____/\/\____) |      | (___) || )            \   /  | )   ( || (____/\| (___) || (___) || ) \ \__\n"
     "   )_(   |/     \|(_______/(_______/\_______)      (_______)|/              \_/   |/     \|(_______/(_______)(_______)|/   \__/\n"
 )
-input('Press Enter to continue\n>>')
+input('Press Enter to continue\n>> ')
 
 # Get the player's name
 print('Welcome hero')
@@ -807,7 +807,7 @@ try:
 
 except FileNotFoundError:
     # Allows the player to pick if they want to use my score or start from 0
-    want_dev_score = input('Do you want to go up against Dexters high score of 6050:(y/n)\n>>')
+    want_dev_score = input('Do you want to go up against Dexters high score of 6050:(y/n)\n>> ')
     if want_dev_score == 'y':
         # Sets the highscore and highscore holder to 'Dexter' and 6050 respectivly 
         high_score_holder = 'Dexter'
@@ -969,11 +969,11 @@ def Main_loop():
             print('You health is now',hero.health)
             hero.exp -= exp_to_next_level
             exp_to_next_level += exp_to_next_level
-            input('Press Enter to continue\n>>')
+            input('Press Enter to continue\n>> ')
 
         elif hero.room == Boss_Room:
             if fight_stage == 1:
-                option = input('are you sure you want to enter the boss room this will trigger the boss fight (yes/no)\n>>')
+                option = input('are you sure you want to enter the boss room this will trigger the boss fight (yes/no)\n>> ')
                 # Allows the player to back out of the boss fight 
                 if option == 'no':
                     print('you turn back')
@@ -1009,7 +1009,7 @@ if hero.dev == True:
 
     else:
         print('Game Over. you lost :(')
-    input('Press Enter to continue\n>>')
+    input('Press Enter to continue\n>> ')
 
     # shows the player their inventory 
     if hero.inventory:
@@ -1021,7 +1021,7 @@ if hero.dev == True:
         print('Your inventory was empty.')
 
     # Shows the player their important stats
-    input('Press Enter to continue\n>>')
+    input('Press Enter to continue\n>> ')
     print('You were level',hero.level)
     print('you had',hero.exp,'exp')
 
@@ -1033,7 +1033,7 @@ else:
 
     else:
         print('Game Over. you lost :(')
-    input('Press Enter to continue\n>>')
+    input('Press Enter to continue\n>> ')
 
     # shows the player their inventory 
     if hero.inventory:
@@ -1048,7 +1048,7 @@ else:
     hero.score *= round(difficulty)
 
     # Shows the player their important stats
-    input('Press Enter to continue\n>>')
+    input('Press Enter to continue\n>> ')
     print('You were',hero.level)
     print('you had',hero.exp,'exp')
     print('Your score is',hero.score)

@@ -650,7 +650,7 @@ class Dragon(Monster):
         self.maxdamage = maxdamage
         self.drops = drops
         self.gold_drops = gold_drops
-        self.actions = ['flamebreath','fireball']
+        self.actions = ['flamebreath','fire-slash']
 
 
 # Create a class for friendly NPC's, also inheriting from LivingThing
@@ -781,7 +781,7 @@ input('Press Enter to continue\n>> ')
 
 # Get the player's name
 print('Welcome hero')
-print('you are a travelar from a far off land')
+print('you are a traveler from a far off land')
 print('you came to this land to find valour or die trying')
 name = input("What is your name?\n>> ")
 if len(name) > 15:
@@ -802,22 +802,22 @@ try:
     file.close()
 
     # tell player high score and its holder
-    print('the current highscore holder is',high_score_holder,'with a score of',high_score)
+    print('the current high score holder is',high_score_holder,'with a score of',high_score)
     print('')
 
 except FileNotFoundError:
     # Allows the player to pick if they want to use my score or start from 0
     want_dev_score = input('Do you want to go up against Dexters high score of 6050:(y/n)\n>> ')
     if want_dev_score == 'y':
-        # Sets the highscore and highscore holder to 'Dexter' and 6050 respectivly 
+        # Sets the high score and high score holder to 'Dexter' and 6050 respectively 
         high_score_holder = 'Dexter'
         high_score = 6050
-        print('the current highscore holder is',high_score_holder,'with a score of',high_score)
+        print('the current high score holder is',high_score_holder,'with a score of',high_score)
         pass
 
     else:
         # If one doesn't exist it sets high score to 0
-        print('currently there is no highscore')
+        print('currently there is no high score)
         pass
 
 # Create Item instances
@@ -838,10 +838,10 @@ locket = Consumables('Locket','This locket seems locked maybe a key will unlock 
 
 # Create Weapon instances
 magic_sword = Weapon('Magic Sword','Increase damage by 15',15) # Drops from dragon
-pitch_fork = Weapon('Pitch fork','Increase damage by 6',6) # found in village
+pitch_fork = Weapon('Pitch fork','Increase damage by 6',6) # found in the village
 sword = Weapon("Sword",'Increase damage by 4',4) # found in deeper forest
 axe = Weapon('Axe','Increase damage by 2',2) # found on path in forest
-village_guard_sword = Weapon('Guard sword','Increase damage by 10',10) # buy from villager for 300 gold
+village_guard_sword = Weapon('Guard sword','Increase damage by 10',10) # buy from a villager for 300 gold
 sharp_stick = Weapon('Sharp stick','Increases damage by 1',1) # found in forest
 lords_sword = Weapon('Lords sword','Increase damage by 12',12) # found in keep
 god_weapon = Weapon('Gods sword','Increase damage by 100',100) # if player uses god_mode func
@@ -863,7 +863,7 @@ shepherd = FriendlyNPC('Humble Gabe',10,'I am but a humble shepherd, but i have 
 prisoner = FriendlyNPC('Prisoner',2,'','','') # found in cave entrance 2
 prisoner_2 = FriendlyNPC('Prisoner',2,'','','') # found in deep cave
 village_scout = FriendlyNPC('Zen the scout',10,'','','') # found on path in meadow
-satyr = FriendlyNPC('Friendly satyr',10,'This grove has been guarded by my kind for centuries we dont bother our selves with the outside world','','') # found in forest grove
+satyr = FriendlyNPC('Friendly satyr',10,"My kind has guarded this grove for centuries we don't bother ourselves with the outside world",'','') # found in forest grove
 prison_guard = FriendlyNPC('Prison guard',10,'i am the guard of this here prison we have never had an excepee','','') # found in dungeon
 goblin_adventurer = FriendlyNPC('Goblin Adventurer',10,'gih fuu feufeueu ueu gfeufg eug eu yeuhgewufiw whfyyw ygvu fhvw',locket,20) # found in old vault
 

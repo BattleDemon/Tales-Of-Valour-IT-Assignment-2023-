@@ -1,3 +1,4 @@
+# Imports randint and choice from random so they can be used in the code
 from random import randint, choice
 
 # Create a base class representing a living thing
@@ -27,7 +28,7 @@ class LivingThing():
         print('Your health is now',self.health)
 
     def mega_heal(self):
-        # adds 2o health to the livingthing
+        # adds 20 health to the livingthing
         self.health = self.health + 20
         print('You gained 20 health')
         print('Your health is now',self.health)
@@ -40,7 +41,7 @@ class Player(LivingThing):
         self.name = name
         self.health = 25
         self.status = 'regular' 
-        self.inventory = []
+        self.inventory = [] 
         self.equipped_weapon = ''
         self.equipped_armour = ''
         self.room = ''
@@ -70,18 +71,21 @@ class Player(LivingThing):
         print('You have a health of', self.health)
         print('your status is', self.status)
         print('You are in', self.room.name)
+
         # checks if the player is holding a weapon
         if self.equipped_weapon == '':
             print("You don't have any weapon equiped")
         else:
             print('You have', self.equipped_weapon.name,'equiped')
             print(self.equipped_weapon.name,'Increases damage by',self.equipped_weapon.modifier)
+
         # checks if the player is wearing armour
         if self.equipped_armour == '':
             print("You don't have any armour equiped")
         else:
             print('You have', self.equipped_armour.name,'equiped')
             print(self.equipped_armour.name,'Reduces damage taken by',self.equipped_armour.modifier)
+
         print("You can't rest for",self.rest_cooldown,'turns')
         print('you have',self.gold,'gold')
         print('You are level',self.level)
@@ -105,7 +109,7 @@ class Player(LivingThing):
                 self.exp += 50
                 input('Press Enter to continue\n>> ')
                 monster = self.room.monsters
-                self.fight(monster)
+                self.fight(monster) # starts combat
             else:
                 print("You couldn't find anything")
 
@@ -185,7 +189,7 @@ class Player(LivingThing):
             non_comabat_action = False
             if self.equipped_weapon != '':
                 # checks if the player has a weapon
-                attack = input(f'What action do you want to do?(slash [has a chance to deal a small to a large amout of dmg],stab [deals a smaller range of damage],use,inv)\n>> ')
+                attack = input(f'What action do you want to do?(slash [has a chance to deal a small to a large amout of dmg],stab [deals a smaller range of damage],use,inv,stats)\n>> ')
 
                 if attack == 'slash':
                     print(self.name,"slash's at the",monster.name)
@@ -217,7 +221,7 @@ class Player(LivingThing):
 
                 elif attack == 'stats':
                     # Allows the player to view their stats in combat
-                    self.stats(boss)
+                    self.stats(monster)
                     non_comabat_action = True
 
                 else:
@@ -369,6 +373,7 @@ class Player(LivingThing):
                             non_comabat_action = True
 
                     else:
+                        # Player input
                         attack = input('What action do you want to do?(punch,use,inv,stats)\n>> ')
 
                         if attack == 'punch':
@@ -453,6 +458,7 @@ class Player(LivingThing):
                             return
                         
                         else:
+                            # if the player doesn't have enough gold
                             print("you don't have enough gold to buy", self.room.npcs.items.name)
 
                     else:
@@ -557,7 +563,7 @@ class Player(LivingThing):
                     input('Press Enter to continue\n>> ')
                     self.status = 'Confronted'
                     monster = self.room.monsters
-                    self.fight(monster)
+                    self.fight(monster) # start combat
 
             # checks if the direction that was inputed is an avaliable direction
             if direction in room_connections[self.room]:
@@ -565,7 +571,7 @@ class Player(LivingThing):
                 print(f'You went {direction}')
                 print(f'you are now in the {self.room.name}')
                 self.rest_cooldown = self.rest_cooldown - 1
-                self.tire()
+                self.tire() # chance of dealing 2 dmg
                 self.score += 25
                 self.exp += 25
 
@@ -594,7 +600,7 @@ class Player(LivingThing):
         directions = 'You can go: '
         for key in room_connections[self.room]:
             directions += key
-            directions += ' , '
+            directions += ', '
 
     def dev_mode(self,monster):
         # allows the player to activate dev mode making them overpowered 
@@ -603,7 +609,7 @@ class Player(LivingThing):
         self.equipped_armour = god_armour
         self.exp += 100000000
         self.gold += 100000
-        Commands.popitem()
+        Commands.popitem() # makes it so the player can't use this command again
         self.dev = True
 
 
@@ -642,6 +648,7 @@ class Beast(Monster):
         self.actions = ['slash','maul']
 
 
+# Create a class for dragons (currently only used by the boss), inheriting from monster
 class Dragon(Monster):
     def __init__(self, name, health, maxdamage, drops, gold_drops):
         # Initialize Dragon monsters attributes
@@ -671,7 +678,7 @@ class Item():
         self.name = name 
         self.description = description
 
-
+# Create a class for consumable items, inheriting from item
 class Consumables(Item):
     def __init__(self,name,description,attributes):
         # Initialize Consumables
@@ -689,7 +696,7 @@ class Weapon(Item):
         self.modifier = modifier
 
 
-# Create a class for armour, inheriting from weapon
+# Create a class for armour, inheriting from item
 class Armour(Item):
     def __init__(self,name,description,modifier):
         # initialize Armour
@@ -757,11 +764,13 @@ difficulty = ''
 def get_difficulty():
     global difficulty
     while difficulty == '':
+        # allows the player to select a difficulty
         difficulty = input("Please select a difficulty:\nEasy (1),\nNormal (2),\nHard (3)\n>> ")
         if difficulty in Difficulty.keys():
             difficulty = Difficulty[difficulty]
 
         else:
+            # if the player inputed something other than a difficulty
             print('!!Please select a real difficulty!!')
             difficulty = ''
     return difficulty
@@ -783,9 +792,12 @@ input('Press Enter to continue\n>> ')
 print('Welcome hero')
 print('you are a traveler from a far off land')
 print('you came to this land to find valour or die trying')
+
 name = input("What is your name?\n>> ")
 if len(name) > 15:
+    # limits the number of characters the players name can have
     print ("Please keep the name below 15 characters!")
+
 hero = Player(name)
 get_difficulty()
 
@@ -817,7 +829,7 @@ except FileNotFoundError:
 
     else:
         # If one doesn't exist it sets high score to 0
-        print('currently there is no high score)
+        print('currently there is no high score')
         pass
 
 # Create Item instances
@@ -976,15 +988,18 @@ def Main_loop():
                 option = input('are you sure you want to enter the boss room this will trigger the boss fight (yes/no)\n>> ')
                 # Allows the player to back out of the boss fight 
                 if option == 'no':
+                    # exits boss room
                     print('you turn back')
                     hero.room = cave_cavern
 
                 else:
+                    # starts boss fight
                     print('you enter the room and see a towering figure')
                     hero.status = 'Boss fight'
                     hero.boss_fight(boss)
 
             else:
+                # continues boss fight
                 hero.status = 'Boss fight'
                 hero.boss_fight(boss)
 
@@ -1053,6 +1068,7 @@ else:
     print('you had',hero.exp,'exp')
     print('Your score is',hero.score)
 
+    # Sets a new high score
     if high_score < hero.score:
         file = open('highscore.txt','w')
         file.write(str(hero.score))

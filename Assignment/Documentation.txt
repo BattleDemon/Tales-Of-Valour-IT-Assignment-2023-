@@ -1,3 +1,44 @@
-Tales Of Valour Documentation 
+Tales Of Valour Documentation  
 
-  The original game was a bit of a mess full of exploits and bugs. You could explore repeatedly always gaining infinite health.  
+  The original game was a bit of a mess full of exploits and bugs. You could ui8explore repeatedly always gaining infinite health. The run function has a very random way of determining how much to heal the monster making it quite hard for the player to defeat it. Also, after running it doesn’t set the status back to ‘Regular’. The game lacks a clear win condition. While there are victory messages when a player defeats a monster, there is no indication of what it takes to win the game or what the player's goal is. The game lacks a sense of progression or story. The game doesn't provide much feedback to the player about their choices and their impact on the game world. There's no handling for what should occur when a player's health drops to zero. The game should have some game-over or restart function to make the player experience complete.  
+
+  I added a lot to my game. Here is a brief list of my additions the go function, the explore function, the item system (items [not usable], consumables, weapons, armour), the equip function, the use function, new monsters and subclasses for monster, a high score system, level system, rest function, quit function, friendly NPCs with interaction, a dev mode and some fixes around fight and healing. These improve the game by adding a clear end/win condition, it adds a sense of progression and provides more feedback to the player.  
+
+Room System  
+  The largest addition to my game was the room system. Rooms can contain several things a monster, an item and or an NPC. Along with these all rooms have a name and a description. The player can travel between rooms using the go function at the cost of possibly being tired (lose two health). The player can also explore the rooms using the function explore this is at the risk of being tired. The explore function allows the player to interact with things in the rooms by encountering NPCS and being confronted with monsters or even finding items.  
+
+ 
+
+ 
+
+Item System 
+
+Another large addition to my game was the item system. There are four types of Items: item, consumables, weapons, and armour. The simplest type of Item is item, it only has a name and description and can’t be used or equipped. Consumables are the most complex type of item; consumables can be used by the use function consuming them and calling a function to heal the player or if the item is a key or a locket, it has a secret. Weapons and armour are both equippable items, increasing damage and decreasing damage taken, respectively. 
+
+ 
+
+ 
+
+NPC interactions  
+  A decently sized addition was the NPC interactions. NPCs have three options when interacting. Leave, buy and talk. Leave allows the player to leave the interaction. Buy allows the player to buy an item from the NPC for gold. Talk allows the NPC to say a line that could give insight into the later part of the game. 
+
+ 
+
+Monster Subclasses 
+  A smaller addition was the monster subclasses. The monster subclasses are humanoid, beast and dragon. Humanoids are human like monsters (bandits & goblins) they have two attacks slash and stab. Beasts are animal like monsters (wolf & bear) they have two attacks slash and maul. Dragon currently only used as the boss has two attacks fireball and fire-slash.  
+
+ 
+
+XP Level and High score system 
+  Other small additions are the level and XP system and high score system. All these systems are connected the more XP you have the higher level you are the higher score you have. The level and XP system works by gaining XP from doing certain actions like killing monsters and successfully exploring. The player increases their level by gaining XP, when they collect enough XP the level increases and the XP required to gain a level doubles and XP is set to 0. While the high score is the collection of all XP throughout the game with some additions for beating the game and at the end of the game the score is multiplied by the difficulty. It then checks the players score against the high score and if the players score is higher than the high score, the players score becomes the new high score.  
+
+Fight System 
+  I fixed the fight system. By turning it into more of a turn-based combat system. Where the player can choose from a list of actions some combat (slash or stab) some utility (use, inv, stats). I think this improves the player experience by allowing them to select how they want to deal with a fight while also limiting what they can do like not exploring or equipping. 
+
+Other 
+  Other additions were the rest function, the dev mode function and difficulty system. First of the rest function, this function allows the player to regain health after several physical actions. The dev mode function that allows the player to go into dev mode, instantly increase their level to 20 gives them God armour and weapon and gives them all the gold they need. But at the cost of not been able to set a high score. Finally, the difficulty system that allows the player to pick a difficulty that determines the monster's health and damage and the end player score. 
+
+ 
+
+If I had more time 
+  Now what I would add if we had more time. A player class system allowing them to pick between fighter, barbarian, etc. A save and load system. Optional bosses or different bosses for different difficulties. A form of ranged weapons using a distance between the player and monster. Some random events, more potion types, day night system and the ability to fight friendly NPCs. 

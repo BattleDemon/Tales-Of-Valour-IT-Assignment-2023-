@@ -37,7 +37,7 @@ class LivingThing():
 # Create a class for the player, inheriting from LivingThing
 class Player(LivingThing):
     def __init__(self, name,):
-        # Initialize player-specific attributes c
+        # Initialize player-specific attributes
         self.name = name
         self.health = 25
         self.status = 'regular' 
@@ -51,6 +51,108 @@ class Player(LivingThing):
         self.exp = 0
         self.score = 0
         self.dev = False
+        self.unarmed_attack = ''
+        self.first_attack = ''
+        self.second_attack = ''
+
+    def punch(self,monster):
+        # allows player classes with the unarmed attack punch to use punch, deals 0-3 dmg or +1 if wilder
+        dmg = randint(0,3)
+        if isinstance(hero, Wilder):
+            dmg += 1
+        print('you punch the',monster.name,'for',dmg,'damage')
+        monster.health -= dmg
+        if monster.health < 0:
+            monster.health = 0
+        print(monster.name,'now has',monster.health,'health')
+
+    def slash(self,monster):
+        # allows the traveler to use the slash attack, deals 1-9 dmg
+        print(self.name,"slash's at the",monster.name)
+        dmg = randint(1,9) + self.equipped_weapon.modifier
+        print(self.name,'did',dmg,'damage')
+        monster.health -= dmg
+        if monster.health < 0:
+            monster.health = 0
+        print(monster.name,'health is now',monster.health)
+
+    def stab(self,monster):
+        # allows player classes with the stab attack, deals 4-6 dmg
+        print(self.name,"stab's at the",monster.name)
+        dmg = randint(4,6) + self.equipped_weapon.modifier
+        print(self.name,'did',dmg,'damage')
+        monster.health -= dmg
+        if monster.health < 0:
+            monster.health = 0
+        print(monster.name,'health is now',monster.health)
+
+    def smash(self,monster):
+        # allows the wilder to use the smash attack, deals 5-6 dmg
+        print(self.name,'smashes into the',monster.name)
+        dmg = randint(5,6) + self.equipped_weapon.modifier
+        print(self.name,'did',dmg,'damage')
+        monster.health -= dmg
+        if monster.health < 0:
+            monster.health = 0
+        print(monster.name,'health is now',monster.health)
+    
+    def strike(self,monster):
+        # allows player classes with the strike attack to use strike, deals 2-5 dmg
+        print(self.name,'strikes the',monster.name)
+        dmg = randint(2,5) + self.equipped_weapon.modifier
+        print(self.name,'did',dmg,'damage')
+        monster.health -= dmg
+        if monster.health < 0:
+            monster.health = 0
+        print(monster.name,'health is now',monster.health)
+
+    def fling(self,monster):
+        # allows player classes with the unarmed attack fling to use fling, 0-4 dmg chance not to hit
+        option = randint(1,3)
+        if option == 1:
+            print(self.name,'missed the',monster.name)
+            print('dealing no damage')
+
+        else:
+            print(self.name,'hits the',monster.name)
+            dmg = randint(0,4)
+            print(self.name,'did',dmg,'damage')
+            monster.health -= dmg
+            if monster.health < 0:
+                monster.health = 0
+            print(monster.name,'health is now',monster.health)
+
+    def shoot(self,monster):
+        # allows the ranger to use the shoot attack, deals 3-8 dmg
+        option = randint(1,10)
+        if option == 1:
+            print(self.name,'missed the',monster.name)
+            print('dealing no damage')
+
+        else:
+            print(self.name,'hits the',monster.name)
+            dmg = randint(3,8) + self.equipped_weapon.modifier
+            print(self.name,'did',dmg,'damage')
+            monster.health -= dmg
+            if monster.health < 0:
+                monster.health = 0
+            print(monster.name,'health is now',monster.health)
+
+    def blast(self,monster):
+        # allows the shaman to use the blast attack, deals 3-8 dmg
+        option = randint(1,10)
+        if option == 1:
+            print(self.name,'missed the',monster.name)
+            print('dealing no damage')
+
+        else:
+            print(self.name,'hits the',monster.name)
+            dmg = randint(3,8) + self.equipped_weapon.modifier
+            print(self.name,'did',dmg,'damage')
+            monster.health -= dmg
+            if monster.health < 0:
+                monster.health = 0
+            print(monster.name,'health is now',monster.health)
 
     def help(self, monster):
         # Display available actions for the player
@@ -110,6 +212,7 @@ class Player(LivingThing):
                 input('Press Enter to continue\n>> ')
                 monster = self.room.monsters
                 self.fight(monster) # starts combat
+
             else:
                 print("You couldn't find anything")
 
@@ -121,6 +224,7 @@ class Player(LivingThing):
                 self.room.items = ''
                 self.score += 50
                 self.exp += 50
+                
             else:
                 print("You couldn't find anything")
 
@@ -132,6 +236,7 @@ class Player(LivingThing):
                 self.score += 50
                 self.exp += 50
                 input('Press Enter to continue\n>> ')
+
             else:
                 print("You couldn't find anything")
 
@@ -189,27 +294,10 @@ class Player(LivingThing):
             non_comabat_action = False
             if self.equipped_weapon != '':
                 # checks if the player has a weapon
-                attack = input(f'What action do you want to do?(slash [has a chance to deal a small to a large amout of dmg],stab [deals a smaller range of damage],use,inv,stats)\n>> ')
+                attack = input(f'What action do you want to do?({self.unarmed_attack}, {self.first_attack}, {self.second_attack},use,inv,stats)\n>> ')
+                attack = attack.lower()
 
-                if attack == 'slash':
-                    print(self.name,"slash's at the",monster.name)
-                    dmg = randint(1,10) + self.equipped_weapon.modifier
-                    print(self.name,'did',dmg,'damage')
-                    monster.health -= dmg
-                    if monster.health < 0:
-                            monster.health = 0
-                    print(monster.name,'health is now',monster.health)
-
-                elif attack == 'stab':
-                    print(self.name,"stab's at the",monster.name)
-                    dmg = randint(5,6) + self.equipped_weapon.modifier
-                    print(self.name,'did',dmg,'damage')
-                    monster.health -= dmg
-                    if monster.health < 0:
-                            monster.health = 0
-                    print(monster.name,'health is now',monster.health)
-
-                elif attack == 'use':
+                if attack == 'use':
                     # Allows the player to use items during combat
                     self.use(monster)
                     non_comabat_action = True
@@ -224,22 +312,87 @@ class Player(LivingThing):
                     self.stats(monster)
                     non_comabat_action = True
 
+                elif attack == 'punch':
+                    # Allows the player to use the punch action if they are a Traveler or a Wilder
+                    if isinstance(hero,Traveler):
+                        self.punch(monster)
+                    elif isinstance(hero,Wilder):
+                        self.punch(monster)
+                    else:
+                        print("Your class can't use that attack")
+                        non_comabat_action = True
+
+                elif attack == 'fling':
+                    # Allows the player to use the fling action if they are a Ranger or Wilder
+                    if isinstance(hero,Ranger):
+                        self.fling(monster)
+                    elif isinstance(hero,Shaman):
+                        self.fling(monster)
+                    else:
+                        print("Your class can't use that attack")
+                        non_comabat_action = True
+
+                elif attack == 'slash':
+                    # Allows the player to use the slash action if they are a Traveler
+                    if isinstance(hero,Traveler):
+                        self.slash(monster)
+                    else:
+                        print("Your class can't use that attack")
+                        non_comabat_action = True
+
+                elif attack == 'stab':
+                    # Allows the player to use the stab action if they are a Traveler or a Shaman
+                    if isinstance(hero,Traveler):
+                        self.stab(monster)
+                    elif isinstance(hero,Shaman):
+                        self.stab(monster)
+                    else:
+                        print("Your class can't use that attack")
+                        non_comabat_action = True
+
+                elif attack == 'smash':
+                    # Allows the player to use the smash action if they are a Wilder
+                    if isinstance(hero,Wilder):
+                        self.smash(monster)
+                    else:
+                        print("Your class can't use that attack")
+                        non_comabat_action = True
+
+                elif attack == 'strike':
+                    # Allows the player to use the strike action if they are a Wilder or a Ranger
+                    if isinstance(hero,Wilder):
+                        self.strike(monster)
+                    elif isinstance(hero,Ranger):
+                        self.strike(monster)
+                    else:
+                        print("Your class can't use that attack")
+                        non_comabat_action = True
+
+                elif attack == 'shoot':
+                    # Allows the player to use the shoot action if they are a Ranger
+                    if isinstance(hero,Ranger):
+                        self.shoot(monster)
+                    else:
+                        print("Your class can't use that attack")
+                        non_comabat_action = True
+                
+                elif attack == 'blast':
+                    # Allows the player to use the blast action if they are a Shaman
+                    if isinstance(hero,Shaman):
+                        self.blast(monster)
+                    else:
+                        print("Your class can't use that attack")
+                        non_comabat_action = True
+
                 else:
                     print('Please input a real attack')
                     non_comabat_action = True
 
             else:
-                attack = input('What action do you want to do?(punch,use,inv,stats)\n>> ')
+                attack = input(f'What action do you want to do?({self.unarmed_attack},use,inv,stats)\n>> ')
+                attack = attack.lower()
 
-                if attack == 'punch':
-                    dmg = randint(0,5)
-                    print('you punch the',monster.name,'for',dmg,'damage')
-                    monster.health -= dmg
-                    if monster.health < 0:
-                            monster.health = 0
-                    print(monster.name,'now has',monster.health,'health')
-
-                elif attack == 'use':
+                if attack == 'use':
                     # Allows the player to use items during combat
                     self.use(monster)
                     non_comabat_action = True
@@ -251,7 +404,27 @@ class Player(LivingThing):
 
                 elif attack == 'stats':
                         # Allows the player to view their stats in combat
-                        self.stats(boss)
+                        self.stats(monster)
+                        non_comabat_action = True
+
+                elif attack == 'punch':
+                    # Allows the player to use the punch action if they are a Traveler or a Wilder
+                    if isinstance(hero,Traveler):
+                        self.punch(monster)
+                    elif isinstance(hero,Wilder):
+                        self.punch(monster)
+                    else:
+                        print("Your class can't use that attack")
+                        non_comabat_action = True
+
+                elif attack == 'fling':
+                    # Allows the player to use the fling action if they are a Ranger or Wilder
+                    if isinstance(hero,Ranger):
+                        self.fling(monster)
+                    elif isinstance(hero,Shaman):
+                        self.fling(monster)
+                    else:
+                        print("Your class can't use that attack")
                         non_comabat_action = True
 
                 else:
@@ -333,27 +506,10 @@ class Player(LivingThing):
                 else:
                     if self.equipped_weapon != '':
                         # cheaks if the player has a weapon equiped
-                        attack = input(f'What action do you want to do?(slash [has a chance to deal a small to a large amout of dmg],stab [deals a smaller range of damage],use,inv,stats)\n>> ')
+                        attack = input(f'What action do you want to do?({self.first_attack},{self.second_attack},use,inv,stats)\n>> ')
+                        attack = attack.lower()
 
-                        if attack == 'slash':
-                            print(self.name,"slash's at the",boss.name)
-                            dmg = randint(1,10) + self.equipped_weapon.modifier
-                            print(self.name,'did',dmg,'damage')
-                            boss.health -= dmg
-                            if boss.health < 0:
-                                boss.health = 0
-                            print(boss.name,'health is now',boss.health)
-
-                        elif attack == 'stab':
-                            print(self.name,"stab's at the",boss.name)
-                            dmg = randint(5,6) + self.equipped_weapon.modifier
-                            print(self.name,'did',dmg,'damage')
-                            boss.health -= dmg
-                            if boss.health < 0:
-                                boss.health = 0
-                            print(boss.name,'health is now',boss.health)
-
-                        elif attack == 'use':
+                        if attack == 'use':
                             # Allows the player to use items in combat 
                             self.use(boss)
                             non_comabat_action = True
@@ -368,21 +524,106 @@ class Player(LivingThing):
                             self.stats(boss)
                             non_comabat_action = True
 
+                        elif attack == 'punch':
+                            # Allows the player to use the punch action if they are a Traveler or a Wilder
+                            if isinstance(hero,Traveler):
+                                self.punch(boss)
+                            elif isinstance(hero,Wilder):
+                                self.punch(boss)
+                            else:
+                                print("Your class can't use that attack")
+                                non_comabat_action = True
+
+                        elif attack == 'fling':
+                            # Allows the player to use the fling action if they are a Ranger or Wilder
+                            if isinstance(hero,Ranger):
+                                self.fling(boss)
+                            elif isinstance(hero,Shaman):
+                                self.fling(boss)
+                            else:
+                                print("Your class can't use that attack")
+                                non_comabat_action = True
+
+                        elif attack == 'slash':
+                            # Allows the player to use the slash action if they are a Traveler
+                            if isinstance(hero,Traveler):
+                                self.slash(boss)
+                            else:
+                                print("Your class can't use that attack")
+                                non_comabat_action = True
+
+                        elif attack == 'stab':
+                            # Allows the player to use the stab action if they are a Traveler or a Shaman
+                            if isinstance(hero,Traveler):
+                                self.stab(boss)
+                            elif isinstance(hero,Shaman):
+                                self.stab(boss)
+                            else:
+                                print("Your class can't use that attack")
+                                non_comabat_action = True
+
+                        elif attack == 'smash':
+                            # Allows the player to use the smash action if they are a Wilder
+                            if isinstance(hero,Wilder):
+                                self.smash(boss)
+                            else:
+                                print("Your class can't use that attack")
+                                non_comabat_action = True
+
+                        elif attack == 'strike':
+                            # Allows the player to use the strike action if they are a Wilder or a Ranger
+                            if isinstance(hero,Wilder):
+                                self.strike(boss)
+                            elif isinstance(hero,Ranger):
+                                self.strike(boss)
+                            else:
+                                print("Your class can't use that attack")
+                                non_comabat_action = True
+
+                        elif attack == 'shoot':
+                            # Allows the player to use the shoot action if they are a Ranger
+                            if isinstance(hero,Ranger):
+                                self.shoot(boss)
+                            else:
+                                print("Your class can't use that attack")
+                                non_comabat_action = True
+                        
+                        elif attack == 'blast':
+                            # Allows the player to use the blast action if they are a Shaman
+                            if isinstance(hero,Shaman):
+                                self.blast(boss)
+                            else:
+                                print("Your class can't use that attack")
+                                non_comabat_action = True
+
                         else:
                             print('Please input a real attack')
                             non_comabat_action = True
 
                     else:
                         # Player input
-                        attack = input('What action do you want to do?(punch,use,inv,stats)\n>> ')
+                        attack = input(f'What action do you want to do?({self.unarmed_attack},use,inv,stats)\n>> ')
+                        attack = attack.lower()
 
                         if attack == 'punch':
-                            dmg = randint(0,5)
-                            print('you punch the',boss.name,'for',dmg,'damage')
-                            boss.health -= dmg
-                            if boss.health < 0:
-                                boss.health = 0
-                            print(boss.name,'now has',boss.health,'health')
+                            # Allows the player to use the punch action if they are a Traveler or a Wilder
+                            if isinstance(hero,Traveler):
+                                self.punch(boss)
+                            elif isinstance(hero,Wilder):
+                                self.punch(boss)
+                            else:
+                                print("Your class can't use that attack")
+                                non_comabat_action = True
+
+                        elif attack == 'fling':
+                            # Allows the player to use the fling action if they are a Ranger or Wilder
+                            if isinstance(hero,Ranger):
+                                self.fling(boss)
+                            elif isinstance(hero,Shaman):
+                                self.fling(boss)
+                            else:
+                                print("Your class can't use that attack")
+                                non_comabat_action = True
 
                         elif attack == 'use':
                             # Allows the player to use items in combat 
@@ -613,6 +854,94 @@ class Player(LivingThing):
         self.dev = True
 
 
+# Create Player class for the Player, inheriting from player
+class Traveler(Player): # like D&D fighter
+    def __init__(self, name,):
+        # Initialize player-specific attributes
+        self.name = name
+        self.health = 25
+        self.status = 'regular' 
+        self.inventory = [] 
+        self.equipped_weapon = ''
+        self.equipped_armour = ''
+        self.room = ''
+        self.rest_cooldown = 0
+        self.gold = 0
+        self.level = 1
+        self.exp = 0
+        self.score = 0
+        self.dev = False
+        self.unarmed_attack = 'punch'
+        self.first_attack = 'slash'
+        self.second_attack = 'stab'
+
+
+# Create Player class for the Player, inheriting from player
+class Wilder(Player): # like D&D barbarian
+    def __init__(self, name,):
+        # Initialize player-specific attributes 
+        self.name = name
+        self.health = 25
+        self.status = 'regular' 
+        self.inventory = [] 
+        self.equipped_weapon = ''
+        self.equipped_armour = ''
+        self.room = ''
+        self.rest_cooldown = 0
+        self.gold = 0
+        self.level = 1
+        self.exp = 0
+        self.score = 0
+        self.dev = False
+        self.unarmed_attack = 'punch'
+        self.first_attack = 'smash'
+        self.second_attack = 'strike'
+
+
+# Create a Player class for the Player, inheriting from player
+class Ranger(Player): # like D&D ranger
+    def __init__(self, name,):
+        # Initialize player-specific attributes c
+        self.name = name
+        self.health = 25
+        self.status = 'regular' 
+        self.inventory = [] 
+        self.equipped_weapon = ''
+        self.equipped_armour = ''
+        self.room = ''
+        self.rest_cooldown = 0
+        self.gold = 0
+        self.level = 1
+        self.exp = 0
+        self.score = 0
+        self.dev = False
+        self.unarmed_attack = 'flign'
+        self.first_attack = 'shoot'
+        self.second_attack = 'strike'
+
+
+# Create a Player class for the Player, inheriting from player
+class Shaman(Player): # like D&D wizard
+    def __init__(self, name,):
+        # Initialize player-specific attributes 
+        self.name = name
+        self.health = 25
+        self.status = 'regular' 
+        self.inventory = [] 
+        self.equipped_weapon = ''
+        self.equipped_armour = ''
+        self.room = ''
+        self.rest_cooldown = 0
+        self.gold = 0
+        self.level = 1
+        self.exp = 0
+        self.score = 0
+        self.dev = False
+        self.unarmed_attack = 'fling'
+        self.first_attack = 'blast'
+        self.second_attack = 'stab'
+
+
 # Create a class for monsters, also inheriting from LivingThing
 class Monster(LivingThing):
     def __init__(self, name, health, maxdamage,drops,gold_drops):
@@ -788,17 +1117,62 @@ print(
 )
 input('Press Enter to continue\n>> ')
 
-# Get the player's name
+# Get the player's class and name
 print('Welcome hero')
-print('you are a traveler from a far off land')
-print('you came to this land to find valour or die trying')
+while True:
+    option = input('are you a traveler\na wilder\na ranger\nor a shaman\n>>')
+    option = option.lower()
+    if option == 'traveler':
+        print('You are a Traveler from a far off land')
+        print('You came to this land to find valour or die')
+        
+        name = input("What is your name?\n>> ")
+        if len(name) > 15:
+            # limits the number of characters the players name can have
+            print ("Please keep the name below 15 characters!")
+        hero = Traveler(name)
+        break
 
-name = input("What is your name?\n>> ")
-if len(name) > 15:
-    # limits the number of characters the players name can have
-    print ("Please keep the name below 15 characters!")
+    elif option == 'wilder':
+        print('You have been wondering this lard for awhile')
+        print('as a wild man you are out seeking valour')
+        
+        name = input("What is your name?\n>> ")
+        if len(name) > 15:
+            # limits the number of characters the players name can have
+            print ("Please keep the name below 15 characters!")
 
-hero = Player(name)
+        hero = Wilder(name)
+        break
+
+    elif option == 'ranger':
+        print('You are a ranger from a far off land')
+        print('you have come to this land to find valour or die')
+        
+        name = input("What is your name?\n>> ")
+        if len(name) > 15:
+            # limits the number of characters the players name can have
+            print ("Please keep the name below 15 characters!")
+
+        hero = Ranger(name)
+        break
+
+    elif option == 'shaman':
+        print('you are a shaman from a far off land ')
+        print('you have come to this land to find valour or die')
+        
+        name = input("What is your name?\n>> ")
+        if len(name) > 15:
+            # limits the number of characters the players name can have
+            print ("Please keep the name below 15 characters!")
+
+        hero = Shaman(name)
+        break
+
+    else:
+        print('please make sure you spelt that right')
+
+# Get difficulty
 get_difficulty()
 
 # attemps to get a high score and high score holder
@@ -830,6 +1204,7 @@ except FileNotFoundError:
     else:
         # If one doesn't exist it sets high score to 0
         print('currently there is no high score')
+        high_score = 0
         pass
 
 # Create Item instances
@@ -849,12 +1224,11 @@ crown = Item('Old Crown','This crown used to belong to a old king') # found in o
 locket = Consumables('Locket','This locket seems locked maybe a key will unlock it','') # buy from goblin adventurer
 
 # Create Weapon instances
-magic_sword = Weapon('Magic Sword','Increase damage by 15',15) # Drops from dragon
-pitch_fork = Weapon('Pitch fork','Increase damage by 6',6) # found in the village
-sword = Weapon("Sword",'Increase damage by 4',4) # found in deeper forest
-axe = Weapon('Axe','Increase damage by 2',2) # found on path in forest
-village_guard_sword = Weapon('Guard sword','Increase damage by 10',10) # buy from a villager for 300 gold
 sharp_stick = Weapon('Sharp stick','Increases damage by 1',1) # found in forest
+axe = Weapon('Axe','Increase damage by 2',2) # found on path in forest
+sword = Weapon("Sword",'Increase damage by 4',4) # found in deeper forest
+pitch_fork = Weapon('Pitch fork','Increase damage by 6',6) # found in the village
+village_guard_sword = Weapon('Guard sword','Increase damage by 10',10) # buy from a villager for 300 gold
 lords_sword = Weapon('Lords sword','Increase damage by 12',12) # found in keep
 god_weapon = Weapon('Gods sword','Increase damage by 100',100) # if player uses god_mode func
 rusted_sword = Weapon('Rusted sword','Increase damage by 3',3) # drops from bandit
@@ -895,11 +1269,11 @@ goblin_scout_3 = Humanoid('Goblin Scout',13*difficulty,5*difficulty,'',50) # fou
 goblin_runt = Humanoid('Goblin Runt',7*difficulty,3*difficulty,'',30) # found in cave entrance 2
 goblin_brute = Humanoid('Goblin Brute',20*difficulty,9*difficulty,goblin_scimatar,100) # found in cave entrance 
 troll = Humanoid('Troll',20*difficulty,9*difficulty,troll_armour,100) # found in cave cavern
-excaped_prisoner = Humanoid('Excaped prisoner',3*difficulty,2*difficulty,'','') # found in dungeon
+excaped_prisoner = Humanoid('Excaped prisoner',3*difficulty,2*difficulty,'',0) # found in dungeon
 
-# Create Boss instance
+# Create monsters needed for Boss Battle
 dragon = Dragon('Timόtheos',45*difficulty,17*difficulty,'',400) # found in boss room
-goblin_brute_2 = Humanoid('Goblin Brute',20*difficulty,9*difficulty,'',100)
+goblin_brute_2 = Humanoid('Goblin Brute',20*difficulty,9*difficulty,'',100) # summoned during the boss fight
 
 # Create Rooms
 forest_clearing = Room('Forest Clearing','you are in a forest clearing','','',sharp_stick)
